@@ -424,17 +424,27 @@ body { font-family: var(--font); background: var(--bg); color: var(--text-primar
 
 /* ═══════════════ ADVANCED FILTERS PANEL ═══════════════ */
 .adv-panel {
-    display: none;
+    display: flex;
     flex-direction: column;
-    padding: 1.25rem;
+    padding: 0 1.25rem;
     background: var(--white);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-sm);
     margin-bottom: 1.5rem;
     gap: 1rem;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: max-height 300ms ease, opacity 200ms ease, padding 200ms ease;
 }
-.adv-panel.open { display: flex; }
+.adv-panel.open {
+    max-height: 600px;
+    opacity: 1;
+    pointer-events: auto;
+    padding: 1.25rem;
+}
 .adv-panel label { font-size: .8125rem; font-weight: 600; color: var(--text-primary); display: block; margin-bottom: .375rem; }
 .adv-panel input[type=number],
 .adv-panel select {
