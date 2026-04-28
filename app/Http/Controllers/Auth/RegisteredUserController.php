@@ -131,6 +131,8 @@ class RegisteredUserController extends Controller
 
         Auth::login($user, remember: true);
 
-        return View('onboarding.algo');
+        return $user->profile_completed
+            ? redirect()->route('explore.index')
+            : redirect()->route('onboarding.basic');
     }
 }
