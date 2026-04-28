@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Profile;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -36,7 +37,10 @@ class RegisteredUserController extends Controller
             'name'             => $request->name,
             'email'            => $request->email,
             'password'         => Hash::make($request->password),
-            'onboarding_step'  => 1,
+        ]);
+
+        $user->profile()->create([
+            'onboarding_step' => 1,
         ]);
 
         event(new Registered($user));
@@ -82,12 +86,16 @@ class RegisteredUserController extends Controller
                 'password'  => null,
             ]);
 
+            $user->profile()->create([
+                'onboarding_step' => 1,
+            ]);
+
             event(new Registered($user));
         }
 
         Auth::login($user, remember: true);
 
-        return $user->profile_completed
+        return ($user->profile?->profile_completed ?? false)
             ? redirect()->route('explore.index')
             : redirect()->route('onboarding.basic');
     }
@@ -126,12 +134,16 @@ class RegisteredUserController extends Controller
                 'password'    => null,
             ]);
 
+            $user->profile()->create([
+                'onboarding_step' => 1,
+            ]);
+
             event(new Registered($user));
         }
 
         Auth::login($user, remember: true);
 
-        return $user->profile_completed
+        return ($user->profile?->profile_completed ?? false)
             ? redirect()->route('explore.index')
             : redirect()->route('onboarding.basic');
     }

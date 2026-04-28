@@ -18,14 +18,6 @@ class User extends Authenticatable
         'facebook_id',
         'avatar',
         'avatar_public_id',
-        'birth_date',
-        'gender',
-        'pronouns',
-        'bio',
-        'city',
-        'looking_for',
-        'profile_completed',
-        'onboarding_step',
     ];
 
     protected $hidden = ['password', 'remember_token'];
@@ -34,15 +26,13 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'birth_date'        => 'date',
             'password'          => 'hashed',
-            'profile_completed' => 'boolean',
         ];
     }
 
-    public function getAgeAttribute(): ?int
+    public function profile()
     {
-        return $this->birth_date?->age;
+        return $this->hasOne(Profile::class);
     }
 
     public function photos()

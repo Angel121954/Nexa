@@ -45,8 +45,8 @@
                     class="field-textarea @error('bio') is-invalid @enderror"
                     placeholder="Escribe una breve presentación sobre ti..."
                     maxlength="160"
-                    oninput="document.getElementById('bio-count').textContent = this.value.length">{{ old('bio', $user->bio) }}</textarea>
-                <div class="char-count"><span id="bio-count">{{ strlen(old('bio', $user->bio ?? '')) }}</span>/160</div>
+                    oninput="document.getElementById('bio-count').textContent = this.value.length">{{ old('bio', $profile->bio ?? '') }}</textarea>
+                <div class="char-count"><span id="bio-count">{{ strlen(old('bio', $profile->bio ?? '')) }}</span>/160</div>
                 @error('bio')<span class="field-error">{{ $message }}</span>@enderror
             </div>
 
@@ -62,7 +62,7 @@
                     <input type="text" id="city" name="city"
                         class="field-input @error('city') is-invalid @enderror"
                         placeholder="Ej: Bogotá, Colombia"
-                        value="{{ old('city', $user->city) }}" required />
+                        value="{{ old('city', $profile->city ?? '') }}" required />
                 </div>
                 @error('city')<span class="field-error">{{ $message }}</span>@enderror
             </div>
@@ -74,7 +74,7 @@
                     <input type="date" id="birth_date" name="birth_date"
                         class="field-input @error('birth_date') is-invalid @enderror"
                         style="padding-left: 12px;"
-                        value="{{ old('birth_date', $user->birth_date?->format('Y-m-d')) }}"
+                        value="{{ old('birth_date', $profile->birth_date?->format('Y-m-d')) }}"
                         max="{{ now()->subYears(18)->format('Y-m-d') }}" required />
                     @error('birth_date')<span class="field-error">{{ $message }}</span>@enderror
                 </div>
@@ -83,7 +83,7 @@
                     <input type="text" id="age-display" class="field-input"
                         placeholder="Ej: 24" readonly
                         style="padding-left: 12px; background: var(--bg); cursor: default;"
-                        value="{{ $user->age ?? '' }}" />
+                        value="{{ $profile->age ?? '' }}" />
                 </div>
             </div>
 
@@ -92,11 +92,11 @@
                 <label for="gender" class="field-label">Género</label>
                 <select id="gender" name="gender"
                     class="field-select @error('gender') is-invalid @enderror" required>
-                    <option value="" disabled {{ old('gender', $user->gender) ? '' : 'selected' }}>Selecciona tu género</option>
-                    <option value="male" {{ old('gender', $user->gender) === 'male'       ? 'selected' : '' }}>Masculino</option>
-                    <option value="female" {{ old('gender', $user->gender) === 'female'     ? 'selected' : '' }}>Femenino</option>
-                    <option value="non_binary" {{ old('gender', $user->gender) === 'non_binary' ? 'selected' : '' }}>No binario</option>
-                    <option value="other" {{ old('gender', $user->gender) === 'other'      ? 'selected' : '' }}>Prefiero no decir</option>
+                    <option value="" disabled {{ old('gender', $profile->gender ?? '') ? '' : 'selected' }}>Selecciona tu género</option>
+                    <option value="male" {{ old('gender', $profile->gender) === 'male'       ? 'selected' : '' }}>Masculino</option>
+                    <option value="female" {{ old('gender', $profile->gender) === 'female'     ? 'selected' : '' }}>Femenino</option>
+                    <option value="non_binary" {{ old('gender', $profile->gender) === 'non_binary' ? 'selected' : '' }}>No binario</option>
+                    <option value="other" {{ old('gender', $profile->gender) === 'other'      ? 'selected' : '' }}>Prefiero no decir</option>
                 </select>
                 @error('gender')<span class="field-error">{{ $message }}</span>@enderror
             </div>
@@ -108,10 +108,10 @@
                 </label>
                 <select id="pronouns" name="pronouns" class="field-select">
                     <option value="">Selecciona tus pronombres</option>
-                    <option value="he/him" {{ old('pronouns', $user->pronouns) === 'he/him'   ? 'selected' : '' }}>Él / Him</option>
-                    <option value="she/her" {{ old('pronouns', $user->pronouns) === 'she/her'  ? 'selected' : '' }}>Ella / Her</option>
-                    <option value="they/them" {{ old('pronouns', $user->pronouns) === 'they/them'? 'selected' : '' }}>Elle / They</option>
-                    <option value="any" {{ old('pronouns', $user->pronouns) === 'any'      ? 'selected' : '' }}>Cualquiera</option>
+                    <option value="he/him" {{ old('pronouns', $profile->pronouns ?? '') === 'he/him'   ? 'selected' : '' }}>Él / Him</option>
+                    <option value="she/her" {{ old('pronouns', $profile->pronouns ?? '') === 'she/her'  ? 'selected' : '' }}>Ella / Her</option>
+                    <option value="they/them" {{ old('pronouns', $profile->pronouns ?? '') === 'they/them'? 'selected' : '' }}>Elle / They</option>
+                    <option value="any" {{ old('pronouns', $profile->pronouns ?? '') === 'any'      ? 'selected' : '' }}>Cualquiera</option>
                 </select>
             </div>
 

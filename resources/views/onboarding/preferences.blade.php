@@ -44,14 +44,17 @@
                 Selecciona una o más opciones
             </p>
 
-            <div class="content-options">
+             <div class="content-options">
+                @php
+                    $lookingFor = old('looking_for', $looking_for ?? []);
+                @endphp
                 @foreach([
                 ['friends',    'Hacer amigos',          'Conocer personas con quienes compartir',  'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0'],
                 ['dating',     'Conocer pareja',         'Encontrar a alguien especial',            'M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z'],
                 ['networking', 'Ampliar mi círculo',     'Conectar con gente nueva cerca de mí',   'M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 004 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064'],
                 ['activities', 'Planes y actividades',   'Encontrar con quién salir y explorar',   'M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7'],
                 ] as [$value, $label, $sub, $icon])
-                <label class="content-option" id="opt-{{ $value }}" onclick="toggleOption(this, '{{ $value }}')">
+                <label class="content-option @if(in_array($value, $lookingFor)) selected @endif" id="opt-{{ $value }}" onclick="toggleOption(this, '{{ $value }}')">
                     <div class="content-option-left">
                         <div class="content-option-icon">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -63,12 +66,12 @@
                             <p class="content-option-sub">{{ $sub }}</p>
                         </div>
                     </div>
-                    <div class="content-option-check" id="check-{{ $value }}">
-                        <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2" style="display:none;" id="checkmark-{{ $value }}">
+                    <div class="content-option-check" id="check-{{ $value }}" style="background: @if(in_array($value, $lookingFor)) var(--pink) @endif; border-color: @if(in_array($value, $lookingFor)) var(--pink) @endif;">
+                        <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2" style="display: @if(in_array($value, $lookingFor)) block @else none @endif;" id="checkmark-{{ $value }}">
                             <path d="M2 6l3 3 5-5" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
                     </div>
-                    <input type="checkbox" name="looking_for[]" value="{{ $value }}" style="display:none;" id="input-{{ $value }}">
+                    <input type="checkbox" name="looking_for[]" value="{{ $value }}" style="display:none;" id="input-{{ $value }}" @if(in_array($value, $lookingFor)) checked @endif>
                 </label>
                 @endforeach
             </div>

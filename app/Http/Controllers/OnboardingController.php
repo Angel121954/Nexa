@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Interest;
+use App\Models\Profile;
 use App\Models\UserPhoto;
 use App\Services\CloudinaryService;
 use Illuminate\Http\RedirectResponse;
@@ -16,8 +17,12 @@ class OnboardingController extends Controller
     // ── Paso 2: Perfil básico ──────────────────
     public function basic(): View
     {
+        $user = auth()->user();
+        $profile = $user->profile ?? new Profile(['user_id' => $user->id]);
+
         return view('onboarding.basic', [
-            'user' => auth()->user(),
+            'user' => $user,
+            'profile' => $profile,
         ]);
     }
 
@@ -33,7 +38,9 @@ class OnboardingController extends Controller
             'birth_date.before' => 'Debes tener al menos 18 años.',
         ]);
 
-        auth()->user()->update([
+        $user = auth()->user();
+        $profile = $user->profile ?? new Profile(['user_id' => $user->id]);
+        $profile->fill([
             'bio'             => $request->bio,
             'city'            => $request->city,
             'birth_date'      => $request->birth_date,
@@ -41,6 +48,12 @@ class OnboardingController extends Controller
             'pronouns'        => $request->pronouns,
             'onboarding_step' => 2,
         ]);
+
+        if (!$profile->exists) {
+            $user->profile()->save($profile);
+        } else {
+            $profile->save();
+        }
 
         return redirect()->route('onboarding.photos');
     }
@@ -138,9 +151,12 @@ class OnboardingController extends Controller
     // ── Paso 4: Preferencias ───────────────────
     public function preferences(): View
     {
+        $user = auth()->user();
+
         return view('onboarding.preferences', [
             'interests'         => Interest::all(),
-            'selectedInterests' => auth()->user()->interests->pluck('id')->toArray(),
+            'selectedInterests' => $user->interests->pluck('id')->toArray(),
+            'looking_for'       => $user->profile?->looking_for ?? [],
         ]);
     }
 
@@ -154,8 +170,10 @@ class OnboardingController extends Controller
         ]);
 
         $user = auth()->user();
+        $profile = $user->profile;
+
         $user->interests()->sync($request->interests ?? []);
-        $user->update([
+        $profile->update([
             'looking_for'      => $request->looking_for ?? [],
             'profile_completed' => true,
             'onboarding_step'  => 4,

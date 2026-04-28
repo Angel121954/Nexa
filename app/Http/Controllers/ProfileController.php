@@ -18,6 +18,7 @@ class ProfileController extends Controller
     {
         return view('profile.edit', [
             'user' => $request->user(),
+            'profile' => $request->user()->profile,
         ]);
     }
 
@@ -33,6 +34,13 @@ class ProfileController extends Controller
         }
 
         $request->user()->save();
+
+        // Update profile fields if present
+        $profile = $request->user()->profile;
+        if ($profile && $request->hasAny(['bio', 'city', 'birth_date', 'gender', 'pronouns'])) {
+            $profile->fill($request->only(['bio', 'city', 'birth_date', 'gender', 'pronouns']));
+            $profile->save();
+        }
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
