@@ -27,7 +27,7 @@
            class="nav-link {{ request('tab') === 'interests' ? 'active' : '' }}">
             Mismos intereses
         </a>
-        <a href="#" class="nav-link">Mensajes</a>
+        <a href="{{ route('messages.index') }}" class="nav-link {{ request()->routeIs('messages.*') ? 'active' : '' }}">Mensajes</a>
     </div>
 
     <div class="nav-right">

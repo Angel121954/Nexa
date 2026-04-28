@@ -36,6 +36,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/explore',              [ExploreController::class, 'index'])->name('explore.index');
     Route::post('/explore/like/{user}', [ExploreController::class, 'like'])->name('explore.like');
 
+    Route::get('/messages', fn() => view('messages.index'))->name('messages.index');
+
     Route::get('/profile',   [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
