@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\ExploreController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -32,7 +33,9 @@ Route::middleware('auth')->prefix('onboarding')->name('onboarding.')->group(func
 
 // App principal
 Route::middleware(['auth'])->group(function () {
-Route::get('/explore', fn() => view('explore.index'))->name('explore.index');
+    Route::get('/explore',              [ExploreController::class, 'index'])->name('explore.index');
+    Route::post('/explore/like/{user}', [ExploreController::class, 'like'])->name('explore.like');
+
     Route::get('/profile',   [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

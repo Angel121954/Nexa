@@ -28,7 +28,21 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return View('onboarding.basic');
+        $user = Auth::user();
+
+        // Si el perfil ya está completo → feed principal
+        if ($user->profile?->profile_completed) {
+            return redirect()->route('explore.index');
+        }
+
+        // Si está a mitad del onboarding, reanudar donde quedó
+        $step = $user->profile?->onboarding_step ?? 0;
+
+        return match(true) {
+            $step >= 3 => redirect()->route('onboarding.preferences'),
+            $step >= 2 => redirect()->route('onboarding.photos'),
+            default    => redirect()->route('onboarding.basic'),
+        };
     }
 
     /**
