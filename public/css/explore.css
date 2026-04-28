@@ -405,7 +405,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text-primar
 .match-toast {
     position: fixed;
     bottom: 2rem; left: 50%;
-    transform: translateX(-50%) translateY(120%);
+    transform: translateX(-50%) translateY(200%);
     background: linear-gradient(135deg, var(--pink) 0%, var(--pink-dark) 100%);
     color: var(--white);
     padding: 1rem 1.5rem;
@@ -418,8 +418,12 @@ body { font-family: var(--font); background: var(--bg); color: var(--text-primar
     transition: transform 400ms cubic-bezier(.34,1.56,.64,1);
     white-space: nowrap;
     max-width: 90vw;
+    visibility: hidden;
 }
-.match-toast.show { transform: translateX(-50%) translateY(0); }
+.match-toast.show {
+    transform: translateX(-50%) translateY(0);
+    visibility: visible;
+}
 .match-toast svg { flex-shrink: 0; }
 
 /* ═══════════════ ADVANCED FILTERS PANEL ═══════════════ */
