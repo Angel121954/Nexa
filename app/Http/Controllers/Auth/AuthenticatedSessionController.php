@@ -28,7 +28,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return View('onboarding.algo');
+        return View('onboarding.basic');
     }
 
     /**
