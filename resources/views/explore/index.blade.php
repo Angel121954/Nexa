@@ -115,8 +115,9 @@
 
         {{-- Advanced filters panel --}}
         <div class="adv-panel {{ request()->hasAny(['age_min','age_max','interests']) ? 'open' : '' }}" id="adv-panel">
-            <div>
-                <label>Intereses</label>
+
+            <div class="adv-interest-wrap">
+                <label style="font-size:.8125rem;font-weight:600;color:var(--text-primary);">Intereses</label>
                 <div class="interest-checkboxes">
                     @foreach($interests as $interest)
                         @php $checked = in_array($interest->id, (array) request('interests', [])); @endphp
