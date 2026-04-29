@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable
 {
@@ -27,25 +29,29 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password'          => 'hashed',
+            'password' => 'hashed',
         ];
     }
 
-    public function profile()
+    //  PERFIL (CLAVE PARA TU VISTA)
+    public function profile(): HasOne
     {
         return $this->hasOne(Profile::class);
     }
 
-    public function photos()
+    //  FOTOS
+    public function photos(): HasMany
     {
         return $this->hasMany(UserPhoto::class)->orderBy('sort_order');
     }
 
-    public function interests()
+    //  INTERESES
+    public function interests(): BelongsToMany
     {
         return $this->belongsToMany(Interest::class);
     }
 
+    //  LIKES
     public function likesSent(): HasMany
     {
         return $this->hasMany(Like::class, 'sender_id');
@@ -58,6 +64,8 @@ class User extends Authenticatable
 
     public function hasLiked(int $userId): bool
     {
-        return $this->likesSent()->where('receiver_id', $userId)->exists();
+        return $this->likesSent()
+            ->where('receiver_id', $userId)
+            ->exists();
     }
 }

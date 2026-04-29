@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\Profile;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,41 +13,76 @@ use Illuminate\View\View;
 class ProfileController extends Controller
 {
     /**
-     * Display the user's profile form.
+     * Mostrar perfil
      */
-    public function edit(Request $request): View
+    public function index(): View
     {
-        return view('profile.edit', [
-            'user' => $request->user(),
-            'profile' => $request->user()->profile,
+        $user = auth()->user();
+
+        //  asegurar que tenga profile
+        if (!$user->profile) {
+            $user->profile()->create([]);
+        }
+
+        return view('profile.index', [
+            'user' => $user,
+            'profile' => $user->profile
         ]);
     }
 
     /**
-     * Update the user's profile information.
+     * Editar perfil
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function edit(Request $request): View
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        //  asegurar profile también aquí
+        if (!$user->profile) {
+            $user->profile()->create([]);
         }
 
-        $request->user()->save();
-
-        // Update profile fields if present
-        $profile = $request->user()->profile;
-        if ($profile && $request->hasAny(['bio', 'city', 'birth_date', 'gender', 'pronouns'])) {
-            $profile->fill($request->only(['bio', 'city', 'birth_date', 'gender', 'pronouns']));
-            $profile->save();
-        }
-
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        return view('profile.edit', [
+            'user' => $user,
+            'profile' => $user->profile,
+        ]);
     }
 
     /**
-     * Delete the user's account.
+     * Actualizar perfil
+     */
+    public function update(ProfileUpdateRequest $request): RedirectResponse
+    {
+        $user = $request->user();
+        //  actualizar usuario
+        $user->fill($request->validated());
+
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
+
+        $user->save();
+
+        //  crear profile si no existe
+        $profile = $user->profile ?? $user->profile()->create([]);
+
+        //  actualizar profile
+        $profile->fill($request->only([
+            'bio',
+            'city',
+            'birth_date',
+            'gender',
+            'pronouns'
+        ]));
+
+        $profile->save();
+
+        return Redirect::route('profile.edit')
+            ->with('status', 'profile-updated');
+    }
+
+    /**
+     * Eliminar cuenta
      */
     public function destroy(Request $request): RedirectResponse
     {
