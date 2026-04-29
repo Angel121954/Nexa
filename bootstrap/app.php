@@ -13,6 +13,10 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->redirectGuestsTo('/');
         $middleware->redirectUsersTo('/explore');
+
+        // Prevent back button access to protected pages after logout
+        // Apply to 'web' middleware group (all web routes)
+        $middleware->web(\App\Http\Middleware\PreventBackHistory::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
