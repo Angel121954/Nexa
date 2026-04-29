@@ -108,35 +108,5 @@
 @endsection
 
 @push('scripts')
-<script>
-    // Preview avatar
-    document.getElementById('avatar').addEventListener('change', function() {
-        const file = this.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = e => {
-            const img = document.getElementById('avatar-img');
-            const placeholder = document.getElementById('avatar-placeholder');
-            img.src = e.target.result;
-            img.style.display = 'block';
-            if (placeholder) placeholder.style.display = 'none';
-        };
-        reader.readAsDataURL(file);
-    });
-
-    // Preview galería
-    function previewGallery(input) {
-        const grid = document.getElementById('gallery-grid');
-        Array.from(input.files).forEach(file => {
-            const reader = new FileReader();
-            reader.onload = e => {
-                const div = document.createElement('div');
-                div.className = 'gallery-item';
-                div.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
-                grid.appendChild(div);
-            };
-            reader.readAsDataURL(file);
-        });
-    }
-</script>
+<script src="{{ asset('js/onboarding.js') }}"></script>
 @endpush

@@ -4,57 +4,12 @@
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/explore.css') }}">
+<link rel="stylesheet" href="{{ asset('css/topbar.css') }}">
 @endpush
 
 @section('content')
 
-{{-- ═══ NAVBAR ═══ --}}
-<nav class="explore-nav">
-    <a href="{{ route('explore.index') }}" class="nav-logo">
-        <img src="{{ asset('img/logoNexa.png') }}" alt="Nexa">
-    </a>
-
-    <div class="nav-links">
-        <a href="{{ route('explore.index', ['tab' => 'all']) }}"
-           class="nav-link {{ request('tab', 'all') === 'all' ? 'active' : '' }}">
-            Descubrir
-        </a>
-        <a href="{{ route('explore.index', ['tab' => 'liked_me']) }}"
-           class="nav-link {{ request('tab') === 'liked_me' ? 'active' : '' }}">
-            Personas que te gustaron
-        </a>
-        <a href="{{ route('explore.index', ['tab' => 'interests']) }}"
-           class="nav-link {{ request('tab') === 'interests' ? 'active' : '' }}">
-            Mismos intereses
-        </a>
-        <a href="{{ route('messages.index') }}" class="nav-link {{ request()->routeIs('messages.*') ? 'active' : '' }}">Mensajes</a>
-    </div>
-
-    <div class="nav-right">
-        <button type="button" class="btn-premium" id="open-premium-modal" aria-haspopup="dialog">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/>
-            </svg>
-            Suscríbete a Nexa Premium
-        </button>
-
-        <a href="#" class="nav-icon-btn" title="Notificaciones">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <span class="nav-notif-dot"></span>
-        </a>
-
-        <a href="{{ route('profile.edit') }}" class="nav-avatar">
-            <img src="{{ auth()->user()->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->name).'&background=E8375A&color=fff' }}"
-                 alt="{{ auth()->user()->name }}">
-            <span>{{ Str::words(auth()->user()->name, 1, '') }}</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </a>
-    </div>
-</nav>
+<x-topbar />
 
 {{-- ═══ PAGE ═══ --}}
 <div class="explore-page">
@@ -72,27 +27,28 @@
         <div class="filters-bar">
             <div class="search-wrap">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                    <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35" stroke-linecap="round"/>
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="M21 21l-4.35-4.35" stroke-linecap="round" />
                 </svg>
                 <input type="text" name="q" id="q" class="search-input"
-                       placeholder="Buscar por nombre, intereses o ciudad..."
-                       value="{{ request('q') }}"
-                       autocomplete="off">
+                    placeholder="Buscar por nombre, intereses o ciudad..."
+                    value="{{ request('q') }}"
+                    autocomplete="off">
             </div>
 
             <select name="city" class="filter-select" onchange="this.form.submit()">
                 <option value="">Ubicación</option>
                 @foreach($users->pluck('profile.city')->filter()->unique()->sort() as $city)
-                    <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>{{ $city }}</option>
+                <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>{{ $city }}</option>
                 @endforeach
             </select>
 
             <select name="gender" class="filter-select" onchange="this.form.submit()">
                 <option value="">Género</option>
-                <option value="male"       {{ request('gender') === 'male'       ? 'selected' : '' }}>Masculino</option>
-                <option value="female"     {{ request('gender') === 'female'     ? 'selected' : '' }}>Femenino</option>
+                <option value="male" {{ request('gender') === 'male'       ? 'selected' : '' }}>Masculino</option>
+                <option value="female" {{ request('gender') === 'female'     ? 'selected' : '' }}>Femenino</option>
                 <option value="non_binary" {{ request('gender') === 'non_binary' ? 'selected' : '' }}>No binario</option>
-                <option value="other"      {{ request('gender') === 'other'      ? 'selected' : '' }}>Otro</option>
+                <option value="other" {{ request('gender') === 'other'      ? 'selected' : '' }}>Otro</option>
             </select>
 
             <select name="age_range" id="age-range-select" class="filter-select">
@@ -107,7 +63,9 @@
 
             <button type="button" class="btn-filters" id="toggle-adv">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/>
+                    <line x1="4" y1="6" x2="20" y2="6" />
+                    <line x1="8" y1="12" x2="16" y2="12" />
+                    <line x1="11" y1="18" x2="13" y2="18" />
                 </svg>
                 Filtros
             </button>
@@ -120,15 +78,15 @@
                 <label style="font-size:.8125rem;font-weight:600;color:var(--text-primary);">Intereses</label>
                 <div class="interest-checkboxes">
                     @foreach($interests as $interest)
-                        @php $checked = in_array($interest->id, (array) request('interests', [])); @endphp
-                        <input type="checkbox" class="interest-chk"
-                               name="interests[]"
-                               value="{{ $interest->id }}"
-                               id="int-{{ $interest->id }}"
-                               {{ $checked ? 'checked' : '' }}>
-                        <label class="interest-chk-label" for="int-{{ $interest->id }}">
-                            {{ $interest->name }}
-                        </label>
+                    @php $checked = in_array($interest->id, (array) request('interests', [])); @endphp
+                    <input type="checkbox" class="interest-chk"
+                        name="interests[]"
+                        value="{{ $interest->id }}"
+                        id="int-{{ $interest->id }}"
+                        {{ $checked ? 'checked' : '' }}>
+                    <label class="interest-chk-label" for="int-{{ $interest->id }}">
+                        {{ $interest->name }}
+                    </label>
                     @endforeach
                 </div>
             </div>
@@ -144,33 +102,33 @@
     {{-- Quick tabs --}}
     <div class="quick-tabs">
         <a href="{{ route('explore.index', array_merge(request()->except('tab', 'page'), ['tab' => 'all'])) }}"
-           class="qtab {{ $tab === 'all' ? 'active' : '' }}">
+            class="qtab {{ $tab === 'all' ? 'active' : '' }}">
             Todos
         </a>
         <a href="{{ route('explore.index', array_merge(request()->except('tab', 'page'), ['tab' => 'all', 'nearby' => 1])) }}"
-           class="qtab">
+            class="qtab">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke-linecap="round"/>
-                <circle cx="12" cy="9" r="2.5"/>
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke-linecap="round" />
+                <circle cx="12" cy="9" r="2.5" />
             </svg>
             Cerca de ti
         </a>
         <a href="{{ route('explore.index', array_merge(request()->except('tab', 'page'), ['tab' => 'new'])) }}"
-           class="qtab {{ $tab === 'new' ? 'active' : '' }}">
+            class="qtab {{ $tab === 'new' ? 'active' : '' }}">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke-linecap="round"/>
+                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke-linecap="round" />
             </svg>
             Nuevos
         </a>
         <a href="{{ route('explore.index', array_merge(request()->except('tab', 'page'), ['tab' => 'liked_me'])) }}"
-           class="qtab {{ $tab === 'liked_me' ? 'active' : '' }}">
+            class="qtab {{ $tab === 'liked_me' ? 'active' : '' }}">
             <span class="online-dot"></span>
             En línea ahora
         </a>
         <a href="{{ route('explore.index', array_merge(request()->except('tab', 'page'), ['tab' => 'interests'])) }}"
-           class="qtab {{ $tab === 'interests' ? 'active' : '' }}">
+            class="qtab {{ $tab === 'interests' ? 'active' : '' }}">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke-linecap="round"/>
+                <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke-linecap="round" />
             </svg>
             Mismos intereses
         </a>
@@ -179,94 +137,95 @@
     {{-- Cards grid --}}
     <div class="cards-grid">
         @forelse($users as $person)
-            @php
-                $liked   = in_array($person->id, $likedIds);
-                $matched = in_array($person->id, $matchIds);
-                $photo   = $person->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode($person->name).'&background=FDE8EE&color=E8375A&size=300';
-                $age     = $person->profile?->age;
-                $city    = $person->profile?->city;
-                $bio     = $person->profile?->bio;
-                $tags    = $person->interests->take(3);
-            @endphp
+        @php
+        $liked = in_array($person->id, $likedIds);
+        $matched = in_array($person->id, $matchIds);
+        $photo = $person->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode($person->name).'&background=FDE8EE&color=E8375A&size=300';
+        $age = $person->profile?->age;
+        $city = $person->profile?->city;
+        $bio = $person->profile?->bio;
+        $tags = $person->interests->take(3);
+        @endphp
 
-            <article class="user-card" id="card-{{ $person->id }}">
-                <div class="card-photo">
-                    <img src="{{ $photo }}" alt="{{ $person->name }}" loading="lazy">
+        <article class="user-card" id="card-{{ $person->id }}">
+            <div class="card-photo">
+                <img src="{{ $photo }}" alt="{{ $person->name }}" loading="lazy">
 
-                    {{-- Random online dot for demo --}}
-                    @if($person->id % 3 === 0)
-                        <span class="card-online" title="En línea"></span>
-                    @endif
+                {{-- Random online dot for demo --}}
+                @if($person->id % 3 === 0)
+                <span class="card-online" title="En línea"></span>
+                @endif
 
-                    <button class="card-like-btn {{ $liked ? 'liked' : '' }}"
-                            id="like-btn-{{ $person->id }}"
-                            data-user="{{ $person->id }}"
-                            data-liked="{{ $liked ? '1' : '0' }}"
-                            data-name="{{ $person->name }}"
-                            title="{{ $liked ? 'Quitar like' : 'Dar like' }}"
-                            aria-label="{{ $liked ? 'Quitar like a '.$person->name : 'Dar like a '.$person->name }}">
-                        <svg width="16" height="16" viewBox="0 0 24 24"
-                             fill="{{ $liked ? 'currentColor' : 'none' }}"
-                             stroke="currentColor" stroke-width="2">
-                            <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"
-                                  stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </button>
-                </div>
-
-                <div class="card-body">
-                    <p class="card-name">
-                        {{ $person->name }}{{ $age ? ', '.$age : '' }}
-                        @if($matched)
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--pink)">
-                                <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
-                            </svg>
-                        @else
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--pink)">
-                                <path d="M9 12l2 2 4-4M22 12c0 5.52-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2s10 4.48 10 10z"/>
-                            </svg>
-                        @endif
-                    </p>
-
-                    @if($bio)
-                        <p class="card-bio">{{ $bio }}</p>
-                    @endif
-
-                    @if($tags->count())
-                        <div class="card-tags">
-                            @foreach($tags as $tag)
-                                <span class="card-tag">{{ $tag->name }}</span>
-                            @endforeach
-                        </div>
-                    @endif
-
-                    @if($city)
-                        <p class="card-location">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke-linecap="round"/>
-                                <circle cx="12" cy="9" r="2.5"/>
-                            </svg>
-                            {{ $city }}
-                        </p>
-                    @endif
-                </div>
-            </article>
-        @empty
-            <div class="empty-state">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35" stroke-linecap="round"/>
-                </svg>
-                <h3>Sin resultados</h3>
-                <p>Intenta ajustar los filtros o busca con otros términos.</p>
+                <button class="card-like-btn {{ $liked ? 'liked' : '' }}"
+                    id="like-btn-{{ $person->id }}"
+                    data-user="{{ $person->id }}"
+                    data-liked="{{ $liked ? '1' : '0' }}"
+                    data-name="{{ $person->name }}"
+                    title="{{ $liked ? 'Quitar like' : 'Dar like' }}"
+                    aria-label="{{ $liked ? 'Quitar like a '.$person->name : 'Dar like a '.$person->name }}">
+                    <svg width="16" height="16" viewBox="0 0 24 24"
+                        fill="{{ $liked ? 'currentColor' : 'none' }}"
+                        stroke="currentColor" stroke-width="2">
+                        <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
             </div>
+
+            <div class="card-body">
+                <p class="card-name">
+                    {{ $person->name }}{{ $age ? ', '.$age : '' }}
+                    @if($matched)
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--pink)">
+                        <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+                    </svg>
+                    @else
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--pink)">
+                        <path d="M9 12l2 2 4-4M22 12c0 5.52-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2s10 4.48 10 10z" />
+                    </svg>
+                    @endif
+                </p>
+
+                @if($bio)
+                <p class="card-bio">{{ $bio }}</p>
+                @endif
+
+                @if($tags->count())
+                <div class="card-tags">
+                    @foreach($tags as $tag)
+                    <span class="card-tag">{{ $tag->name }}</span>
+                    @endforeach
+                </div>
+                @endif
+
+                @if($city)
+                <p class="card-location">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke-linecap="round" />
+                        <circle cx="12" cy="9" r="2.5" />
+                    </svg>
+                    {{ $city }}
+                </p>
+                @endif
+            </div>
+        </article>
+        @empty
+        <div class="empty-state">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="11" cy="11" r="8" />
+                <path d="M21 21l-4.35-4.35" stroke-linecap="round" />
+            </svg>
+            <h3>Sin resultados</h3>
+            <p>Intenta ajustar los filtros o busca con otros términos.</p>
+        </div>
         @endforelse
     </div>
 
     {{-- Pagination --}}
     @if($users->hasPages())
-        <div class="pagination-wrap">
-            {{ $users->onEachSide(1)->links('vendor.pagination.simple-nexa') }}
-        </div>
+    <div class="pagination-wrap">
+        {{ $users->onEachSide(1)->links('vendor.pagination.simple-nexa') }}
+    </div>
     @endif
 
 </div>
@@ -274,7 +233,7 @@
 {{-- Match toast --}}
 <div class="match-toast" id="match-toast" role="alert" aria-live="polite">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+        <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
     </svg>
     <span id="match-toast-text">¡Es un match!</span>
 </div>
@@ -288,7 +247,7 @@
             <div class="pm-visual-inner">
                 <div class="pm-logo-badge">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
-                        <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/>
+                        <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" />
                     </svg>
                 </div>
                 <h2 class="pm-visual-title">Nexa <span>Premium</span></h2>
@@ -296,27 +255,39 @@
 
                 <ul class="pm-visual-perks">
                     <li>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
                         Likes ilimitados cada día
                     </li>
                     <li>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
                         Ve quién te dio like
                     </li>
                     <li>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
                         Filtros avanzados de búsqueda
                     </li>
                     <li>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
                         Perfil destacado en el feed
                     </li>
                     <li>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
                         Mensajes antes del match
                     </li>
                     <li>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
                         Modo incógnito
                     </li>
                 </ul>
@@ -334,8 +305,8 @@
         <div class="pm-plans">
             <button class="pm-close" id="close-premium-modal" aria-label="Cerrar">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="18" y1="6" x2="6" y2="18" stroke-linecap="round"/>
-                    <line x1="6" y1="6" x2="18" y2="18" stroke-linecap="round"/>
+                    <line x1="18" y1="6" x2="6" y2="18" stroke-linecap="round" />
+                    <line x1="6" y1="6" x2="18" y2="18" stroke-linecap="round" />
                 </svg>
             </button>
 
@@ -364,11 +335,23 @@
                         <span class="pm-period">/mes</span>
                     </div>
                     <ul class="pm-card-features">
-                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5" stroke-linecap="round"/></svg> 50 likes diarios</li>
-                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5" stroke-linecap="round"/></svg> Ve quién te gustó</li>
-                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5" stroke-linecap="round"/></svg> Filtros avanzados</li>
-                        <li class="pm-feat-no"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18" stroke-linecap="round"/><line x1="6" y1="6" x2="18" y2="18" stroke-linecap="round"/></svg> Modo incógnito</li>
-                        <li class="pm-feat-no"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18" stroke-linecap="round"/><line x1="6" y1="6" x2="18" y2="18" stroke-linecap="round"/></svg> Perfil destacado</li>
+                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path d="M20 6L9 17l-5-5" stroke-linecap="round" />
+                            </svg> 50 likes diarios</li>
+                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path d="M20 6L9 17l-5-5" stroke-linecap="round" />
+                            </svg> Ve quién te gustó</li>
+                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path d="M20 6L9 17l-5-5" stroke-linecap="round" />
+                            </svg> Filtros avanzados</li>
+                        <li class="pm-feat-no"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <line x1="18" y1="6" x2="6" y2="18" stroke-linecap="round" />
+                                <line x1="6" y1="6" x2="18" y2="18" stroke-linecap="round" />
+                            </svg> Modo incógnito</li>
+                        <li class="pm-feat-no"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <line x1="18" y1="6" x2="6" y2="18" stroke-linecap="round" />
+                                <line x1="6" y1="6" x2="18" y2="18" stroke-linecap="round" />
+                            </svg> Perfil destacado</li>
                     </ul>
                     <button class="pm-btn-plan pm-btn-outline">Elegir Plus</button>
                 </div>
@@ -384,11 +367,21 @@
                         <span class="pm-period">/mes</span>
                     </div>
                     <ul class="pm-card-features">
-                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5" stroke-linecap="round"/></svg> Likes ilimitados</li>
-                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5" stroke-linecap="round"/></svg> Ve quién te gustó</li>
-                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5" stroke-linecap="round"/></svg> Filtros avanzados</li>
-                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5" stroke-linecap="round"/></svg> Modo incógnito</li>
-                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5" stroke-linecap="round"/></svg> Perfil destacado</li>
+                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path d="M20 6L9 17l-5-5" stroke-linecap="round" />
+                            </svg> Likes ilimitados</li>
+                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path d="M20 6L9 17l-5-5" stroke-linecap="round" />
+                            </svg> Ve quién te gustó</li>
+                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path d="M20 6L9 17l-5-5" stroke-linecap="round" />
+                            </svg> Filtros avanzados</li>
+                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path d="M20 6L9 17l-5-5" stroke-linecap="round" />
+                            </svg> Modo incógnito</li>
+                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path d="M20 6L9 17l-5-5" stroke-linecap="round" />
+                            </svg> Perfil destacado</li>
                     </ul>
                     <button class="pm-btn-plan pm-btn-gold">Elegir Gold</button>
                 </div>
@@ -402,127 +395,5 @@
 @endsection
 
 @push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const CSRF = document.querySelector('meta[name="csrf-token"]').content;
-
-    // ── Like buttons ─────────────────────────────
-    document.querySelectorAll('.card-like-btn').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-            e.stopPropagation();
-            const userId = btn.dataset.user;
-            btn.disabled = true;
-
-            try {
-                const res = await fetch(`/explore/like/${userId}`, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': CSRF,
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                    },
-                });
-
-                if (!res.ok) throw new Error('Server error');
-                const data = await res.json();
-
-                const svg = btn.querySelector('svg');
-
-                if (data.liked) {
-                    btn.classList.add('liked');
-                    btn.dataset.liked = '1';
-                    svg.setAttribute('fill', 'currentColor');
-                    btn.title = 'Quitar like';
-                    animateLike(btn);
-                } else {
-                    btn.classList.remove('liked');
-                    btn.dataset.liked = '0';
-                    svg.setAttribute('fill', 'none');
-                    btn.title = 'Dar like';
-                }
-
-                if (data.match) {
-                    showMatchToast(data.matchName);
-                }
-            } catch (err) {
-                console.error(err);
-            } finally {
-                btn.disabled = false;
-            }
-        });
-    });
-
-    // ── Like animation ───────────────────────────
-    function animateLike(btn) {
-        btn.style.transform = 'scale(1.35)';
-        setTimeout(() => btn.style.transform = '', 300);
-    }
-
-    // ── Match toast ──────────────────────────────
-    function showMatchToast(name) {
-        const toast = document.getElementById('match-toast');
-        document.getElementById('match-toast-text').textContent =
-            `¡Es un match con ${name}! 🎉`;
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 4000);
-    }
-
-    // ── Advanced filters panel ───────────────────
-    const toggleBtn = document.getElementById('toggle-adv');
-    const panel     = document.getElementById('adv-panel');
-    if (toggleBtn && panel) {
-        toggleBtn.addEventListener('click', () => {
-            panel.classList.toggle('open');
-        });
-    }
-
-    // ── Age range select ─────────────────────────
-    const ageSelect = document.getElementById('age-range-select');
-    if (ageSelect) {
-        ageSelect.addEventListener('change', () => {
-            const val = ageSelect.value;
-            const [min, max] = val ? val.split('-') : ['', ''];
-            document.getElementById('age-min').value = min || '';
-            document.getElementById('age-max').value = max || '';
-        });
-    }
-
-    // ── Premium modal ─────────────────────────────
-    const overlay   = document.getElementById('premium-modal');
-    const openBtn   = document.getElementById('open-premium-modal');
-    const closeBtn  = document.getElementById('close-premium-modal');
-
-    function openModal()  { overlay.hidden = false; document.body.style.overflow = 'hidden'; }
-    function closeModal() { overlay.hidden = true;  document.body.style.overflow = ''; }
-
-    openBtn?.addEventListener('click', openModal);
-    closeBtn?.addEventListener('click', closeModal);
-    overlay?.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
-
-    // Billing toggle
-    document.querySelectorAll('.pm-toggle-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.pm-toggle-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            const period = btn.dataset.period;
-            document.querySelectorAll('.pm-price').forEach(el => {
-                el.textContent = el.dataset[period];
-            });
-        });
-    });
-
-    // ── Search debounce ──────────────────────────
-    const searchInput = document.getElementById('q');
-    if (searchInput) {
-        let timer;
-        searchInput.addEventListener('input', () => {
-            clearTimeout(timer);
-            timer = setTimeout(() => {
-                document.getElementById('filter-form').submit();
-            }, 600);
-        });
-    }
-});
-</script>
+<script src="{{ asset('js/explore.js') }}"></script>
 @endpush

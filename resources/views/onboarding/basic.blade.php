@@ -125,14 +125,5 @@
 @endsection
 
 @push('scripts')
-<script>
-    document.getElementById('birth_date').addEventListener('change', function() {
-        const birth = new Date(this.value);
-        const today = new Date();
-        let age = today.getFullYear() - birth.getFullYear();
-        const m = today.getMonth() - birth.getMonth();
-        if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
-        document.getElementById('age-display').value = isNaN(age) || age < 0 ? '' : age;
-    });
-</script>
+<script src="{{ asset('js/onboarding.js') }}"></script>
 @endpush

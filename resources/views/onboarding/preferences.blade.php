@@ -86,22 +86,5 @@
 @endsection
 
 @push('scripts')
-<script>
-    function toggleTag(checkbox) {
-        checkbox.closest('.interest-tag').classList.toggle('selected', checkbox.checked);
-    }
-
-    function toggleOption(label, value) {
-        const input = document.getElementById('input-' + value);
-        const check = document.getElementById('check-' + value);
-        const checkmark = document.getElementById('checkmark-' + value);
-        const selected = !input.checked;
-
-        input.checked = selected;
-        label.classList.toggle('selected', selected);
-        check.style.background = selected ? 'var(--pink)' : '';
-        check.style.borderColor = selected ? 'var(--pink)' : '';
-        checkmark.style.display = selected ? 'block' : 'none';
-    }
-</script>
+<script src="{{ asset('js/onboarding.js') }}"></script>
 @endpush
