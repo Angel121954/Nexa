@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Storage;
+
 
 class ProfileController extends Controller
 {
@@ -103,5 +105,21 @@ class ProfileController extends Controller
         ]);
 
         return back();
+    }
+    public function deletePhoto($id)
+    {
+        $photo = UserPhoto::where('id', $id)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
+
+        // borrar archivo físico
+        if (Storage::disk('public')->exists($photo->path)) {
+            Storage::disk('public')->delete($photo->path);
+        }
+
+        // borrar registro BD
+        $photo->delete();
+
+        return back()->with('success', 'Foto eliminada correctamente');
     }
 }
