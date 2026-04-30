@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\UserPhoto;
+use App\Models\Like;
+use App\Models\User;
 use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,15 +18,27 @@ class ProfileController extends Controller
 {
     public function index(): View
     {
-        $user = auth()->user();
+        $user = auth()->user()->load(['profile', 'interests', 'photos']);
 
         if (!$user->profile) {
             $user->profile()->create([]);
         }
 
+        // Personas a quienes yo di like
+        $likedUsers = User::whereIn('id', $user->likesSent()->pluck('receiver_id'))
+            ->with('profile')
+            ->get();
+
+        // Personas que me dieron like a mí
+        $admirers = User::whereHas('likesSent', fn($q) => $q->where('receiver_id', $user->id))
+            ->with('profile')
+            ->get();
+
         return view('profile.index', [
-            'user' => $user,
-            'profile' => $user->profile
+            'user'       => $user,
+            'profile'    => $user->profile,
+            'likedUsers' => $likedUsers,
+            'admirers'   => $admirers,
         ]);
     }
 
