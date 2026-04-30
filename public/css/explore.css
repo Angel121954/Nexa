@@ -318,6 +318,17 @@ body {
     box-shadow: var(--shadow-lg);
 }
 
+.card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+}
+
+.card-link:hover {
+    text-decoration: none;
+}
+
 .card-photo {
     position: relative;
     aspect-ratio: 3/4;
@@ -367,6 +378,7 @@ body {
     color: var(--text-muted);
     transition: all 200ms ease;
     box-shadow: var(--shadow-sm);
+    z-index: 2;
 }
 
 .card-like-btn:hover {

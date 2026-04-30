@@ -148,6 +148,7 @@
         @endphp
 
         <article class="user-card" id="card-{{ $person->id }}">
+            <a href="{{ route('profile.show', $person->id) }}" class="card-link">
             <div class="card-photo">
                 <img src="{{ $photo }}" alt="{{ $person->name }}" loading="lazy">
 
@@ -208,6 +209,7 @@
                 </p>
                 @endif
             </div>
+            </a>
         </article>
         @empty
         <div class="empty-state">

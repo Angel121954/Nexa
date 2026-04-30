@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\UserPhoto;
 use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
@@ -25,6 +26,18 @@ class ProfileController extends Controller
         return view('profile.index', [
             'user' => $user,
             'profile' => $user->profile
+        ]);
+    }
+
+    public function show(User $user): View
+    {
+        if ($user->id === auth()->id()) {
+            return redirect()->route('profile.index');
+        }
+
+        return view('profile.show', [
+            'user' => $user,
+            'profile' => $user->profile,
         ]);
     }
 

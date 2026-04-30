@@ -39,6 +39,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/messages', fn() => view('messages.index'))->name('messages.index');
     // VER PERFIL
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::get('/profile/{user}', [ProfileController::class, 'show'])->name('profile.show');
 
     // EDITAR PERFIL
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
