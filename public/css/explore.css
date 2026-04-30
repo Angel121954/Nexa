@@ -586,13 +586,13 @@ body {
 }
 
 .adv-panel.open {
-    max-height: 600px;
+    max-height: 900px;
     opacity: 1;
     pointer-events: auto;
     padding: 1.25rem;
 }
 
-.adv-panel label {
+.adv-panel label:not(.interest-chk-label) {
     font-size: .8125rem;
     font-weight: 600;
     color: var(--text-primary);
@@ -626,11 +626,16 @@ body {
 }
 
 .interest-chk {
-    display: none;
+    display: none !important;
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
 }
 
 .interest-chk-label {
-    padding: 4px 12px;
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 13px;
     background: var(--bg);
     border: 1.5px solid var(--border);
     border-radius: 20px;
@@ -641,6 +646,13 @@ body {
     transition: all var(--transition);
     white-space: nowrap;
     flex-shrink: 0;
+    margin-bottom: 0;
+    user-select: none;
+}
+.interest-chk-label:hover {
+    border-color: var(--pink);
+    color: var(--pink);
+    background: var(--pink-light);
 }
 
 .interest-chk:checked+.interest-chk-label {
