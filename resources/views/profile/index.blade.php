@@ -10,7 +10,7 @@
 
 @section('content')
 
-@include('components.topbar')
+<x-topbar />
 
 <div class="prf-page">
 

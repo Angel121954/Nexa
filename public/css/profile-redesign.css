@@ -1,34 +1,13 @@
 /**
  * Profile Redesign — Nexa
  * Premium layout: hero banner + sidebar/main two-column
+ * NOTE: No :root block here — inherit global vars from explore.css / app.css
  */
-
-:root {
-    --pink:       #E8375A;
-    --pink-dark:  #c42e4e;
-    --pink-light: #FDE8EE;
-    --gold:       #F59E0B;
-    --white:      #fff;
-    --bg:         #F7F7F9;
-    --border:     #EEE;
-    --text-primary:   #18171D;
-    --text-secondary: #6B7280;
-    --text-muted:     #9CA3AF;
-    --font:       'Inter', 'Outfit', system-ui, sans-serif;
-    --radius-sm:  10px;
-    --radius-md:  16px;
-    --radius-lg:  22px;
-    --shadow-sm:  0 1px 4px rgba(0,0,0,.06);
-    --shadow-md:  0 4px 20px rgba(0,0,0,.08);
-    --shadow-lg:  0 12px 40px rgba(0,0,0,.12);
-    --transition: 200ms ease;
-}
 
 /* ═══════════════ PAGE WRAPPER ═══════════════ */
 .prf-page {
     min-height: 100vh;
     background: var(--bg);
-    font-family: var(--font);
     padding-bottom: 4rem;
 }
 
