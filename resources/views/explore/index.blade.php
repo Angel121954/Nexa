@@ -395,5 +395,5 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('js/explore.js') }}"></script>
+<script src="{{ asset('js/explore/app.js') }}" type="module"></script>
 @endpush
