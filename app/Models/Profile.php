@@ -16,6 +16,7 @@ class Profile extends Model
         'looking_for',
         'profile_completed',
         'onboarding_step',
+        'banner',
     ];
 
     protected $casts = [

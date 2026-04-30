@@ -132,14 +132,44 @@ class ProfileController extends Controller
             ->where('user_id', auth()->id())
             ->firstOrFail();
 
-        // borrar archivo físico
         if (Storage::disk('public')->exists($photo->path)) {
             Storage::disk('public')->delete($photo->path);
         }
 
-        // borrar registro BD
         $photo->delete();
-
         return back()->with('success', 'Foto eliminada correctamente');
     }
-}
+
+    // ── Actualizar avatar ──────────────────────
+    public function updateAvatar(Request $request)
+    {
+        $request->validate(['avatar' => 'required|image|max:4096']);
+        $user = auth()->user();
+
+        $path = $request->file('avatar')->store('avatars', 'public');
+        $user->update(['avatar' => Storage::url($path)]);
+
+        return back()->with('status', 'avatar-updated');
+    }
+
+    // ── Actualizar banner ──────────────────────
+    public function updateBanner(Request $request)
+    {
+        $request->validate(['banner' => 'required|image|max:6144']);
+        $user  = auth()->user();
+        $profile = $user->profile ?? $user->profile()->create([]);
+
+        $path = $request->file('banner')->store('banners', 'public');
+        $profile->update(['banner' => Storage::url($path)]);
+
+        return back()->with('status', 'banner-updated');
+    }
+
+    // ── Actualizar intereses ───────────────────
+    public function updateInterests(Request $request)
+    {
+        $request->validate(['interests' => 'nullable|array', 'interests.*' => 'integer|exists:interests,id']);
+        auth()->user()->interests()->sync($request->input('interests', []));
+        return back()->with('status', 'interests-updated');
+    }
+

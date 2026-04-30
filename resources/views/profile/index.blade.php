@@ -16,7 +16,11 @@
 
     {{-- ══════════ HERO BANNER ══════════ --}}
     <div class="prf-hero">
-        <div class="prf-banner"></div>
+        @if($profile?->banner)
+            <div class="prf-banner" style="background-image:url('{{ $profile->banner }}'); background-size:cover; background-position:center;"></div>
+        @else
+            <div class="prf-banner"></div>
+        @endif
 
         <div class="prf-hero-content">
             {{-- Avatar --}}
