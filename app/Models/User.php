@@ -28,7 +28,6 @@ class User extends Authenticatable
         'bio',
         'city',
         'profile_completed',
-        'onboarding_step',
     ];
 
     protected $hidden = ['password', 'remember_token'];

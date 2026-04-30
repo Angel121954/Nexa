@@ -69,7 +69,10 @@ class SocialAuthController extends Controller
                     'email'             => $socialUser->getEmail(),
                     'email_verified_at' => now(),
                     'password'          => bcrypt(Str::random(16)),
-                    'onboarding_step'   => 1,
+                ]);
+
+                $user->profile()->create([
+                    'onboarding_step' => 1,
                 ]);
             }
 

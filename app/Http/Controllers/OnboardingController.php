@@ -91,7 +91,6 @@ class OnboardingController extends Controller
         $user->update([
             'avatar'             => $avatar['url'],
             'avatar_public_id'   => $avatar['public_id'],
-            'onboarding_step'    => 3,
         ]);
 
         // 🔥 GALERÍA
@@ -110,6 +109,10 @@ class OnboardingController extends Controller
                 ]);
             }
         }
+
+        // Actualizar onboarding_step en profile
+        $profile = $user->profile ?? $user->profile()->create([]);
+        $profile->update(['onboarding_step' => 3]);
 
         return redirect()->route('onboarding.preferences');
     }

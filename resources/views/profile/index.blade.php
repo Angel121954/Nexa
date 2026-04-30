@@ -102,7 +102,7 @@
                         <circle cx="12" cy="7" r="4" />
                         <path d="M12 11v10" />
                     </svg>
-                    {{ $profile->gender ?? 'No especificado' }}
+                    <p>{{ $profile->gender == 'female' ? 'Femenino' : ($profile->gender == 'male' ? 'Masculino' : 'No especificado') }}</p>
                 </span>
 
             </div>
