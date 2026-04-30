@@ -172,4 +172,4 @@ class ProfileController extends Controller
         auth()->user()->interests()->sync($request->input('interests', []));
         return back()->with('status', 'interests-updated');
     }
-
+}
