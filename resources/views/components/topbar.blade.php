@@ -79,3 +79,7 @@
 @if(!$onlyLogoAvatar)
 <div class="nav-overlay" id="nav-overlay"></div>
 @endif
+
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/topbar.css') }}">
+@endpush

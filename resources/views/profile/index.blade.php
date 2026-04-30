@@ -5,6 +5,7 @@
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/topbar.css') }}">
 <link rel="stylesheet" href="{{ asset('css/explore.css') }}">
+<link rel="stylesheet" href="{{ asset('css/profile.css') }}">
 @endpush
 
 @section('content')
@@ -14,22 +15,22 @@
 <div class="bg-gray-50 min-h-screen pb-16">
 
     <!-- HEADER -->
-    <div class="relative mb-24">
+    <div class="profile-header">
 
         <!-- Banner -->
-        <div class="h-[260px] rounded-b-[30px] shadow-lg bg-cover bg-center"
+        <div class="profile-banner"
             style="background-image: url('{{ asset('img/fondo.png') }}');">
         </div>
 
         <!-- Avatar -->
-        <div class="absolute left-1/2 -translate-x-1/2 bottom-0 translate-y-1/2">
+        <div class="profile-avatar-container">
             <div class="relative">
                 <img
                     src="{{ auth()->user()->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->name).'&background=E8375A&color=fff' }}"
-                    class="w-36 h-36 rounded-full border-[5px] border-white object-cover shadow-xl">
+                    class="profile-avatar">
 
                 <!-- cámara -->
-                <div class="absolute bottom-2 right-2 bg-pink-500 p-2 rounded-full border-2 border-white shadow-md cursor-pointer hover:scale-110 transition">
+                <div class="profile-avatar-camera">
                     <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2"
                         viewBox="0 0 24 24">
                         <path d="M4 7h3l2-3h6l2 3h3v12H4V7z" />
@@ -40,16 +41,15 @@
         </div>
 
         <!-- BOTÓN EDITAR -->
-        <div class="absolute right-6 top-4">
-            <button onclick="openModal()"
-                class="bg-white px-4 py-2 rounded-full shadow text-sm hover:bg-gray-100 flex items-center gap-2">
-
-                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2"
-                    viewBox="0 0 24 24">
+        <div class="profile-edit-btn">
+            <button
+                onclick="window.openModal && window.openModal()"
+                type="button"
+                class="bg-white px-4 py-2 rounded-full shadow text-sm hover:bg-gray-100 flex items-center gap-2 transition">
+                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5" />
                     <path d="M18.5 2.5l3 3L12 15l-4 1 1-4 9.5-9.5z" />
                 </svg>
-
                 Editar
             </button>
         </div>
@@ -57,23 +57,23 @@
     </div>
 
     <!-- INFO -->
-    <div class="px-6">
-        <div class="bg-white rounded-2xl shadow-md p-6 text-center">
+    <div class="profile-info">
+        <div class="profile-info-card">
 
-            <h2 class="text-2xl font-bold text-gray-800">
+            <h2 class="profile-name">
                 {{ $user->name }}
             </h2>
 
-            <p class="text-gray-400 text-sm mt-1">
-                {{ '@' . ($user->username ?? 'usuario') }}
+            <p class="profile-username">
+                {{ '@' . ($user->name ?? 'usuario') }}
             </p>
 
-            <p class="text-gray-600 mt-4 text-sm">
+            <p class="profile-bio">
                 {{ $profile->bio ?? 'Sin biografía' }}
             </p>
 
             <!-- ICONOS INFO -->
-            <div class="flex justify-center gap-6 mt-5 text-sm text-gray-500">
+            <div class="profile-info-icons">
 
                 <!-- ciudad -->
                 <span class="flex items-center gap-1">
@@ -108,7 +108,7 @@
             </div>
 
             @if($profile && $profile->pronouns)
-            <p class="mt-3 text-xs text-gray-400">
+            <p class="profile-pronouns">
                 {{ $profile->pronouns }}
             </p>
             @endif
@@ -116,17 +116,17 @@
         </div>
     </div>
     @if(session('error'))
-    <div class="mb-3 p-3 bg-red-100 text-red-600 text-sm rounded-xl">
+    <div class="error-message mx-6">
         {{ session('error') }}
     </div>
     @endif
     <!-- GALERÍA -->
-    <div class="px-6 mt-6 bg-white rounded-2xl shadow-md p-4">
+    <div class="profile-gallery">
 
-        <h3 class="font-semibold text-sm mb-3 text-gray-700">Galería</h3>
+        <h3 class="gallery-title">Galería</h3>
 
         <!-- SUBIR FOTO -->
-        <form action="{{ route('profile.photo') }}" method="POST" enctype="multipart/form-data" class="mb-4">
+        <form action="{{ route('profile.photo') }}" method="POST" enctype="multipart/form-data" class="gallery-upload">
             @csrf
 
             <label class="flex items-center justify-center w-full h-20 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:bg-gray-50 transition gap-2">
@@ -145,28 +145,27 @@
         </form>
 
         <!-- GRID -->
-        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
+        <div class="gallery-grid">
 
             @forelse($user->photos as $photo)
 
-            <div class="relative group overflow-hidden rounded-2xl shadow-sm bg-gray-100">
+            <div class="gallery-item">
 
                 <img
-                    src="{{ str_starts_with($photo->path, 'http') ? $photo->path : Storage::url($photo->path) }}"
-                    class="w-full aspect-square object-cover transition duration-300 group-hover:scale-110">
+                    src="{{ str_starts_with($photo->path, 'http') ? $photo->path : Storage::url($photo->path) }}">
 
                 <!-- overlay -->
-                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition"></div>
+                <div class="gallery-item-overlay"></div>
 
                 <!-- eliminar -->
                 <form action="{{ route('profile.photo.delete', $photo->id) }}" method="POST"
-                    class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition">
+                    class="gallery-item-delete">
 
                     @csrf
                     @method('DELETE')
 
                     <button type="submit"
-                        class="bg-white/90 hover:bg-white p-2 rounded-full shadow">
+                        class="bg-white/90 hover:bg-white p-2 rounded-full shadow border-0">
 
                         <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" stroke-width="2"
                             viewBox="0 0 24 24">
@@ -181,7 +180,7 @@
 
             @empty
 
-            <div class="col-span-5 text-center text-gray-400 py-6">
+            <div class="gallery-empty">
                 No hay fotos aún 📸
             </div>
 
@@ -191,31 +190,36 @@
 
     </div>
 
-    <!-- MODAL -->
-    <div id="profileModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+    <!-- MODAL EDITAR PERFIL -->
+    <div id="profileModal" class="modal-overlay">
+        <div class="modal-backdrop"></div>
 
-        <div class="bg-white w-full max-w-2xl rounded-2xl shadow-lg p-6 relative">
+        <div class="modal-content">
 
-            <button onclick="closeModal()" class="absolute top-3 right-3 text-gray-500">
-                ✕
-            </button>
-
-            <h2 class="text-xl font-bold mb-4">Editar perfil</h2>
-
-            <div class="space-y-6 max-h-[70vh] overflow-y-auto">
-
-                @include('profile.partials.update-profile-information-form')
-                @include('profile.partials.update-password-form')
-                @include('profile.partials.delete-user-form')
-
+            <!-- Header -->
+            <div class="modal-header">
+                <h2>Editar perfil</h2>
+                <button id="closeModalBtn" type="button"
+                    class="modal-close-btn">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
             </div>
 
+            <!-- Content -->
+            <div class="modal-body">
+                @include('profile.partials.update-profile-form')
+            </div>
         </div>
-
     </div>
 
 </div>
 
-<script src="{{ asset('js/profile.js') }}"></script>
+<script src="{{ asset('js/profile/modal.js') }}"></script>
+<script src="{{ asset('js/profile/tabs.js') }}"></script>
+<script src="{{ asset('js/profile/bioCounter.js') }}"></script>
+<script src="{{ asset('js/profile/successMessage.js') }}"></script>
+<script src="{{ asset('js/profile/index.js') }}"></script>
 
 @endsection

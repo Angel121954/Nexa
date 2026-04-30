@@ -47,7 +47,11 @@ class ProfileController extends Controller
     {
         $user = $request->user();
 
-        $user->fill($request->validated());
+        // Update user fields (only name and email belong to users table)
+        $user->fill($request->only([
+            'name',
+            'email',
+        ]));
 
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;
@@ -55,6 +59,7 @@ class ProfileController extends Controller
 
         $user->save();
 
+        // Update or create profile fields
         $profile = $user->profile ?? $user->profile()->create([]);
 
         $profile->fill($request->only([
@@ -62,12 +67,13 @@ class ProfileController extends Controller
             'city',
             'birth_date',
             'gender',
-            'pronouns'
+            'pronouns',
+            'looking_for',
         ]));
 
         $profile->save();
 
-        return back()->with('status', 'profile-updated');;
+        return back()->with('status', 'profile-updated');
     }
 
     public function destroy(Request $request): RedirectResponse
