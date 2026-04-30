@@ -65,12 +65,12 @@ class SocialAuthController extends Controller
 
                 $user = User::create([
                     'name'              => $socialUser->getName() ?? $socialUser->getNickname(),
-                    'username'          => $username,
                     'email'             => $socialUser->getEmail(),
                     'email_verified_at' => now(),
                     'password'          => bcrypt(Str::random(16)),
-                    'onboarding_step'   => 1,
                 ]);
+
+                $user->profile()->create(['onboarding_step' => 1]);
             }
 
             // Descargar y subir avatar a Cloudinary: home/nexa/avatares/user_{id}

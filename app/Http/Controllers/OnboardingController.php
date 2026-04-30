@@ -89,10 +89,12 @@ class OnboardingController extends Controller
         $avatar = $cloudinary->uploadAvatar($request->file('avatar'), $user->id);
 
         $user->update([
-            'avatar'             => $avatar['url'],
-            'avatar_public_id'   => $avatar['public_id'],
-            'onboarding_step'    => 3,
+            'avatar'           => $avatar['url'],
+            'avatar_public_id' => $avatar['public_id'],
         ]);
+
+        // onboarding_step vive en profiles desde la migración
+        $user->profile?->update(['onboarding_step' => 3]);
 
         // 🔥 GALERÍA
         if ($request->hasFile('gallery')) {

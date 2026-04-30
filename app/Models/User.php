@@ -21,14 +21,6 @@ class User extends Authenticatable
         'facebook_id',
         'avatar',
         'avatar_public_id',
-        'birth_date',
-        'gender',
-        'pronouns',
-        'looking_for',
-        'bio',
-        'city',
-        'profile_completed',
-        'onboarding_step',
     ];
 
     protected $hidden = ['password', 'remember_token'];
@@ -37,10 +29,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'birth_date' => 'date',
-            'looking_for' => 'array',
-            'profile_completed' => 'boolean',
+            'password'          => 'hashed',
         ];
     }
 
