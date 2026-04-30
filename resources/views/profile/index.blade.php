@@ -3,7 +3,7 @@
 @section('title', 'Mi Perfil — Nexa')
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/topbar.css') }}">
+<link rel="stylesheet" href="{{ asset('css/explore.css') }}">
 <link rel="stylesheet" href="{{ asset('css/profile.css') }}">
 <link rel="stylesheet" href="{{ asset('css/profile-redesign.css') }}">
 @endpush
