@@ -83,6 +83,7 @@
                         name="interests[]"
                         value="{{ $interest->id }}"
                         id="int-{{ $interest->id }}"
+                        style="display:none;position:absolute;opacity:0"
                         {{ $checked ? 'checked' : '' }}>
                     <label class="interest-chk-label" for="int-{{ $interest->id }}">
                         {{ $interest->name }}
@@ -148,66 +149,71 @@
             @endphp
 
             <article class="user-card {{ $matched ? 'is-match' : '' }}" id="card-{{ $person->id }}">
+
+                {{-- ── Photo ── --}}
                 <div class="card-photo">
                     <img src="{{ $photo }}" alt="{{ $person->name }}" loading="lazy">
-
-                    @if($person->id % 3 === 0)
-                        <span class="card-online" title="En línea"></span>
-                    @endif
-
-                    @if($matched)
-                        <div class="card-match-badge">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
-                            </svg>
-                            Match
-                        </div>
-                    @endif
-
-                    <div class="card-overlay">
-                        <div class="card-info">
-                            <div class="card-name-row">
-                                <span class="card-name">{{ $person->name }}{{ $age ? ', '.$age : '' }}</span>
-                                @if($city)
-                                    <span class="card-city">
-                                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke-linecap="round"/>
-                                        </svg>
-                                        {{ $city }}
-                                    </span>
-                                @endif
-                            </div>
-
-                            @if($tags->count())
-                                <div class="card-tags">
-                                    @foreach($tags as $tag)
-                                        <span class="card-tag">{{ $tag->name }}</span>
-                                    @endforeach
-                                </div>
-                            @endif
-
-                            @if($bio)
-                                <p class="card-bio">{{ $bio }}</p>
-                            @endif
-                        </div>
-
-                        <button class="card-like-btn {{ $liked ? 'liked' : '' }}"
-                                id="like-btn-{{ $person->id }}"
-                                data-user="{{ $person->id }}"
-                                data-liked="{{ $liked ? '1' : '0' }}"
-                                data-name="{{ $person->name }}"
-                                title="{{ $liked ? 'Quitar like' : 'Dar like' }}"
-                                aria-label="{{ $liked ? 'Quitar like a '.$person->name : 'Dar like a '.$person->name }}">
-                            <svg width="20" height="20" viewBox="0 0 24 24"
-                                 fill="{{ $liked ? 'currentColor' : 'none' }}"
-                                 stroke="currentColor" stroke-width="2">
-                                <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"
-                                      stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </button>
-                    </div>
                 </div>
+
+                {{-- ── Top badges ── --}}
+                @if($person->id % 3 === 0)
+                    <span class="card-online" title="En línea"></span>
+                @endif
+
+                @if($matched)
+                    <div class="card-match-badge">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+                        </svg>
+                        Match
+                    </div>
+                @endif
+
+                {{-- ── Like button (top-right) ── --}}
+                <button class="card-like-btn {{ $liked ? 'liked' : '' }}"
+                        id="like-btn-{{ $person->id }}"
+                        data-user="{{ $person->id }}"
+                        data-liked="{{ $liked ? '1' : '0' }}"
+                        data-name="{{ $person->name }}"
+                        title="{{ $liked ? 'Quitar like' : 'Dar like' }}"
+                        aria-label="{{ $liked ? 'Quitar like a '.$person->name : 'Dar like a '.$person->name }}">
+                    <svg width="18" height="18" viewBox="0 0 24 24"
+                         fill="{{ $liked ? 'currentColor' : 'none' }}"
+                         stroke="currentColor" stroke-width="2.2">
+                        <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"
+                              stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+
+                {{-- ── Bottom overlay info ── --}}
+                <div class="card-overlay">
+                    <div class="card-name-row">
+                        <span class="card-name">{{ $person->name }}{{ $age ? ', '.$age : '' }}</span>
+                        @if($city)
+                            <span class="card-city">
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke-linecap="round"/>
+                                </svg>
+                                {{ $city }}
+                            </span>
+                        @endif
+                    </div>
+
+                    @if($bio)
+                        <p class="card-bio">{{ Str::limit($bio, 60) }}</p>
+                    @endif
+
+                    @if($tags->count())
+                        <div class="card-tags">
+                            @foreach($tags as $tag)
+                                <span class="card-tag">{{ $tag->name }}</span>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+
             </article>
+
         @empty
             <div class="empty-state">
                 <div class="empty-icon-wrap">
