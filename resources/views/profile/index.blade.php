@@ -10,6 +10,7 @@
 @section('content')
 
 @include('components.topbar')
+<x-toast />
 
 <div class="bg-gray-50 min-h-screen pb-16">
 
@@ -25,17 +26,23 @@
         <div class="profile-avatar-container">
             <div class="relative">
                 <img
+                    id="profile-avatar-img"
                     src="{{ auth()->user()->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->name).'&background=E8375A&color=fff' }}"
                     class="profile-avatar">
 
                 <!-- cámara -->
-                <div class="profile-avatar-camera">
+                <label class="profile-avatar-camera" for="avatar-input" title="Cambiar foto de perfil">
                     <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2"
                         viewBox="0 0 24 24">
                         <path d="M4 7h3l2-3h6l2 3h3v12H4V7z" />
                         <circle cx="12" cy="13" r="3" />
                     </svg>
-                </div>
+                </label>
+
+                <form id="avatar-form" action="{{ route('profile.avatar') }}" method="POST" enctype="multipart/form-data" class="hidden">
+                    @csrf
+                    <input type="file" id="avatar-input" name="avatar" class="hidden" accept="image/*">
+                </form>
             </div>
         </div>
 

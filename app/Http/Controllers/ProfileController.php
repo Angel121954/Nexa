@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\UserPhoto;
+use App\Services\CloudinaryService;
 use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Storage;
 
@@ -125,6 +127,37 @@ class ProfileController extends Controller
 
         return back();
     }
+
+    public function uploadAvatar(Request $request, CloudinaryService $cloudinary)
+    {
+        $request->validate([
+            'avatar' => 'required|image|max:5120',
+        ]);
+
+        $user = auth()->user();
+
+        if ($user->avatar_public_id) {
+            try {
+                $cloudinary->delete($user->avatar_public_id);
+            } catch (\Exception $e) {
+                Log::warning('Failed to delete old avatar: ' . $e->getMessage());
+            }
+        }
+
+        $avatar = $cloudinary->uploadAvatar($request->file('avatar'), $user->id);
+
+        $user->update([
+            'avatar'           => $avatar['url'],
+            'avatar_public_id' => $avatar['public_id'],
+        ]);
+
+        if ($request->expectsJson()) {
+            return response()->json(['message' => 'avatar-updated', 'avatar' => $avatar['url']]);
+        }
+
+        return back()->with('status', 'avatar-updated');
+    }
+
     public function deletePhoto($id)
     {
         $photo = UserPhoto::where('id', $id)

@@ -14,6 +14,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     @stack('styles')
+    <link rel="stylesheet" href="{{ asset('css/toast.css') }}">
 </head>
 
 <body class="antialiased bg-gray-50 text-gray-900">
