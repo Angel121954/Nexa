@@ -137,87 +137,109 @@
     {{-- Cards grid --}}
     <div class="cards-grid">
         @forelse($users as $person)
-        @php
-        $liked = in_array($person->id, $likedIds);
-        $matched = in_array($person->id, $matchIds);
-        $photo = $person->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode($person->name).'&background=FDE8EE&color=E8375A&size=300';
-        $age = $person->profile?->age;
-        $city = $person->profile?->city;
-        $bio = $person->profile?->bio;
-        $tags = $person->interests->take(3);
-        @endphp
+            @php
+                $liked   = in_array($person->id, $likedIds);
+                $matched = in_array($person->id, $matchIds);
+                $photo   = $person->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode($person->name).'&background=FDE8EE&color=E8375A&size=400&bold=true';
+                $age     = $person->profile?->age;
+                $city    = $person->profile?->city;
+                $bio     = $person->profile?->bio;
+                $tags    = $person->interests->take(3);
+            @endphp
 
-        <article class="user-card" id="card-{{ $person->id }}">
-            <div class="card-photo">
-                <img src="{{ $photo }}" alt="{{ $person->name }}" loading="lazy">
+            <article class="user-card {{ $matched ? 'is-match' : '' }}" id="card-{{ $person->id }}">
+                <div class="card-photo">
+                    <img src="{{ $photo }}" alt="{{ $person->name }}" loading="lazy">
 
-                {{-- Random online dot for demo --}}
-                @if($person->id % 3 === 0)
-                <span class="card-online" title="En línea"></span>
-                @endif
-
-                <button class="card-like-btn {{ $liked ? 'liked' : '' }}"
-                    id="like-btn-{{ $person->id }}"
-                    data-user="{{ $person->id }}"
-                    data-liked="{{ $liked ? '1' : '0' }}"
-                    data-name="{{ $person->name }}"
-                    title="{{ $liked ? 'Quitar like' : 'Dar like' }}"
-                    aria-label="{{ $liked ? 'Quitar like a '.$person->name : 'Dar like a '.$person->name }}">
-                    <svg width="16" height="16" viewBox="0 0 24 24"
-                        fill="{{ $liked ? 'currentColor' : 'none' }}"
-                        stroke="currentColor" stroke-width="2">
-                        <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"
-                            stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                </button>
-            </div>
-
-            <div class="card-body">
-                <p class="card-name">
-                    {{ $person->name }}{{ $age ? ', '.$age : '' }}
-                    @if($matched)
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--pink)">
-                        <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
-                    </svg>
-                    @else
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--pink)">
-                        <path d="M9 12l2 2 4-4M22 12c0 5.52-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2s10 4.48 10 10z" />
-                    </svg>
+                    @if($person->id % 3 === 0)
+                        <span class="card-online" title="En línea"></span>
                     @endif
-                </p>
 
-                @if($bio)
-                <p class="card-bio">{{ $bio }}</p>
-                @endif
+                    @if($matched)
+                        <div class="card-match-badge">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+                            </svg>
+                            Match
+                        </div>
+                    @endif
 
-                @if($tags->count())
-                <div class="card-tags">
-                    @foreach($tags as $tag)
-                    <span class="card-tag">{{ $tag->name }}</span>
-                    @endforeach
+                    <div class="card-overlay">
+                        <div class="card-info">
+                            <div class="card-name-row">
+                                <span class="card-name">{{ $person->name }}{{ $age ? ', '.$age : '' }}</span>
+                                @if($city)
+                                    <span class="card-city">
+                                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke-linecap="round"/>
+                                        </svg>
+                                        {{ $city }}
+                                    </span>
+                                @endif
+                            </div>
+
+                            @if($tags->count())
+                                <div class="card-tags">
+                                    @foreach($tags as $tag)
+                                        <span class="card-tag">{{ $tag->name }}</span>
+                                    @endforeach
+                                </div>
+                            @endif
+
+                            @if($bio)
+                                <p class="card-bio">{{ $bio }}</p>
+                            @endif
+                        </div>
+
+                        <button class="card-like-btn {{ $liked ? 'liked' : '' }}"
+                                id="like-btn-{{ $person->id }}"
+                                data-user="{{ $person->id }}"
+                                data-liked="{{ $liked ? '1' : '0' }}"
+                                data-name="{{ $person->name }}"
+                                title="{{ $liked ? 'Quitar like' : 'Dar like' }}"
+                                aria-label="{{ $liked ? 'Quitar like a '.$person->name : 'Dar like a '.$person->name }}">
+                            <svg width="20" height="20" viewBox="0 0 24 24"
+                                 fill="{{ $liked ? 'currentColor' : 'none' }}"
+                                 stroke="currentColor" stroke-width="2">
+                                <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"
+                                      stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
-                @endif
-
-                @if($city)
-                <p class="card-location">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke-linecap="round" />
-                        <circle cx="12" cy="9" r="2.5" />
-                    </svg>
-                    {{ $city }}
-                </p>
-                @endif
-            </div>
-        </article>
+            </article>
         @empty
-        <div class="empty-state">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <circle cx="11" cy="11" r="8" />
-                <path d="M21 21l-4.35-4.35" stroke-linecap="round" />
-            </svg>
-            <h3>Sin resultados</h3>
-            <p>Intenta ajustar los filtros o busca con otros términos.</p>
-        </div>
+            <div class="empty-state">
+                <div class="empty-icon-wrap">
+                    <svg class="empty-icon-bg" viewBox="0 0 200 200" fill="none" aria-hidden="true">
+                        <circle cx="100" cy="100" r="90" fill="#FDE8EE" opacity="0.6"/>
+                        <circle cx="100" cy="100" r="65" fill="#FDE8EE" opacity="0.8"/>
+                    </svg>
+                    <svg class="empty-icon" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="var(--pink)" stroke-width="1.4">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="M21 21l-4.35-4.35" stroke-linecap="round"/>
+                        <path d="M8 11h6M11 8v6" stroke-linecap="round"/>
+                    </svg>
+                </div>
+
+                <h3 class="empty-title">Sin resultados</h3>
+                <p class="empty-desc">
+                    No encontramos personas que coincidan con tu búsqueda.<br>
+                    Prueba con otros filtros o amplía el criterio.
+                </p>
+
+                <div class="empty-actions">
+                    <a href="{{ route('explore.index') }}" class="empty-btn-primary">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 12h18M3 6h18M3 18h18" stroke-linecap="round"/>
+                        </svg>
+                        Limpiar filtros
+                    </a>
+                    <a href="{{ route('explore.index', ['tab' => 'new']) }}" class="empty-btn-secondary">
+                        Ver nuevos usuarios
+                    </a>
+                </div>
+            </div>
         @endforelse
     </div>
 
@@ -229,6 +251,8 @@
     @endif
 
 </div>
+
+
 
 {{-- Match toast --}}
 <div class="match-toast" id="match-toast" role="alert" aria-live="polite">
