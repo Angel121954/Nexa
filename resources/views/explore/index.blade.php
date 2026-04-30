@@ -106,14 +106,6 @@
             class="qtab {{ $tab === 'all' ? 'active' : '' }}">
             Todos
         </a>
-        <a href="{{ route('explore.index', array_merge(request()->except('tab', 'page'), ['tab' => 'all', 'nearby' => 1])) }}"
-            class="qtab">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke-linecap="round" />
-                <circle cx="12" cy="9" r="2.5" />
-            </svg>
-            Cerca de ti
-        </a>
         <a href="{{ route('explore.index', array_merge(request()->except('tab', 'page'), ['tab' => 'new'])) }}"
             class="qtab {{ $tab === 'new' ? 'active' : '' }}">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -123,13 +115,15 @@
         </a>
         <a href="{{ route('explore.index', array_merge(request()->except('tab', 'page'), ['tab' => 'liked_me'])) }}"
             class="qtab {{ $tab === 'liked_me' ? 'active' : '' }}">
-            <span class="online-dot"></span>
-            En línea ahora
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke-linecap="round" />
+            </svg>
+            Me gustaron
         </a>
         <a href="{{ route('explore.index', array_merge(request()->except('tab', 'page'), ['tab' => 'interests'])) }}"
             class="qtab {{ $tab === 'interests' ? 'active' : '' }}">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke-linecap="round" />
+                <path d="M9 12l2 2 4-4M22 12c0 5.52-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2s10 4.48 10 10z" stroke-linecap="round" />
             </svg>
             Mismos intereses
         </a>
@@ -146,6 +140,8 @@
                 $city    = $person->profile?->city;
                 $bio     = $person->profile?->bio;
                 $tags    = $person->interests->take(3);
+                // Online simulado: basado en hash del nombre para que sea consistente por usuario
+                $isOnline = (crc32($person->name) % 4 === 0);
             @endphp
 
             <article class="user-card {{ $matched ? 'is-match' : '' }}" id="card-{{ $person->id }}">
@@ -156,7 +152,7 @@
                 </div>
 
                 {{-- ── Top badges ── --}}
-                @if($person->id % 3 === 0)
+                @if($isOnline)
                     <span class="card-online" title="En línea"></span>
                 @endif
 

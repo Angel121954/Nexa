@@ -65,20 +65,25 @@ class ExploreController extends Controller
         // Filtro rápido: "tab"
         $tab = $request->get('tab', 'all');
         match ($tab) {
-            // Usuarios que me dieron like (aparecen primero)
-            'liked_me' => $query->whereHas('likesSent', fn($q) => $q->where('receiver_id', $me->id))
-                                 ->orderByDesc('id'),
-            // Ordenar por fecha de creación descendente
-            'new'      => $query->orderByDesc('created_at'),
-            // Mismos intereses → priorizar
-            'interests' => $query->withCount(['interests as shared_interests' => fn($q) =>
-                                    $q->whereIn('interests.id', $me->interests->pluck('id')->toArray())
-                                ])
-                                ->orderByDesc('shared_interests'),
-            default    => $query->inRandomOrder(),
+            // Personas a las que YO di like
+            'liked_me'         => $query->whereIn('id', $me->likesSent()->pluck('receiver_id'))
+                                        ->orderByDesc('id'),
+            // Personas que ME dieron like
+            'liked_me_reverse' => $query->whereHas('likesSent', fn($q) => $q->where('receiver_id', $me->id))
+                                        ->orderByDesc('id'),
+            // Más recientes primero
+            'new'              => $query->orderByDesc('created_at'),
+            // Mismos intereses → priorizar por intereses en común
+            'interests'        => $query->withCount(['interests as shared_interests' => fn($q) =>
+                                        $q->whereIn('interests.id', $me->interests->pluck('id')->toArray())
+                                    ])
+                                    ->orderByDesc('shared_interests'),
+            // Por defecto: orden aleatorio
+            default            => $query->inRandomOrder(),
         };
 
         $users = $query->paginate(12)->withQueryString();
+
 
         // IDs de usuarios a los que ya di like
         $likedIds = $me->likesSent()->pluck('receiver_id')->toArray();
