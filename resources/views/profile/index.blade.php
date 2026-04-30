@@ -9,9 +9,7 @@
 
 @section('content')
 
-@include('components.topbar', [
-'onlyLogoAvatar' => true
-])
+@include('components.topbar')
 
 <div class="bg-gray-50 min-h-screen pb-16">
 
@@ -154,7 +152,7 @@
             <div class="relative group overflow-hidden rounded-2xl shadow-sm bg-gray-100">
 
                 <img
-                    src="{{ Storage::url($photo->path) }}"
+                    src="{{ str_starts_with($photo->path, 'http') ? $photo->path : Storage::url($photo->path) }}"
                     class="w-full aspect-square object-cover transition duration-300 group-hover:scale-110">
 
                 <!-- overlay -->

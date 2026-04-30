@@ -86,7 +86,7 @@
             <div class="gallery-grid" id="gallery-grid">
                 @foreach($photos as $photo)
                 <div class="gallery-item" id="photo-{{ $photo->id }}">
-                    <img src="{{ Storage::url($photo->path) }}" alt="Foto">
+                    <img src="{{ str_starts_with($photo->path, 'http') ? $photo->path : Storage::url($photo->path) }}" alt="Foto">
                     <form method="POST" action="{{ route('onboarding.photos.delete', $photo) }}" style="display:inline;">
                         @csrf @method('DELETE')
                         <button type="submit" class="gallery-item-remove" title="Eliminar">×</button>
