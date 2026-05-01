@@ -174,4 +174,27 @@ class ProfileController extends Controller
 
         return back()->with('success', 'Foto eliminada correctamente');
     }
+
+    public function updateAvatar(Request $request)
+    {
+        $request->validate([
+            'avatar' => 'required|image|mimes:jpg,jpeg,png|max:2048'
+        ]);
+
+        $user = auth()->user();
+
+        // eliminar anterior (opcional)
+        if ($user->avatar) {
+            \Storage::delete($user->avatar);
+        }
+
+        // guardar nueva
+        $path = $request->file('avatar')->store('avatars', 'public');
+
+        // guardar en BD
+        $user->avatar = $path;
+        $user->save();
+
+        return back()->with('success', 'Avatar actualizado');
+    }
 }

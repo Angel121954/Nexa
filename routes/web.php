@@ -49,6 +49,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/profile/avatar', [ProfileController::class, 'uploadAvatar'])->name('profile.avatar');
     Route::delete('/profile/photo/{id}', [ProfileController::class, 'deletePhoto'])
         ->name('profile.photo.delete');
+    Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
 });
 
 require __DIR__ . '/auth.php';

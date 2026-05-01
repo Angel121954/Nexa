@@ -23,27 +23,34 @@
         </div>
 
         <!-- Avatar -->
-        <div class="profile-avatar-container">
-            <div class="relative">
-                <img
-                    id="profile-avatar-img"
-                    src="{{ auth()->user()->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->name).'&background=E8375A&color=fff' }}"
-                    class="profile-avatar">
+        <div class="absolute left-1/2 -translate-x-1/2 -bottom-16">
+            <form action="{{ route('profile.avatar') }}" method="POST" enctype="multipart/form-data" class="relative group">
+                @csrf
 
-                <!-- cámara -->
-                <label class="profile-avatar-camera" for="avatar-input" title="Cambiar foto de perfil">
+                <!-- Imagen -->
+                <img
+                    src="{{ auth()->user()->avatar 
+        ? Storage::url(auth()->user()->avatar) 
+        : 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->name).'&background=E8375A&color=fff' }}"
+                    class="w-36 h-36 rounded-full border-[5px] border-white object-cover shadow-xl"
+                    onclick="document.getElementById('avatarInput').click()">
+
+                <!-- Input oculto -->
+                <input type="file" name="avatar" id="avatarInput" class="hidden" accept="image/*"
+                    onchange="this.form.submit()">
+
+                <!-- Botón cámara -->
+                <div onclick="document.getElementById('avatarInput').click()"
+                    class="absolute bottom-2 right-2 bg-pink-500 p-2 rounded-full border-2 border-white shadow-md cursor-pointer hover:scale-110 transition">
+
                     <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2"
                         viewBox="0 0 24 24">
                         <path d="M4 7h3l2-3h6l2 3h3v12H4V7z" />
                         <circle cx="12" cy="13" r="3" />
                     </svg>
-                </label>
+                </div>
 
-                <form id="avatar-form" action="{{ route('profile.avatar') }}" method="POST" enctype="multipart/form-data" class="hidden">
-                    @csrf
-                    <input type="file" id="avatar-input" name="avatar" class="hidden" accept="image/*">
-                </form>
-            </div>
+            </form>
         </div>
 
         <!-- BOTÓN EDITAR -->
