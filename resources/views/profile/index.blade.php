@@ -18,8 +18,8 @@
     <div class="profile-header">
 
         <!-- Banner -->
-        <div class="profile-banner"
-            style="background-image: url('{{ asset('img/fondo.png') }}');">
+        <div class="h-[260px] rounded-b-[30px] shadow-lg 
+            bg-gradient-to-r from-pink-200 via-pink-50 to-pink-400">
         </div>
 
         <!-- Avatar -->
