@@ -28,6 +28,8 @@ class User extends Authenticatable
         'bio',
         'city',
         'profile_completed',
+        'latitude',
+        'longitude',
     ];
 
     protected $hidden = ['password', 'remember_token'];
@@ -40,6 +42,8 @@ class User extends Authenticatable
             'birth_date' => 'date',
             'looking_for' => 'array',
             'profile_completed' => 'boolean',
+            'latitude' => 'float',
+            'longitude' => 'float',
         ];
     }
 

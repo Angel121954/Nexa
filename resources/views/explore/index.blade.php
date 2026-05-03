@@ -105,12 +105,14 @@
             class="qtab {{ $tab === 'all' ? 'active' : '' }}">
             Todos
         </a>
-        <a href="{{ route('explore.index', array_merge(request()->except('tab', 'page'), ['tab' => 'all', 'nearby' => 1])) }}"
-            class="qtab">
+        <a href="{{ route('explore.index', array_merge(request()->except('page'), ['nearby' => 1])) }}"
+            class="qtab {{ request('nearby') ? 'active' : '' }}">
+
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                 <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke-linecap="round" />
                 <circle cx="12" cy="9" r="2.5" />
             </svg>
+
             Cerca de ti
         </a>
         <a href="{{ route('explore.index', array_merge(request()->except('tab', 'page'), ['tab' => 'new'])) }}"
@@ -149,51 +151,51 @@
 
         <article class="user-card" id="card-{{ $person->id }}">
             <a href="{{ route('profile.show', $person->id) }}" class="card-link">
-            <div class="card-photo">
-                <img src="{{ $photo }}" alt="{{ $person->name }}" loading="lazy">
+                <div class="card-photo">
+                    <img src="{{ $photo }}" alt="{{ $person->name }}" loading="lazy">
 
-                {{-- Random online dot for demo --}}
-                @if($person->id % 3 === 0)
-                <span class="card-online" title="En línea"></span>
-                @endif
-            </div>
-
-            <div class="card-body">
-                <p class="card-name">
-                    {{ $person->name }}{{ $age ? ', '.$age : '' }}
-                    @if($matched)
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--pink)">
-                        <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
-                    </svg>
-                    @else
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--pink)">
-                        <path d="M9 12l2 2 4-4M22 12c0 5.52-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2s10 4.48 10 10z" />
-                    </svg>
+                    {{-- Random online dot for demo --}}
+                    @if($person->id % 3 === 0)
+                    <span class="card-online" title="En línea"></span>
                     @endif
-                </p>
-
-                @if($bio)
-                <p class="card-bio">{{ $bio }}</p>
-                @endif
-
-                @if($tags->count())
-                <div class="card-tags">
-                    @foreach($tags as $tag)
-                    <span class="card-tag">{{ $tag->name }}</span>
-                    @endforeach
                 </div>
-                @endif
 
-                @if($city)
-                <p class="card-location">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke-linecap="round" />
-                        <circle cx="12" cy="9" r="2.5" />
-                    </svg>
-                    {{ $city }}
-                </p>
-                @endif
-            </div>
+                <div class="card-body">
+                    <p class="card-name">
+                        {{ $person->name }}{{ $age ? ', '.$age : '' }}
+                        @if($matched)
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--pink)">
+                            <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+                        </svg>
+                        @else
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--pink)">
+                            <path d="M9 12l2 2 4-4M22 12c0 5.52-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2s10 4.48 10 10z" />
+                        </svg>
+                        @endif
+                    </p>
+
+                    @if($bio)
+                    <p class="card-bio">{{ $bio }}</p>
+                    @endif
+
+                    @if($tags->count())
+                    <div class="card-tags">
+                        @foreach($tags as $tag)
+                        <span class="card-tag">{{ $tag->name }}</span>
+                        @endforeach
+                    </div>
+                    @endif
+
+                    @if($city)
+                    <p class="card-location">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke-linecap="round" />
+                            <circle cx="12" cy="9" r="2.5" />
+                        </svg>
+                        {{ $city }}
+                    </p>
+                    @endif
+                </div>
             </a>
 
             <button class="card-like-btn {{ $liked ? 'liked' : '' }}"

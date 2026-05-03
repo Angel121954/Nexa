@@ -25,6 +25,7 @@
     @yield('content')
 
     <script src="{{ asset('js/main.js') }}"></script>
+    <script src="{{ asset('js/location.js') }}"></script>
 
     @stack('scripts')
 </body>

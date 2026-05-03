@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\LikeController;
 use App\Http\Controllers\Api\MatchController;
 use App\Http\Controllers\Api\MessageController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LocationController;
 
 Route::get('/', fn() => view('auth.login'));
 
@@ -69,6 +70,8 @@ Route::middleware('auth')->prefix('api')->group(function () {  // ← con prefix
     Route::get('/matches/{matchId}/messages', [MessageController::class, 'index']);
     Route::post('/matches/{matchId}/messages', [MessageController::class, 'store']);
     Route::post('/matches/{matchId}/messages/read', [MessageController::class, 'markAsRead']);
+    // Ubicación
+    Route::post('/update-location', [LocationController::class, 'update']);
 });
 
 
