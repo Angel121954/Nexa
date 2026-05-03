@@ -142,7 +142,9 @@
         @php
         $liked = in_array($person->id, $likedIds);
         $matched = in_array($person->id, $matchIds);
-        $photo = $person->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode($person->name).'&background=FDE8EE&color=E8375A&size=300';
+        $photo = $person->avatar
+        ? Storage::url($person->avatar)
+        : 'https://ui-avatars.com/api/?name='.urlencode($person->name).'&background=FDE8EE&color=E8375A&size=300';
         $age = $person->profile?->age;
         $city = $person->profile?->city;
         $bio = $person->profile?->bio;

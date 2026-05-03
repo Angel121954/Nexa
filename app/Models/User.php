@@ -8,6 +8,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -110,5 +111,16 @@ class User extends Authenticatable
         })->orWhere(function ($query) use ($userId) {
             $query->where('user1_id', $userId)->where('user2_id', $this->id);
         })->exists();
+    }
+    public function getAvatarUrlAttribute()
+    {
+        if (!$this->avatar) {
+            return 'https://ui-avatars.com/api/?name=' . urlencode($this->name);
+        }
+        if (str_starts_with($this->avatar, 'http')) {
+            return $this->avatar;
+        }
+
+        return Storage::url($this->avatar);
     }
 }
