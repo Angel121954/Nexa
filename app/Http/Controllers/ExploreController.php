@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\MatchCreated;
 use App\Models\Interest;
 use App\Models\Like;
 use App\Models\User;
@@ -122,14 +123,18 @@ class ExploreController extends Controller
 
         if ($isMatch) {
             // Crear match si no existe
-            $already = UserMatch::where(function ($q) use ($me, $userId) {
+            $match = UserMatch::where(function ($q) use ($me, $userId) {
                 $q->where('user1_id', $me->id)->where('user2_id', $userId);
             })->orWhere(function ($q) use ($me, $userId) {
                 $q->where('user1_id', $userId)->where('user2_id', $me->id);
-            })->exists();
+            })->first();
 
-            if (!$already) {
-                UserMatch::create(['user1_id' => $me->id, 'user2_id' => $userId]);
+            if (!$match) {
+                $match = UserMatch::create([
+                    'user1_id' => min($me->id, $userId),
+                    'user2_id' => max($me->id, $userId),
+                ]);
+                event(new MatchCreated($match));
             }
         }
 

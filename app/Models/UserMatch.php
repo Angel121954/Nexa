@@ -20,4 +20,14 @@ class UserMatch extends Model
     {
         return $this->belongsTo(User::class, 'user2_id');
     }
+
+    public function messages()
+    {
+        return $this->hasMany(Message::class, 'match_id');
+    }
+
+    public function otherUser($userId)
+    {
+        return $this->user1_id == $userId ? $this->user2 : $this->user1;
+    }
 }

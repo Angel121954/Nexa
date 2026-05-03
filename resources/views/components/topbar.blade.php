@@ -18,16 +18,16 @@
     </button>
 
     <div class="nav-links" id="nav-links">
-        <a href="{{ route('explore.index', ['tab' => 'all']) }}"
-            class="nav-link {{ request('tab', 'all') === 'all' ? 'active' : '' }}">
+        <a href="{{ route('explore.index') }}"
+            class="nav-link {{ request()->routeIs('explore.index') && request('tab', 'all') === 'all' ? 'active' : '' }}">
             Descubrir
         </a>
         <a href="{{ route('explore.index', ['tab' => 'liked_me']) }}"
-            class="nav-link {{ request('tab') === 'liked_me' ? 'active' : '' }}">
+            class="nav-link {{ request()->routeIs('explore.index') && request('tab') === 'liked_me' ? 'active' : '' }}">
             Personas que te gustaron
         </a>
         <a href="{{ route('explore.index', ['tab' => 'interests']) }}"
-            class="nav-link {{ request('tab') === 'interests' ? 'active' : '' }}">
+            class="nav-link {{ request()->routeIs('explore.index') && request('tab') === 'interests' ? 'active' : '' }}">
             Mismos intereses
         </a>
         <a href="{{ route('messages.index') }}" class="nav-link {{ request()->routeIs('messages.*') ? 'active' : '' }}">Mensajes</a>

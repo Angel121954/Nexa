@@ -78,4 +78,33 @@ class User extends Authenticatable
             ->where('receiver_id', $userId)
             ->exists();
     }
+
+    //  MATCHES
+    public function matches()
+    {
+        return UserMatch::where('user1_id', $this->id)
+            ->orWhere('user2_id', $this->id);
+    }
+
+    public function matchedUsers()
+    {
+        $matchIds = $this->matches()->pluck('id')->toArray();
+
+        $userIds = UserMatch::whereIn('id', $matchIds)
+            ->get()
+            ->map(function ($match) {
+                return $match->user1_id == $this->id ? $match->user2_id : $match->user1_id;
+            });
+
+        return User::whereIn('id', $userIds);
+    }
+
+    public function isMatchedWith(int $userId): bool
+    {
+        return UserMatch::where(function ($query) use ($userId) {
+            $query->where('user1_id', $this->id)->where('user2_id', $userId);
+        })->orWhere(function ($query) use ($userId) {
+            $query->where('user1_id', $userId)->where('user2_id', $this->id);
+        })->exists();
+    }
 }

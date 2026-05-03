@@ -2,8 +2,12 @@
 
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ExploreController;
+use App\Http\Controllers\MessagePageController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Api\LikeController;
+use App\Http\Controllers\Api\MatchController;
+use App\Http\Controllers\Api\MessageController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn() => view('auth.login'));
@@ -36,7 +40,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/explore',              [ExploreController::class, 'index'])->name('explore.index');
     Route::post('/explore/like/{user}', [ExploreController::class, 'like'])->name('explore.like');
 
-    Route::get('/messages', fn() => view('messages.index'))->name('messages.index');
+    Route::get('/messages', [MessagePageController::class, 'index'])->name('messages.index');
     // VER PERFIL
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::get('/profile/{user}', [ProfileController::class, 'show'])->name('profile.show');
@@ -50,5 +54,21 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/profile/photo/{id}', [ProfileController::class, 'deletePhoto'])
         ->name('profile.photo.delete');
 });
+
+Route::middleware('auth')->prefix('api')->group(function () {  // ← con prefix
+    // Likes
+    Route::post('/likes', [LikeController::class, 'store']);
+    Route::delete('/likes/{receiverId}', [LikeController::class, 'destroy']);
+
+    // Matches
+    Route::get('/matches', [MatchController::class, 'index']);
+    Route::get('/matches/{id}', [MatchController::class, 'show']);
+
+    // Messages
+    Route::get('/matches/{matchId}/messages', [MessageController::class, 'index']);
+    Route::post('/matches/{matchId}/messages', [MessageController::class, 'store']);
+    Route::post('/matches/{matchId}/messages/read', [MessageController::class, 'markAsRead']);
+});
+
 
 require __DIR__ . '/auth.php';
