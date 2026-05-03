@@ -53,6 +53,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/profile/avatar', [ProfileController::class, 'uploadAvatar'])->name('profile.avatar');
     Route::delete('/profile/photo/{id}', [ProfileController::class, 'deletePhoto'])
         ->name('profile.photo.delete');
+    Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
 });
 
 Route::middleware('auth')->prefix('api')->group(function () {  // ← con prefix
