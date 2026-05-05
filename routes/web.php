@@ -8,7 +8,11 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Api\LikeController;
 use App\Http\Controllers\Api\MatchController;
 use App\Http\Controllers\Api\MessageController;
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
+
+// Rutas de broadcasting (para autenticación de canales privados)
+Broadcast::routes(['middleware' => ['web', 'auth']]);
 
 Route::get('/', fn() => view('auth.login'));
 

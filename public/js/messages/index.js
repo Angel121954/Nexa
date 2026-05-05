@@ -74,9 +74,60 @@ document.addEventListener('DOMContentLoaded', () => {
             const emptyState = chatBody.querySelector('.msg-empty-state');
             if (emptyState) emptyState.remove();
 
+            // Verificar si necesitamos un separador de fecha
+            const messages = chatBody.querySelectorAll('.msg-row');
+            let lastMessageDate = null;
+            
+            if (messages.length > 0) {
+                const lastMsg = messages[messages.length - 1];
+                // El último elemento puede ser el separador, necesitamos obtener la fecha del último mensaje
+                // Por simplicidad, vamos a verificar la fecha del último mensaje comparándola
+            }
+
+            const msgDate = new Date(msg.created_at).toDateString();
+            const today = new Date().toDateString();
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            const yesterdayStr = yesterday.toDateString();
+
+            // Determinar la etiqueta de fecha
+            let dateLabel = '';
+            if (msgDate === today) {
+                dateLabel = 'Hoy';
+            } else if (msgDate === yesterdayStr) {
+                dateLabel = 'Ayer';
+            } else {
+                dateLabel = new Date(msg.created_at).toLocaleDateString('es-ES', { 
+                    day: '2-digit', 
+                    month: '2-digit', 
+                    year: 'numeric' 
+                });
+            }
+
+            // Verificar si ya existe un separador con la misma fecha
+            const existingSeparators = chatBody.querySelectorAll('.msg-date-separator span');
+            let needsSeparator = true;
+            if (existingSeparators.length > 0) {
+                const lastSeparator = existingSeparators[existingSeparators.length - 1];
+                if (lastSeparator.textContent === dateLabel) {
+                    needsSeparator = false;
+                }
+            } else if (messages.length === 0) {
+                needsSeparator = true;
+            }
+
             const div = document.createElement('div');
-            div.innerHTML = this.createMessageHTML(msg, false);
-            chatBody.appendChild(div.firstElementChild);
+            let html = '';
+            if (needsSeparator) {
+                html += `<div class="msg-date-separator"><span>${dateLabel}</span></div>`;
+            }
+            html += this.createMessageHTML(msg, false);
+            div.innerHTML = html;
+            
+            // Agregar cada elemento hijo al chatBody
+            while (div.firstChild) {
+                chatBody.appendChild(div.firstChild);
+            }
             chatBody.scrollTop = chatBody.scrollHeight;
         },
 
@@ -107,6 +158,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
         formatTime(dateString) {
             return new Date(dateString).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+        },
+
+        formatDateSeparator(dateString) {
+            const date = new Date(dateString);
+            const today = new Date();
+            const yesterday = new Date();
+            yesterday.setDate(today.getDate() - 1);
+
+            if (date.toDateString() === today.toDateString()) {
+                return 'Hoy';
+            } else if (date.toDateString() === yesterday.toDateString()) {
+                return 'Ayer';
+            } else {
+                return date.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            }
+        },
+
+        renderMessages(messages) {
+            const chatBody = state.get('chatBody');
+            if (!chatBody) return;
+            if (messages.length === 0) {
+                chatBody.innerHTML = `<div class="msg-empty-state" style="margin-top:2rem;"><p class="msg-empty-title">Aún no hay mensajes</p><p class="msg-empty-sub">¡Envía el primero!</p></div>`;
+                return;
+            }
+            let lastType = null;
+            let lastDate = null;
+            const html = messages.map(msg => {
+                const isSent = String(msg.sender_id) === String(state.currentUserId);
+                const currentType = isSent ? 'sent' : 'received';
+                const isGrouped = lastType === currentType;
+                lastType = currentType;
+
+                const msgDate = new Date(msg.created_at).toDateString();
+                let dateSeparator = '';
+                if (msgDate !== lastDate) {
+                    dateSeparator = `<div class="msg-date-separator"><span>${this.formatDateSeparator(msg.created_at)}</span></div>`;
+                    lastDate = msgDate;
+                }
+
+                return dateSeparator + this.createMessageHTML(msg, isGrouped);
+            }).join('');
+            chatBody.innerHTML = html;
+            chatBody.scrollTop = chatBody.scrollHeight;
         },
 
         toggleChatPanels(showChat) {

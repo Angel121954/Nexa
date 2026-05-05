@@ -29,8 +29,10 @@
 
                 <!-- Imagen -->
                 <img
-                    src="{{ auth()->user()->avatar 
-        ? Storage::url(auth()->user()->avatar) 
+                    src="{{ auth()->user()->avatar
+        ? (Str::startsWith(auth()->user()->avatar, ['http://', 'https://'])
+            ? auth()->user()->avatar
+            : Storage::url(auth()->user()->avatar))
         : 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->name).'&background=E8375A&color=fff' }}"
                     class="w-36 h-36 rounded-full border-[5px] border-white object-cover shadow-xl"
                     onclick="document.getElementById('avatarInput').click()">

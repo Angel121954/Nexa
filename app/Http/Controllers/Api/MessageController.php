@@ -77,4 +77,19 @@ class MessageController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    public function unreadCount()
+    {
+        $userId = Auth::id();
+
+        $count = Message::whereHas('match', function ($query) use ($userId) {
+            $query->where('user1_id', $userId)
+                  ->orWhere('user2_id', $userId);
+        })
+        ->where('sender_id', '!=', $userId)
+        ->whereNull('read_at')
+        ->count();
+
+        return response()->json(['count' => $count]);
+    }
 }

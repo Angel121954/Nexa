@@ -195,10 +195,5 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('js/messages/state.js') }}"></script>
-<script src="{{ asset('js/messages/ui.js') }}"></script>
-<script src="{{ asset('js/messages/api.js') }}"></script>
-<script src="{{ asset('js/messages/websocket.js') }}"></script>
-<script src="{{ asset('js/messages/events.js') }}"></script>
 <script src="{{ asset('js/messages/index.js') }}"></script>
 @endpush
