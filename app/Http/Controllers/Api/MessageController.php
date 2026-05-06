@@ -27,11 +27,6 @@ class MessageController extends Controller
             ->orderBy('created_at')
             ->paginate(50);
 
-        Message::where('match_id', $matchId)
-            ->where('sender_id', '!=', $userId)
-            ->whereNull('read_at')
-            ->update(['read_at' => now()]);
-
         return response()->json($messages);
     }
 

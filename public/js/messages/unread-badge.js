@@ -33,6 +33,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Exponer la función para que otros scripts puedan actualizar el badge
+    window.updateTopbarBadge = updateUnreadBadge;
+
     // Suscribirse al canal privado del usuario para recibir notificaciones en tiempo real
     if (window.Echo) {
         window.Echo

@@ -28,6 +28,7 @@ class User extends Authenticatable
         'bio',
         'city',
         'profile_completed',
+        'last_activity_at',
     ];
 
     protected $hidden = ['password', 'remember_token'];
@@ -40,6 +41,7 @@ class User extends Authenticatable
             'birth_date' => 'date',
             'looking_for' => 'array',
             'profile_completed' => 'boolean',
+            'last_activity_at' => 'datetime',
         ];
     }
 

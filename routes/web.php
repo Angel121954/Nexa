@@ -8,11 +8,12 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Api\LikeController;
 use App\Http\Controllers\Api\MatchController;
 use App\Http\Controllers\Api\MessageController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 
 // Rutas de broadcasting (para autenticación de canales privados)
-Broadcast::routes(['middleware' => ['web', 'auth']]);
+Broadcast::routes(['middleware' => ['web']]);
 
 Route::get('/', fn() => view('auth.login'));
 
@@ -73,7 +74,9 @@ Route::middleware('auth')->prefix('api')->group(function () {  // ← con prefix
     Route::get('/matches/{matchId}/messages', [MessageController::class, 'index']);
     Route::post('/matches/{matchId}/messages', [MessageController::class, 'store']);
     Route::post('/matches/{matchId}/messages/read', [MessageController::class, 'markAsRead']);
-});
 
+    // Estado de usuarios online (fallback con last_activity_at)
+    Route::get('/users/online-status', [\App\Http\Controllers\Api\UserController::class, 'onlineStatus']);
+});
 
 require __DIR__ . '/auth.php';

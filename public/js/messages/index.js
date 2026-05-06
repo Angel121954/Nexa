@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
         currentMatchId: null,
         currentUserId: null,
         currentChannel: null,
+        presenceChannel: null,
+        presenceMembers: new Set(),
         csrfToken: null,
         elements: {},
 
@@ -38,6 +40,32 @@ document.addEventListener('DOMContentLoaded', () => {
         get(elem) { return this.elements[elem]; }
     };
 
+    // ═══ HELPERS ═══
+    function formatTimeAgo(isoString) {
+        if (!isoString) return '';
+        const now = Date.now();
+        const then = new Date(isoString).getTime();
+        const diff = Math.floor((now - then) / 1000);
+
+        if (diff < 60 && diff >= 1) return `hace ${diff} seg`;
+        if (diff < 120) return 'hace 1 min';
+        if (diff < 3600) return `hace ${Math.floor(diff / 60)} min`;
+        if (diff < 7200) return 'hace 1 h';
+        if (diff < 86400) return `hace ${Math.floor(diff / 3600)} h`;
+        if (diff < 172800) return 'ayer';
+        return new Date(isoString).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' });
+    }
+
+    function updateAllConversationTimes() {
+        document.querySelectorAll('.msg-conv-item').forEach(item => {
+            const timeEl = item.querySelector('.msg-conv-time');
+            const lastTime = item.dataset.lastTime;
+            if (timeEl && lastTime) {
+                timeEl.textContent = formatTimeAgo(lastTime);
+            }
+        });
+    }
+
     // ═══ UI ═══
     const UI = {
         updateChatHeader(userName, userAvatar, isOnline) {
@@ -46,6 +74,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (state.get('chatHeaderName')) state.get('chatHeaderName').textContent = userName;
             if (state.get('chatHeaderBadge')) state.get('chatHeaderBadge').style.display = isOnline ? 'inline' : 'none';
             if (state.get('chatHeaderStatus')) state.get('chatHeaderStatus').textContent = isOnline ? 'En línea' : 'Desconectado';
+
+            // Actualizar el data-user-id del header para que online-status.js lo detecte
+            const activeItem = document.querySelector('.msg-conv-item.active');
+            if (activeItem && state.get('chatHeaderName')) {
+                state.get('chatHeaderName').dataset.userId = activeItem.dataset.userId;
+            }
         },
 
         renderMessages(messages) {
@@ -132,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
         // Actualiza el preview de la conversación en el sidebar
-        updateConversationPreview(matchId, body) {
+        updateConversationPreview(matchId, body, isoTime = null) {
             const item = document.querySelector(`.msg-conv-item[data-conv-id="${matchId}"]`);
             if (!item) return;
             const preview = item.querySelector('.msg-conv-preview');
@@ -141,7 +175,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 preview.textContent = body.length > 35 ? body.slice(0, 35) + '...' : body;
                 preview.classList.remove('unread');
             }
-            if (time) time.textContent = 'ahora';
+            if (time) {
+                const now = isoTime || new Date().toISOString();
+                item.dataset.lastTime = now;
+                time.textContent = 'hace unos segundos';
+            }
+            // Quitar badge si existe
+            item.querySelector('.msg-unread-badge')?.remove();
         },
 
         createMessageHTML(msg, isGrouped = false) {
@@ -277,6 +317,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error('Error enviando:', e);
                 return false;
             }
+        },
+
+        async markAsRead(matchId) {
+            try {
+                await fetch(`/api/matches/${matchId}/messages/read`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': state.csrfToken,
+                    },
+                    credentials: 'same-origin'
+                });
+                // Limpiar UI
+                const item = document.querySelector(`.msg-conv-item[data-conv-id="${matchId}"]`);
+                if (item) {
+                    item.querySelector('.msg-conv-preview')?.classList.remove('unread');
+                    item.querySelector('.msg-unread-badge')?.remove();
+                }
+                window.updateTopbarBadge?.();
+            } catch (e) {
+                console.error('Error marcando como leído:', e);
+            }
         }
     };
 
@@ -288,6 +350,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // Desuscribirse del canal anterior
             if (state.currentChannel && state.currentMatchId) {
                 window.Echo.leave(`match.${state.currentMatchId}`);
+                if (state.presenceChannel) {
+                    window.Echo.leave(`presence-match.${state.currentMatchId}`);
+                    state.presenceChannel = null;
+                    state.presenceMembers.clear();
+                }
                 state.currentChannel = null;
             }
 
@@ -299,20 +366,50 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Solo renderizar mensajes de otros (el propio ya tiene optimistic update)
                     if (String(e.sender_id) !== String(state.currentUserId)) {
                         UI.appendMessage(e);
-                        UI.updateConversationPreview(matchId, e.body);
+                        UI.updateConversationPreview(matchId, e.body, e.created_at);
                     }
                 })
                 .error((error) => {
                     console.error('Error en canal WebSocket:', error);
                 });
 
+            // Presence channel para detectar si ambos usuarios están en el chat
+            state.presenceChannel = window.Echo
+                .join(`presence-match.${matchId}`)
+                .here((users) => {
+                    // users incluye a todos los usuarios en el canal (incluyéndome)
+                    state.presenceMembers = new Set(users.map(u => String(u.id)));
+                    // Si ambos usuarios están aquí, marcar como leídos
+                    if (state.presenceMembers.size >= 2) {
+                        API.markAsRead(matchId);
+                    }
+                })
+                .joining((user) => {
+                    state.presenceMembers.add(String(user.id));
+                    // Si ahora somos 2 usuarios, marcar como leídos
+                    if (state.presenceMembers.size >= 2) {
+                        API.markAsRead(matchId);
+                    }
+                })
+                .leaving((user) => {
+                    state.presenceMembers.delete(String(user.id));
+                })
+                .error((error) => {
+                    console.error('Error en presence channel:', error);
+                });
+
             console.log(`[Reverb] Suscrito a match.${matchId}`);
         },
 
         unsubscribeFromCurrentMatch() {
-            if (state.currentMatchId && state.currentChannel) {
+            if (state.currentMatchId) {
                 try {
                     window.Echo.leave(`match.${state.currentMatchId}`);
+                    if (state.presenceChannel) {
+                        window.Echo.leave(`presence-match.${state.currentMatchId}`);
+                        state.presenceChannel = null;
+                        state.presenceMembers.clear();
+                    }
                     state.currentChannel = null;
                     console.log(`[Reverb] Desuscrito de match.${state.currentMatchId}`);
                 } catch (e) {
@@ -371,14 +468,23 @@ document.addEventListener('DOMContentLoaded', () => {
             const matchId = item.dataset.convId;
             const userName = item.dataset.userName;
             const userAvatar = item.dataset.userAvatar;
-            const isOnline = item.dataset.online === 'true';
+            const userId = item.dataset.userId;
 
             state.currentMatchId = matchId;
 
-            UI.toggleChatPanels(true);
+            // Actualizar header con estado online en tiempo real
+            const isOnline = window.isUserOnline ? window.isUserOnline(userId) : false;
             UI.updateChatHeader(userName, userAvatar, isOnline);
+            UI.toggleChatPanels(true);
             UI.setActiveConversation(item);
             UI.clearChatBody();
+
+            // Quitar badge y estilo unread al instante (optimistic UI)
+            item.querySelector('.msg-conv-preview')?.classList.remove('unread');
+            item.querySelector('.msg-unread-badge')?.remove();
+
+            // Marcar como leído en el backend (para que no reaparezca al recargar)
+            API.markAsRead(matchId);
 
             API.loadMessages(matchId).then(messages => UI.renderMessages(messages));
             WS.subscribeToMatch(matchId);
@@ -420,13 +526,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!body || !state.currentMatchId) return;
 
             // 1. Optimistic update: el sender ve su mensaje de inmediato
+            const nowISO = new Date().toISOString();
             const optimisticMsg = {
                 sender_id: state.currentUserId,
                 body,
-                created_at: new Date().toISOString(),
+                created_at: nowISO,
             };
             UI.appendMessage(optimisticMsg);
-            UI.updateConversationPreview(state.currentMatchId, body);
+            UI.updateConversationPreview(state.currentMatchId, body, nowISO);
 
             // 2. Limpiar input
             textInput.value = '';
@@ -447,4 +554,8 @@ document.addEventListener('DOMContentLoaded', () => {
     Events.setupSearch();
     Events.setupBackButton();
     Events.setupMessageInput();
+
+    // Live timer: actualiza los tiempos cada segundo
+    setInterval(updateAllConversationTimes, 1000);
+    updateAllConversationTimes();
 });
