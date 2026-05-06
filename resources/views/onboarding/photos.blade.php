@@ -41,9 +41,7 @@
             {{-- Avatar --}}
             <div class="avatar-upload-wrap">
                 <div class="avatar-preview">
-                    @if(auth()->user()->avatar && !str_starts_with(auth()->user()->avatar, 'http'))
-                    <img id="avatar-img" src="{{ Storage::url(auth()->user()->avatar) }}" alt="Avatar">
-                    @elseif(auth()->user()->avatar)
+                    @if(auth()->user()->avatar)
                     <img id="avatar-img" src="{{ auth()->user()->avatar }}" alt="Avatar">
                     @else
                     <div class="avatar-placeholder" id="avatar-placeholder">
@@ -86,7 +84,7 @@
             <div class="gallery-grid" id="gallery-grid">
                 @foreach($photos as $photo)
                 <div class="gallery-item" id="photo-{{ $photo->id }}">
-                    <img src="{{ str_starts_with($photo->path, 'http') ? $photo->path : Storage::url($photo->path) }}" alt="Foto">
+                    <img src="{{ $photo->path }}" alt="Foto">
                     <form method="POST" action="{{ route('onboarding.photos.delete', $photo) }}" style="display:inline;">
                         @csrf @method('DELETE')
                         <button type="submit" class="gallery-item-remove" title="Eliminar">×</button>

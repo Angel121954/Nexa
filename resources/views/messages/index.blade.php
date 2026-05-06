@@ -53,7 +53,9 @@
                 data-conv-id="{{ $conv->id }}"
                 data-user-id="{{ $conv->otherUser->id }}"
                 data-user-name="{{ $conv->otherUser->name }}"
-                data-user-avatar="{{ asset('storage/' . $user->avatar) }}"
+                data-user-avatar="{{ !empty($user->avatar) 
+    ? $user->avatar 
+    : 'https://ui-avatars.com/api/?name='.urlencode($user->name) }}"
                 data-online="{{ $conv->otherUser->is_online ? 'true' : 'false' }}"
                 data-tab-all="true"
                 data-tab-matches="{{ ($conv->is_match ?? false) ? 'true' : 'false' }}"
@@ -61,12 +63,11 @@
                 data-last-time="{{ $conv->lastMessage?->created_at?->toISOString() ?? '' }}">
 
                 <div class="msg-conv-avatar">
-                    <img src="{{ asset('storage/' . $user->avatar) }}" width="100">
                     @if($user?->is_online ?? false)
                     <span class="msg-status-dot"></span>
                     @endif
                     <img src="{{ $conv->otherUser->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode($conv->otherUser->name).'&background=E8375A&color=fff' }}"
-                         alt="{{ $conv->otherUser->name }}">
+                        alt="{{ $conv->otherUser->name }}">
                     <span class="msg-status-dot" style="display:none;"></span>
                 </div>
 
@@ -166,7 +167,7 @@
                 </div>
 
                 <div class="msg-privacy-note">
-                     Tus conversaciones están protegidas y son privadas.
+                    Tus conversaciones están protegidas y son privadas.
                 </div>
             </div>
 

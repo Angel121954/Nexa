@@ -16,5 +16,3 @@
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/toast.css') }}">
 @endpush
-
-<script src="{{ asset('js/toast.js') }}"></script>

@@ -12,6 +12,8 @@ class UserPhoto extends Model
     protected $fillable = [
         'user_id',
         'path',
+        'public_id',
+        'sort_order',
     ];
 
     public function user()

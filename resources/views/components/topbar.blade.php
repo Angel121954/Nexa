@@ -50,12 +50,9 @@ $onlyLogoAvatar = $onlyLogoAvatar ?? false;
             <span class="nav-notif-badge" id="nav-unread-badge" style="display:none;"></span>
         </a>
         @endif
-
         <a href="{{ route('profile.index') }}" class="nav-avatar">
-            <img src="{{ auth()->user()->avatar
-        ? (Str::startsWith(auth()->user()->avatar, ['http://', 'https://'])
-            ? auth()->user()->avatar
-            : Storage::url(auth()->user()->avatar))
+            <img id="topbar-avatar" src="{{ !empty(auth()->user()->avatar) 
+        ? auth()->user()->avatar 
         : 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->name).'&background=E8375A&color=fff' }}"
                 alt="{{ auth()->user()->name }}">
 

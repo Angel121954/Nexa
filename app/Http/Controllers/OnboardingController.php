@@ -100,7 +100,7 @@ class OnboardingController extends Controller
             foreach ($request->file('gallery') as $index => $photo) {
                 if ($currentCount + $index >= 6) break;
 
-                $uploaded = $cloudinary->uploadGallery($photo, $user->id, $currentCount + $index);
+                $uploaded = $cloudinary->uploadGallery($photo, $user->id, (string)($currentCount + $index));
 
                 $user->photos()->create([
                     'path'       => $uploaded['url'],

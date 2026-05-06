@@ -24,22 +24,20 @@
 
         <!-- Avatar -->
         <div class="absolute left-1/2 -translate-x-1/2 -bottom-16">
-            <form action="{{ route('profile.avatar') }}" method="POST" enctype="multipart/form-data" class="relative group">
+            <form id="avatar-form" action="{{ route('profile.avatar') }}" method="POST" enctype="multipart/form-data" class="relative group">
                 @csrf
 
                 <!-- Imagen -->
                 <img
-                    src="{{ auth()->user()->avatar
-        ? (Str::startsWith(auth()->user()->avatar, ['http://', 'https://'])
-            ? auth()->user()->avatar
-            : Storage::url(auth()->user()->avatar))
+                    id="avatar-img"
+                    src="{{ !empty(auth()->user()->avatar) 
+        ? auth()->user()->avatar 
         : 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->name).'&background=E8375A&color=fff' }}"
                     class="w-36 h-36 rounded-full border-[5px] border-white object-cover shadow-xl"
                     onclick="document.getElementById('avatarInput').click()">
 
                 <!-- Input oculto -->
-                <input type="file" name="avatar" id="avatarInput" class="hidden" accept="image/*"
-                    onchange="this.form.submit()">
+                <input type="file" name="avatar" id="avatarInput" class="hidden" accept="image/*">
 
                 <!-- Botón cámara -->
                 <div onclick="document.getElementById('avatarInput').click()"
@@ -141,7 +139,7 @@
         <h3 class="gallery-title">Galería</h3>
 
         <!-- SUBIR FOTO -->
-        <form action="{{ route('profile.photo') }}" method="POST" enctype="multipart/form-data" class="gallery-upload">
+        <form id="gallery-upload-form" action="{{ route('profile.photo') }}" method="POST" enctype="multipart/form-data" class="gallery-upload">
             @csrf
 
             <label class="flex items-center justify-center w-full h-20 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:bg-gray-50 transition gap-2">
@@ -155,7 +153,7 @@
 
                 <span class="text-gray-500 text-sm">Agregar foto</span>
 
-                <input type="file" name="photo" class="hidden" accept="image/*" onchange="this.form.submit()">
+                <input type="file" name="photo" id="gallery-upload-input" class="hidden" accept="image/*">
             </label>
         </form>
 
@@ -166,8 +164,8 @@
 
             <div class="gallery-item">
 
-                <img
-                    src="{{ str_starts_with($photo->path, 'http') ? $photo->path : Storage::url($photo->path) }}">
+                    <img
+                        src="{{ $photo->path }}">
 
                 <!-- overlay -->
                 <div class="gallery-item-overlay"></div>

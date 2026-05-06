@@ -12,8 +12,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
-use Illuminate\Support\Facades\Storage;
-
 
 class ProfileController extends Controller
 {
@@ -51,7 +49,6 @@ class ProfileController extends Controller
             $user->profile()->create([]);
         }
 
-
         return view('profile.edit', [
             'user' => $user,
             'profile' => $user->profile,
@@ -62,11 +59,8 @@ class ProfileController extends Controller
     {
         $user = $request->user();
 
-        // Update user fields (only name and email belong to users table)
-        $user->fill($request->only([
-            'name',
-            'email',
-        ]));
+        // Datos básicos
+        $user->fill($request->only(['name', 'email']));
 
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;
@@ -74,7 +68,7 @@ class ProfileController extends Controller
 
         $user->save();
 
-        // Update or create profile fields
+        // Perfil
         $profile = $user->profile ?? $user->profile()->create([]);
 
         $profile->fill($request->only([
@@ -108,93 +102,130 @@ class ProfileController extends Controller
         return Redirect::to('/');
     }
 
-    //  SUBIR FOTO 
-    public function uploadPhoto(Request $request)
+    // 📸 SUBIR FOTO → CLOUDINARY (archivo o URL)
+    public function uploadPhoto(Request $request, CloudinaryService $cloudinary)
     {
         if (auth()->user()->photos()->count() >= 6) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Máximo 6 fotos'], 422);
+            }
             return back()->with('error', 'Máximo 6 fotos');
         }
+
         $request->validate([
-            'photo' => 'required|image|max:2048'
+            'photo'      => 'nullable|image|max:5120',
+            'photo_url'  => 'nullable|url',
         ]);
 
-        $path = $request->file('photo')->store('photos', 'public');
+        try {
+            $userId = auth()->id();
 
-        UserPhoto::create([
-            'user_id' => auth()->id(),
-            'path' => $path
-        ]);
+            if ($request->filled('photo_url')) {
+                $upload = $cloudinary->uploadGalleryFromUrl(
+                    $request->input('photo_url'),
+                    $userId,
+                    $userId . '_' . time()
+                );
+            } else {
+                $request->validate([
+                    'photo' => 'required|image|max:5120'
+                ]);
 
-        return back();
+                $upload = $cloudinary->uploadGallery(
+                    $request->file('photo'),
+                    $userId,
+                    $userId . '_' . time()
+                );
+            }
+
+            UserPhoto::create([
+                'user_id'   => $userId,
+                'path'      => $upload['url'],
+                'public_id' => $upload['public_id']
+            ]);
+
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Foto subida', 'url' => $upload['url']]);
+            }
+
+            return back()->with('success', 'Foto subida');
+        } catch (\Exception $e) {
+            Log::error('Error subiendo foto: ' . $e->getMessage());
+
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Error subiendo foto'], 422);
+            }
+
+            return back()->with('error', 'Error subiendo foto');
+        }
     }
 
-    public function uploadAvatar(Request $request, CloudinaryService $cloudinary)
+    public function updateAvatar(Request $request, CloudinaryService $cloudinary)
     {
         $request->validate([
-            'avatar' => 'required|image|max:5120',
+            'avatar'     => 'nullable|image|max:5120',
+            'avatar_url' => 'nullable|url',
         ]);
 
         $user = auth()->user();
 
-        if ($user->avatar_public_id) {
-            try {
+        try {
+            if ($user->avatar_public_id) {
                 $cloudinary->delete($user->avatar_public_id);
-            } catch (\Exception $e) {
-                Log::warning('Failed to delete old avatar: ' . $e->getMessage());
             }
+
+            if ($request->filled('avatar_url')) {
+                $avatar = $cloudinary->uploadAvatarFromUrl(
+                    $request->input('avatar_url'),
+                    $user->id
+                );
+            } else {
+                $request->validate([
+                    'avatar' => 'required|image|max:5120',
+                ]);
+
+                $avatar = $cloudinary->uploadAvatar(
+                    $request->file('avatar'),
+                    $user->id
+                );
+            }
+
+            $user->update([
+                'avatar'           => $avatar['url'],
+                'avatar_public_id' => $avatar['public_id'],
+            ]);
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'avatar-updated',
+                    'avatar'  => $avatar['url']
+                ]);
+            }
+
+            return back()->with('status', 'avatar-updated');
+        } catch (\Exception $e) {
+            Log::error('Error avatar: ' . $e->getMessage());
+            return back()->with('error', 'Error actualizando avatar');
         }
-
-        $avatar = $cloudinary->uploadAvatar($request->file('avatar'), $user->id);
-
-        $user->update([
-            'avatar'           => $avatar['url'],
-            'avatar_public_id' => $avatar['public_id'],
-        ]);
-
-        if ($request->expectsJson()) {
-            return response()->json(['message' => 'avatar-updated', 'avatar' => $avatar['url']]);
-        }
-
-        return back()->with('status', 'avatar-updated');
     }
 
-    public function deletePhoto($id)
+    public function deletePhoto($id, CloudinaryService $cloudinary)
     {
         $photo = UserPhoto::where('id', $id)
             ->where('user_id', auth()->id())
             ->firstOrFail();
 
-        // borrar archivo físico
-        if (Storage::disk('public')->exists($photo->path)) {
-            Storage::disk('public')->delete($photo->path);
+        try {
+            if ($photo->public_id) {
+                $cloudinary->delete($photo->public_id);
+            }
+
+            $photo->delete();
+
+            return back()->with('success', 'Foto eliminada');
+        } catch (\Exception $e) {
+            Log::error('Error eliminando foto: ' . $e->getMessage());
+            return back()->with('error', 'Error eliminando foto');
         }
-
-        // borrar registro BD
-        $photo->delete();
-
-        return back()->with('success', 'Foto eliminada correctamente');
-    }
-
-    public function updateAvatar(Request $request)
-    {
-        $request->validate([
-            'avatar' => 'required|image|mimes:jpg,jpeg,png|max:2048'
-        ]);
-
-        $user = auth()->user();
-
-        // eliminar anterior (opcional)
-        if ($user->avatar) {
-            \Storage::delete($user->avatar);
-        }
-
-        // guardar nueva
-        $path = $request->file('avatar')->store('avatars', 'public');
-
-        // guardar en BD
-        $user->avatar = $path;
-        $user->save();
-
-        return back()->with('success', 'Avatar actualizado');
     }
 }
