@@ -43,17 +43,19 @@ $onlyLogoAvatar = $onlyLogoAvatar ?? false;
             Suscríbete a Nexa Premium
         </button> -->
 
-        <a href="#" class="nav-icon-btn" title="Notificaciones">
+        <a href="{{ route('messages.index') }}" class="nav-icon-btn nav-messages-icon" title="Mensajes" id="nav-messages-link">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                 <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
-            <span class="nav-notif-dot"></span>
+            <span class="nav-notif-badge" id="nav-unread-badge" style="display:none;"></span>
         </a>
         @endif
 
         <a href="{{ route('profile.index') }}" class="nav-avatar">
-            <img src="{{ auth()->user()->avatar 
-        ? Storage::url(auth()->user()->avatar)
+            <img src="{{ auth()->user()->avatar
+        ? (Str::startsWith(auth()->user()->avatar, ['http://', 'https://'])
+            ? auth()->user()->avatar
+            : Storage::url(auth()->user()->avatar))
         : 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->name).'&background=E8375A&color=fff' }}"
                 alt="{{ auth()->user()->name }}">
 
@@ -84,6 +86,10 @@ $onlyLogoAvatar = $onlyLogoAvatar ?? false;
 @if(!$onlyLogoAvatar)
 <div class="nav-overlay" id="nav-overlay"></div>
 @endif
+
+@push('scripts')
+<script src="{{ asset('js/messages/unread-badge.js') }}"></script>
+@endpush
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/topbar.css') }}">

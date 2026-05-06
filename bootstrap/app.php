@@ -19,6 +19,9 @@ return Application::configure(basePath: dirname(__DIR__))
         // Prevent back button access to protected pages after logout
         // Apply to 'web' middleware group (all web routes)
         $middleware->web(\App\Http\Middleware\PreventBackHistory::class);
+
+        // Update last activity for authenticated users
+        $middleware->web(\App\Http\Middleware\UpdateLastActivity::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

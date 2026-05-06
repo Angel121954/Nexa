@@ -27,11 +27,6 @@ class MessageController extends Controller
             ->orderBy('created_at')
             ->paginate(50);
 
-        Message::where('match_id', $matchId)
-            ->where('sender_id', '!=', $userId)
-            ->whereNull('read_at')
-            ->update(['read_at' => now()]);
-
         return response()->json($messages);
     }
 
@@ -76,5 +71,20 @@ class MessageController extends Controller
             ->update(['read_at' => now()]);
 
         return response()->json(['success' => true]);
+    }
+
+    public function unreadCount()
+    {
+        $userId = Auth::id();
+
+        $count = Message::whereHas('match', function ($query) use ($userId) {
+            $query->where('user1_id', $userId)
+                  ->orWhere('user2_id', $userId);
+        })
+        ->where('sender_id', '!=', $userId)
+        ->whereNull('read_at')
+        ->count();
+
+        return response()->json(['count' => $count]);
     }
 }

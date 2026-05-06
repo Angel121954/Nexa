@@ -57,13 +57,17 @@
                 data-online="{{ $conv->otherUser->is_online ? 'true' : 'false' }}"
                 data-tab-all="true"
                 data-tab-matches="{{ ($conv->is_match ?? false) ? 'true' : 'false' }}"
-                data-tab-unread="{{ ($conv->unread_count ?? 0) > 0 ? 'true' : 'false' }}">
+                data-tab-unread="{{ ($conv->unread_count ?? 0) > 0 ? 'true' : 'false' }}"
+                data-last-time="{{ $conv->lastMessage?->created_at?->toISOString() ?? '' }}">
 
                 <div class="msg-conv-avatar">
                     <img src="{{ asset('storage/' . $user->avatar) }}" width="100">
                     @if($user?->is_online ?? false)
                     <span class="msg-status-dot"></span>
                     @endif
+                    <img src="{{ $conv->otherUser->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode($conv->otherUser->name).'&background=E8375A&color=fff' }}"
+                         alt="{{ $conv->otherUser->name }}">
+                    <span class="msg-status-dot" style="display:none;"></span>
                 </div>
 
                 <div class="msg-conv-info">
@@ -174,10 +178,6 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('js/messages/state.js') }}"></script>
-<script src="{{ asset('js/messages/ui.js') }}"></script>
-<script src="{{ asset('js/messages/api.js') }}"></script>
-<script src="{{ asset('js/messages/websocket.js') }}"></script>
-<script src="{{ asset('js/messages/events.js') }}"></script>
+<script src="{{ asset('js/messages/online-status.js') }}"></script>
 <script src="{{ asset('js/messages/index.js') }}"></script>
 @endpush
