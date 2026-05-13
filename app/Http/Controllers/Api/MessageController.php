@@ -7,7 +7,6 @@ use App\Models\Message;
 use App\Models\UserMatch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Broadcast;
 
 class MessageController extends Controller
 {
@@ -15,16 +14,18 @@ class MessageController extends Controller
     {
         $userId = Auth::id();
 
-        $match = UserMatch::where('id', $matchId)
+        UserMatch::where('id', $matchId)
             ->where(function ($query) use ($userId) {
                 $query->where('user1_id', $userId)
-                    ->orWhere('user2_id', $userId);
+                      ->orWhere('user2_id', $userId);
             })
             ->firstOrFail();
 
+        // latest() trae los 50 más recientes; el frontend los invierte
+        // para que el chat muestre los mensajes de más antiguo a más nuevo.
         $messages = Message::where('match_id', $matchId)
             ->with('sender')
-            ->orderBy('created_at')
+            ->latest()
             ->paginate(50);
 
         return response()->json($messages);
@@ -39,14 +40,14 @@ class MessageController extends Controller
         $match = UserMatch::where('id', $matchId)
             ->where(function ($query) use ($userId) {
                 $query->where('user1_id', $userId)
-                    ->orWhere('user2_id', $userId);
+                      ->orWhere('user2_id', $userId);
             })
             ->firstOrFail();
 
         $message = Message::create([
-            'match_id' => $matchId,
+            'match_id'  => $matchId,
             'sender_id' => $userId,
-            'body' => $request->body,
+            'body'      => $request->body,
         ]);
 
         $message->load('sender');
@@ -78,12 +79,12 @@ class MessageController extends Controller
         $userId = Auth::id();
 
         $count = Message::whereHas('match', function ($query) use ($userId) {
-            $query->where('user1_id', $userId)
-                  ->orWhere('user2_id', $userId);
-        })
-        ->where('sender_id', '!=', $userId)
-        ->whereNull('read_at')
-        ->count();
+                $query->where('user1_id', $userId)
+                      ->orWhere('user2_id', $userId);
+            })
+            ->where('sender_id', '!=', $userId)
+            ->whereNull('read_at')
+            ->count();
 
         return response()->json(['count' => $count]);
     }

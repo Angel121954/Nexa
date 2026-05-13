@@ -103,23 +103,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
-            // Actualizar badges de no leídos (quitar los del chat activo)
-            updateUnreadBadges();
         } catch (e) {
             console.error('Error cargando estados fallback:', e);
         }
-    }
-
-    // Quitar badge de no leídos del chat activo (porque lo estamos viendo)
-    function updateUnreadBadges() {
-        const activeItem = document.querySelector('.msg-conv-item.active');
-        if (!activeItem) return;
-
-        // Si el chat activo es el mismo, quitar badge (ya lo estamos viendo)
-        const badge = activeItem.querySelector('.msg-unread-badge');
-        const preview = activeItem.querySelector('.msg-conv-preview');
-        if (badge) badge.remove();
-        if (preview) preview.classList.remove('unread');
     }
 
     // Cargar estados fallback al inicio
