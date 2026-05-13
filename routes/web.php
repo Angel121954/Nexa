@@ -81,4 +81,7 @@ Route::middleware('auth')->prefix('api')->group(function () {  // ← con prefix
     Route::get('/users/online-status', [\App\Http\Controllers\Api\UserController::class, 'onlineStatus']);
 });
 
+// Página legal (términos y privacidad)
+Route::view('/legal', 'legal.legal')->name('legal');
+
 require __DIR__ . '/auth.php';

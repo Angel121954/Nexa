@@ -50,6 +50,8 @@ $onlyLogoAvatar = $onlyLogoAvatar ?? false;
             <span class="nav-notif-badge" id="nav-unread-badge" style="display:none;"></span>
         </a>
         @endif
+
+        @auth
         <a href="{{ route('profile.index') }}" class="nav-avatar">
             <img id="topbar-avatar" src="{{ !empty(auth()->user()->avatar) 
         ? auth()->user()->avatar 
@@ -65,6 +67,7 @@ $onlyLogoAvatar = $onlyLogoAvatar ?? false;
             </svg>
             @endif
         </a>
+        @endauth
 
         @if(!$onlyLogoAvatar)
         <form method="POST" action="{{ route('logout') }}" class="nav-logout-form">

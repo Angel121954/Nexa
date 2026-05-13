@@ -123,9 +123,9 @@
 
         <p class="auth-copyright" style="margin-top: 1rem;">
             Al registrarte aceptas nuestros
-            <a href="#" style="color: var(--pink); text-decoration: none; font-weight: 500;">Términos</a>
+            <a href="{{ route('legal') }}" style="color: var(--pink); text-decoration: none; font-weight: 500;">Términos</a>
             y
-            <a href="#" style="color: var(--pink); text-decoration: none; font-weight: 500;">Política de Privacidad</a>
+            <a href="{{ route('legal') }}" style="color: var(--pink); text-decoration: none; font-weight: 500;">Política de Privacidad</a>
         </p>
     </div>
 </div>
