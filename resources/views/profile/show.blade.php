@@ -11,7 +11,7 @@
 
 @include('components.topbar')
 
-<div class="bg-gray-50 min-h-screen pb-16">
+    <div class="bg-gray-50 min-h-screen pb-16">
 
     <!-- HEADER -->
     <div class="profile-header">
@@ -90,6 +90,7 @@
             @endif
 
         </div>
+
     </div>
 
     <!-- GALERÍA -->

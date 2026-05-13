@@ -13,8 +13,9 @@ class MessagePageController extends Controller
     {
         $userId = Auth::id();
 
-        $matches = UserMatch::where('user1_id', $userId)
-            ->orWhere('user2_id', $userId)
+        $matches = UserMatch::where(function ($q) use ($userId) {
+                $q->where('user1_id', $userId)->orWhere('user2_id', $userId);
+            })
             ->with(['user1', 'user2', 'latestMessage'])
             ->get();
 
@@ -27,6 +28,9 @@ class MessagePageController extends Controller
                     ->where('sender_id', '!=', $userId)
                     ->whereNull('read_at')
                     ->count();
+
+                $isBlocked   = auth()->user()->hasBlocked($otherUser->id);
+                $isBlockedBy = auth()->user()->isBlockedBy($otherUser->id);
 
                 return (object) [
                     'id'        => $match->id,
@@ -42,6 +46,8 @@ class MessagePageController extends Controller
                     ] : null,
                     'unread_count' => $unreadCount,
                     'is_match'     => true,
+                    'is_blocked'   => $isBlocked,
+                    'is_blocked_by' => $isBlockedBy,
                 ];
             })
             // Conversaciones ordenadas por actividad más reciente primero

@@ -240,6 +240,42 @@ document.addEventListener('DOMContentLoaded', () => {
             const textInput = state.get('textInput');
             const sendBtn = state.get('sendBtn');
             if (sendBtn && textInput) sendBtn.disabled = !textInput.value.trim();
+        },
+
+        updateBlockState(isBlocked, isBlockedBy) {
+            const textInput = state.get('textInput');
+            const sendBtn = state.get('sendBtn');
+            const blockNotice = document.getElementById('msg-block-notice');
+            const blockNoticeText = document.getElementById('msg-block-notice-text');
+            const blockBtnText = document.getElementById('msg-block-btn-text');
+
+            if (isBlocked) {
+                if (textInput) { textInput.disabled = true; textInput.placeholder = ''; }
+                if (sendBtn) sendBtn.disabled = true;
+                if (blockNotice) {
+                    blockNotice.style.display = 'flex';
+                    blockNotice.className = 'msg-block-notice blocked-by-me';
+                }
+                if (blockNoticeText) blockNoticeText.textContent = 'Has bloqueado a este usuario. Desbloquéalo para seguir enviando mensajes.';
+                if (blockBtnText) blockBtnText.textContent = 'Desbloquear usuario';
+            } else if (isBlockedBy) {
+                if (textInput) { textInput.disabled = true; textInput.placeholder = ''; }
+                if (sendBtn) sendBtn.disabled = true;
+                if (blockNotice) {
+                    blockNotice.style.display = 'flex';
+                    blockNotice.className = 'msg-block-notice blocked-by-other';
+                }
+                if (blockNoticeText) blockNoticeText.textContent = 'Este usuario te ha bloqueado.';
+                if (blockBtnText) blockBtnText.textContent = 'Bloquear usuario';
+            } else {
+                if (textInput) { textInput.disabled = false; textInput.placeholder = 'Escribe un mensaje...'; }
+                if (sendBtn) sendBtn.disabled = true;
+                if (blockNotice) {
+                    blockNotice.style.display = 'none';
+                    blockNotice.className = 'msg-block-notice';
+                }
+                if (blockBtnText) blockBtnText.textContent = 'Bloquear usuario';
+            }
         }
     };
 
@@ -316,6 +352,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ═══ WEBSOCKET ═══
     const WS = {
+        userChannel: null,
+
+        subscribeToUserChannel() {
+            if (!window.Echo || !state.currentUserId) return;
+            this.userChannel = window.Echo
+                .private(`user.${state.currentUserId}`)
+                .listen('.UserBlocked', (e) => {
+                    BlockUI.handleExternalBlock(e.blocker_id, e.is_blocked);
+                });
+        },
+
         subscribeToMatch(matchId) {
             if (!window.Echo) { console.error('Echo no disponible'); return; }
 
@@ -450,6 +497,10 @@ document.addEventListener('DOMContentLoaded', () => {
             API.loadMessages(matchId).then(messages => UI.renderMessages(messages));
             WS.subscribeToMatch(matchId);
 
+            const isBlocked = item.dataset.blocked === 'true';
+            const isBlockedBy = item.dataset.blockedBy === 'true';
+            UI.updateBlockState(isBlocked, isBlockedBy);
+
             if (window.innerWidth < 768) {
                 document.getElementById('msg-sidebar')?.classList.add('hidden-mobile');
                 document.getElementById('msg-chat-panel')?.classList.remove('hidden-mobile');
@@ -511,6 +562,80 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // ═══ BLOCK USER ═══
+    const BlockUI = {
+        dropdown: document.getElementById('msg-dropdown-menu'),
+        blockBtn: document.getElementById('msg-block-btn'),
+
+        init() {
+            document.querySelector('.msg-dropdown-toggle')?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.toggleDropdown();
+            });
+
+            this.blockBtn?.addEventListener('click', () => this.toggleBlock());
+
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.msg-chat-dropdown')) {
+                    this.closeDropdown();
+                }
+            });
+        },
+
+        toggleDropdown() {
+            if (!this.dropdown) return;
+            this.dropdown.style.display = this.dropdown.style.display === 'none' ? 'block' : 'none';
+        },
+
+        closeDropdown() {
+            if (this.dropdown) this.dropdown.style.display = 'none';
+        },
+
+        async toggleBlock() {
+            const userId = document.getElementById('chat-header-name')?.dataset.userId;
+            if (!userId) return;
+
+            this.closeDropdown();
+
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+
+            try {
+                const res = await fetch(`/profile/${userId}/block`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json',
+                    },
+                    credentials: 'same-origin',
+                });
+
+                if (res.ok) {
+                    const activeItem = document.querySelector('.msg-conv-item.active');
+                    if (!activeItem) return;
+
+                    const wasBlocked = activeItem.dataset.blocked === 'true';
+                    const isBlocked = !wasBlocked;
+                    const isBlockedBy = activeItem.dataset.blockedBy === 'true';
+
+                    activeItem.dataset.blocked = isBlocked ? 'true' : 'false';
+                    UI.updateBlockState(isBlocked, isBlockedBy);
+                }
+            } catch (e) {
+                console.error('Error al bloquear usuario:', e);
+            }
+        },
+
+        handleExternalBlock(blockerId, isBlocked) {
+            const activeItem = document.querySelector('.msg-conv-item.active');
+            if (!activeItem) return;
+            if (String(activeItem.dataset.userId) !== String(blockerId)) return;
+
+            activeItem.dataset.blockedBy = isBlocked ? 'true' : 'false';
+            const isBlockedByMe = activeItem.dataset.blocked === 'true';
+            UI.updateBlockState(isBlockedByMe, isBlocked);
+        }
+    };
+
     // ═══ INIT ═══
     state.init();
     Events.bindConversationItems();
@@ -518,6 +643,8 @@ document.addEventListener('DOMContentLoaded', () => {
     Events.setupSearch();
     Events.setupBackButton();
     Events.setupMessageInput();
+    BlockUI.init();
+    WS.subscribeToUserChannel();
 
     setInterval(updateAllConversationTimes, 1000);
     updateAllConversationTimes();

@@ -60,7 +60,9 @@
                 data-tab-all="true"
                 data-tab-matches="{{ ($conv->is_match ?? false) ? 'true' : 'false' }}"
                 data-tab-unread="{{ ($conv->unread_count ?? 0) > 0 ? 'true' : 'false' }}"
-                data-last-time="{{ $conv->lastMessage?->created_at?->toISOString() ?? '' }}">
+                data-last-time="{{ $conv->lastMessage?->created_at?->toISOString() ?? '' }}"
+                data-blocked="{{ $conv->is_blocked ? 'true' : 'false' }}"
+                data-blocked-by="{{ $conv->is_blocked_by ? 'true' : 'false' }}">
 
                 <div class="msg-conv-avatar">
                     @if($user?->is_online ?? false)
@@ -142,6 +144,27 @@
                         <div class="msg-chat-user-status" id="chat-header-status"></div>
                     </div>
                 </div>
+
+                <!-- <div class="msg-chat-actions">
+                    <button class="msg-action-btn" title="Llamada de voz" type="button">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.63 19.79 19.79 0 01.12 2.18 2 2 0 012.1 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                    <button class="msg-action-btn" title="Videollamada" type="button">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <polygon points="23 7 16 12 23 17 23 7" />
+                            <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+                        </svg>
+                    </button>
+                    <button class="msg-action-btn" title="Información" type="button">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="16" x2="12" y2="12" />
+                            <line x1="12" y1="8" x2="12.01" y2="8" />
+                        </svg>
+                    </button>
+                </div> -->
             </div>
 
             {{-- Body --}}
@@ -149,22 +172,20 @@
 
             {{-- Footer --}}
             <div class="msg-chat-footer">
-                <div class="msg-input-wrap">
-                    <button class="msg-attach-btn" type="button">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                            <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.19 9.19a2 2 0 01-2.83-2.83l8.49-8.48" />
-                        </svg>
-                    </button>
-
-                    <input type="text" id="msg-text-input" class="msg-text-input" placeholder="Escribe un mensaje...">
-
-                    <button class="msg-send-btn" id="msg-send-btn" disabled type="button">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="22" y1="2" x2="11" y2="13"></line>
-                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                        </svg>
-                    </button>
-                </div>
+                    <div class="msg-input-wrap">
+                        <button class="msg-attach-btn" type="button" aria-label="Adjuntar">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.19 9.19a2 2 0 01-2.83-2.83l8.49-8.48" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>
+                        </button>
+                        <input type="text" id="msg-text-input" class="msg-text-input" placeholder="Escribe un mensaje...">
+                        <button class="msg-send-btn" id="msg-send-btn" disabled type="button" aria-label="Enviar">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="22" y1="2" x2="11" y2="13"></line>
+                                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                            </svg>
+                        </button>
+                    </div>
 
                 <div class="msg-privacy-note">
                     Tus conversaciones están protegidas y son privadas.
