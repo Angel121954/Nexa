@@ -11,26 +11,28 @@
         
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background-color: #F9FAFB;
+            background-color: #F3F4F6;
             color: #111827;
             line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
         }
         
         .wrapper {
-            background-color: #F9FAFB;
-            padding: 40px 20px;
+            background-color: #F3F4F6;
+            padding: 48px 20px;
         }
         
         .content {
-            max-width: 600px;
+            max-width: 560px;
             margin: 0 auto;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 20px rgba(0,0,0,0.04);
+            border-radius: 20px;
         }
         
         .header {
-            background: linear-gradient(135deg, #E8375A 0%, #C92E4B 100%);
-            padding: 30px 40px;
+            padding: 36px 40px;
             text-align: center;
-            border-radius: 16px 16px 0 0;
+            border-radius: 20px 20px 0 0;
         }
         
         .header img {
@@ -40,13 +42,11 @@
         
         .body {
             background: #FFFFFF;
-            border-left: 1px solid #E5E7EB;
-            border-right: 1px solid #E5E7EB;
             padding: 40px;
         }
         
         .inner-body {
-            max-width: 570px;
+            max-width: 100%;
             margin: 0 auto;
         }
         
@@ -58,63 +58,28 @@
         
         .footer {
             background: #FFFFFF;
-            border: 1px solid #E5E7EB;
-            border-top: none;
-            border-radius: 0 0 16px 16px;
-            padding: 30px 40px;
+            border-top: 1px solid #F3F4F6;
+            padding: 28px 40px;
             text-align: center;
-        }
-        
-        .button {
-            display: inline-block;
-            background: linear-gradient(135deg, #E8375A 0%, #C92E4B 100%);
-            color: #FFFFFF !important;
-            text-decoration: none;
-            padding: 14px 32px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 16px;
-            margin: 20px 0;
-            box-shadow: 0 4px 12px rgba(232, 55, 90, 0.3);
-        }
-        
-        .button:hover {
-            box-shadow: 0 6px 16px rgba(232, 55, 90, 0.4);
-        }
-        
-        h1 {
-            color: #111827;
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 16px;
-        }
-        
-        p {
-            margin-bottom: 16px;
-        }
-        
-        .divider {
-            height: 1px;
-            background: #E5E7EB;
-            margin: 30px 0;
+            border-radius: 0 0 20px 20px;
         }
         
         .footer p {
-            font-size: 14px;
+            font-size: 13px;
             color: #9CA3AF;
-            margin-bottom: 8px;
         }
         
         .footer a {
             color: #E8375A;
             text-decoration: none;
+            font-weight: 600;
         }
         
         @media only screen and (max-width: 600px) {
-            .wrapper { padding: 20px 10px; }
-            .header { padding: 20px; }
-            .body { padding: 30px 20px; }
-            .footer { padding: 20px; }
+            .wrapper { padding: 24px 12px; }
+            .header { padding: 24px 20px; }
+            .body { padding: 28px 20px; }
+            .footer { padding: 24px 20px; }
         }
     </style>
     {!! $head ?? '' !!}
