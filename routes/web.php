@@ -71,9 +71,11 @@ Route::middleware('auth')->prefix('api')->group(function () {  // ← con prefix
     Route::get('/matches/{id}', [MatchController::class, 'show']);
 
     // Messages
+    Route::get('/unread-messages-count', [MessageController::class, 'unreadCount']);
     Route::get('/matches/{matchId}/messages', [MessageController::class, 'index']);
     Route::post('/matches/{matchId}/messages', [MessageController::class, 'store']);
     Route::post('/matches/{matchId}/messages/read', [MessageController::class, 'markAsRead']);
+    Route::post('/matches/{matchId}/messages/mark-read', [MessageController::class, 'markAsRead']);
 
     // Estado de usuarios online (fallback con last_activity_at)
     Route::get('/users/online-status', [\App\Http\Controllers\Api\UserController::class, 'onlineStatus']);
