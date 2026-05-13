@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LocationController;
 
 // Rutas de broadcasting (para autenticación de canales privados)
 Broadcast::routes(['middleware' => ['web']]);
@@ -55,7 +56,6 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/profile/photo', [ProfileController::class, 'uploadPhoto'])->name('profile.photo');
-    Route::post('/profile/avatar', [ProfileController::class, 'uploadAvatar'])->name('profile.avatar');
     Route::delete('/profile/photo/{id}', [ProfileController::class, 'deletePhoto'])
         ->name('profile.photo.delete');
     Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
@@ -74,6 +74,8 @@ Route::middleware('auth')->prefix('api')->group(function () {  // ← con prefix
     Route::get('/matches/{matchId}/messages', [MessageController::class, 'index']);
     Route::post('/matches/{matchId}/messages', [MessageController::class, 'store']);
     Route::post('/matches/{matchId}/messages/read', [MessageController::class, 'markAsRead']);
+    // Ubicación
+    Route::post('/update-location', [LocationController::class, 'update']);
 
     // Estado de usuarios online (fallback con last_activity_at)
     Route::get('/users/online-status', [\App\Http\Controllers\Api\UserController::class, 'onlineStatus']);

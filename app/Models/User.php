@@ -28,10 +28,15 @@ class User extends Authenticatable
         'bio',
         'city',
         'profile_completed',
-        'last_activity_at',
+        'latitude',
+        'longitude',
+        'last_activity_at', // 🔥 IMPORTANTE
     ];
 
-    protected $hidden = ['password', 'remember_token'];
+    protected $hidden = [
+        'password',
+        'remember_token'
+    ];
 
     protected function casts(): array
     {
@@ -41,29 +46,31 @@ class User extends Authenticatable
             'birth_date' => 'date',
             'looking_for' => 'array',
             'profile_completed' => 'boolean',
+            'latitude' => 'float',
+            'longitude' => 'float',
             'last_activity_at' => 'datetime',
         ];
     }
 
-    //  PERFIL (CLAVE PARA TU VISTA)
+    // 🟢 PERFIL
     public function profile(): HasOne
     {
         return $this->hasOne(Profile::class);
     }
 
-    //  FOTOS
+    // 📸 FOTOS
     public function photos(): HasMany
     {
         return $this->hasMany(UserPhoto::class)->orderBy('sort_order');
     }
 
-    //  INTERESES
+    // ❤️ INTERESES
     public function interests(): BelongsToMany
     {
         return $this->belongsToMany(Interest::class);
     }
 
-    //  LIKES
+    // 👍 LIKES
     public function likesSent(): HasMany
     {
         return $this->hasMany(Like::class, 'sender_id');
@@ -81,7 +88,7 @@ class User extends Authenticatable
             ->exists();
     }
 
-    //  MATCHES
+    // 🔥 MATCHES
     public function matches()
     {
         return UserMatch::where('user1_id', $this->id)
@@ -95,7 +102,9 @@ class User extends Authenticatable
         $userIds = UserMatch::whereIn('id', $matchIds)
             ->get()
             ->map(function ($match) {
-                return $match->user1_id == $this->id ? $match->user2_id : $match->user1_id;
+                return $match->user1_id == $this->id
+                    ? $match->user2_id
+                    : $match->user1_id;
             });
 
         return User::whereIn('id', $userIds);
@@ -104,9 +113,19 @@ class User extends Authenticatable
     public function isMatchedWith(int $userId): bool
     {
         return UserMatch::where(function ($query) use ($userId) {
-            $query->where('user1_id', $this->id)->where('user2_id', $userId);
+            $query->where('user1_id', $this->id)
+                  ->where('user2_id', $userId);
         })->orWhere(function ($query) use ($userId) {
-            $query->where('user1_id', $userId)->where('user2_id', $this->id);
+            $query->where('user1_id', $userId)
+                  ->where('user2_id', $this->id);
         })->exists();
+    }
+
+    // 🖼️ AVATAR (SOLO CLOUDINARY)
+    public function getAvatarUrlAttribute()
+    {
+        return (!empty($this->avatar) && filter_var($this->avatar, FILTER_VALIDATE_URL))
+            ? $this->avatar
+            : 'https://ui-avatars.com/api/?name=' . urlencode($this->name);
     }
 }

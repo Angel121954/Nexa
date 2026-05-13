@@ -27,9 +27,11 @@ class ExploreController extends Controller
         if ($search = $request->get('q')) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhereHas('profile', fn($p) => $p
-                        ->where('bio', 'like', "%{$search}%")
-                        ->orWhere('city', 'like', "%{$search}%")
+                    ->orWhereHas(
+                        'profile',
+                        fn($p) => $p
+                            ->where('bio', 'like', "%{$search}%")
+                            ->orWhere('city', 'like', "%{$search}%")
                     );
             });
         }
@@ -62,21 +64,47 @@ class ExploreController extends Controller
                 $query->whereHas('interests', fn($q) => $q->whereIn('interests.id', $ids));
             }
         }
+        // 🔥 FILTRO: personas cercanas
+        if ($request->get('nearby')) {
+
+            if ($me->latitude && $me->longitude) {
+
+                $lat = $me->latitude;
+                $lng = $me->longitude;
+                $radius = 10; // km
+
+                $query->selectRaw("
+            users.*,
+            (6371 * acos(
+                cos(radians(?))
+                * cos(radians(latitude))
+                * cos(radians(longitude) - radians(?))
+                + sin(radians(?))
+                * sin(radians(latitude))
+            )) AS distance
+        ", [$lat, $lng, $lat])
+                    ->whereNotNull('latitude')
+                    ->whereNotNull('longitude')
+                    ->having('distance', '<=', $radius)
+                    ->orderBy('distance');
+            }
+        }
 
         // Filtro rápido: "tab"
         $tab = $request->get('tab', 'all');
         match ($tab) {
             // Usuarios que me dieron like (aparecen primero)
             'liked_me' => $query->whereHas('likesSent', fn($q) => $q->where('receiver_id', $me->id))
-                                 ->orderByDesc('id'),
+                ->orderByDesc('id'),
             // Ordenar por fecha de creación descendente
             'new'      => $query->orderByDesc('created_at'),
             // Mismos intereses → priorizar
-            'interests' => $query->withCount(['interests as shared_interests' => fn($q) =>
-                                    $q->whereIn('interests.id', $me->interests->pluck('id')->toArray())
-                                ])
-                                ->orderByDesc('shared_interests'),
-            default    => $query->inRandomOrder(),
+            'interests' => $query->withCount([
+                'interests as shared_interests' => fn($q) =>
+                $q->whereIn('interests.id', $me->interests->pluck('id')->toArray())
+            ])
+                ->orderByDesc('shared_interests'),
+            default => $request->get('nearby') ? $query : $query->inRandomOrder(),
         };
 
         $users = $query->paginate(12)->withQueryString();

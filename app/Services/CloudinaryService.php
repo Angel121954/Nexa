@@ -33,9 +33,14 @@ class CloudinaryService
         return $this->uploadUrl($url, 'nexa/avatares', "user_{$userId}");
     }
 
-    public function uploadGallery(UploadedFile $file, int $userId, int $index): array
+    public function uploadGallery(UploadedFile $file, int $userId, string $index): array
     {
-        return $this->upload($file, 'nexa/galeria', "user_{$userId}_{$index}");
+        return $this->upload($file, 'nexa/galeria', $index);
+    }
+
+    public function uploadGalleryFromUrl(string $url, int $userId, string $index): array
+    {
+        return $this->uploadUrl($url, 'nexa/galeria', $index);
     }
 
     public function delete(string $publicId): void

@@ -18,6 +18,7 @@
 
     @stack('styles')
     <link rel="stylesheet" href="{{ asset('css/toast.css') }}">
+    <script src="{{ asset('js/toast.js') }}"></script>
 </head>
 
 <body class="antialiased bg-gray-50 text-gray-900">
@@ -25,6 +26,7 @@
     @yield('content')
 
     <script src="{{ asset('js/main.js') }}"></script>
+    <script src="{{ asset('js/location.js') }}"></script>
 
     @stack('scripts')
 </body>
