@@ -6,6 +6,8 @@ use App\Models\User;
 use App\Models\UserPhoto;
 use App\Services\CloudinaryService;
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Events\UserBlocked;
+use App\Models\Block;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -35,6 +37,11 @@ class ProfileController extends Controller
     {
         if ($user->id === auth()->id()) {
             return redirect()->route('profile.index');
+        }
+
+        $me = auth()->user();
+        if ($me->hasBlocked($user->id) || $me->isBlockedBy($user->id)) {
+            return redirect()->route('explore.index')->with('error', 'Este usuario no está disponible.');
         }
 
         return view('profile.show', [
@@ -173,6 +180,38 @@ class ProfileController extends Controller
         $photo->delete();
 
         return back()->with('success', 'Foto eliminada correctamente');
+    }
+
+    public function block(Request $request, User $user): RedirectResponse|\Illuminate\Http\JsonResponse
+    {
+        if ($user->id === auth()->id()) {
+            return $request->expectsJson()
+                ? response()->json(['error' => 'No puedes bloquearte a ti mismo.'], 422)
+                : back()->with('error', 'No puedes bloquearte a ti mismo.');
+        }
+
+        $existing = Block::where('blocker_id', auth()->id())
+            ->where('blocked_id', $user->id)
+            ->first();
+
+        if ($existing) {
+            $existing->delete();
+            broadcast(new UserBlocked($user->id, false, auth()->id()));
+            return $request->expectsJson()
+                ? response()->json(['message' => 'Usuario desbloqueado.', 'blocked' => false])
+                : back()->with('success', 'Usuario desbloqueado.');
+        }
+
+        Block::create([
+            'blocker_id' => auth()->id(),
+            'blocked_id' => $user->id,
+        ]);
+
+        broadcast(new UserBlocked($user->id, true, auth()->id()));
+
+        return $request->expectsJson()
+            ? response()->json(['message' => 'Usuario bloqueado.', 'blocked' => true])
+            : back()->with('success', 'Usuario bloqueado.');
     }
 
     public function updateAvatar(Request $request)

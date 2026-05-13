@@ -21,7 +21,9 @@ class ExploreController extends Controller
 
         $query = User::with(['profile', 'interests', 'photos'])
             ->whereHas('profile', fn($q) => $q->where('profile_completed', true))
-            ->where('id', '!=', $me->id);
+            ->where('id', '!=', $me->id)
+            ->whereDoesntHave('blocksReceived', fn($q) => $q->where('blocker_id', $me->id))
+            ->whereDoesntHave('blocksSent', fn($q) => $q->where('blocked_id', $me->id));
 
         // Filtro: búsqueda por nombre, bio o ciudad
         if ($search = $request->get('q')) {
@@ -103,6 +105,10 @@ class ExploreController extends Controller
 
         if ($me->id === $userId) {
             return response()->json(['error' => 'No puedes darte like a ti mismo'], 422);
+        }
+
+        if ($me->hasBlocked($userId) || $me->isBlockedBy($userId)) {
+            return response()->json(['error' => 'No puedes interactuar con este usuario'], 422);
         }
 
         $target = User::findOrFail($userId);

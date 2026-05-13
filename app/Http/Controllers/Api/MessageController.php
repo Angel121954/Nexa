@@ -44,6 +44,16 @@ class MessageController extends Controller
             })
             ->firstOrFail();
 
+        $otherUserId = $match->user1_id == $userId ? $match->user2_id : $match->user1_id;
+
+        if (auth()->user()->hasBlocked($otherUserId)) {
+            return response()->json(['error' => 'Has bloqueado a este usuario.'], 403);
+        }
+
+        if (auth()->user()->isBlockedBy($otherUserId)) {
+            return response()->json(['error' => 'Este usuario te ha bloqueado.'], 403);
+        }
+
         $message = Message::create([
             'match_id'  => $matchId,
             'sender_id' => $userId,

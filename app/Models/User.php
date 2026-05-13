@@ -81,6 +81,31 @@ class User extends Authenticatable
             ->exists();
     }
 
+    //  BLOCKS
+    public function blocksSent(): HasMany
+    {
+        return $this->hasMany(Block::class, 'blocker_id');
+    }
+
+    public function blocksReceived(): HasMany
+    {
+        return $this->hasMany(Block::class, 'blocked_id');
+    }
+
+    public function hasBlocked(int $userId): bool
+    {
+        return $this->blocksSent()
+            ->where('blocked_id', $userId)
+            ->exists();
+    }
+
+    public function isBlockedBy(int $userId): bool
+    {
+        return $this->blocksReceived()
+            ->where('blocker_id', $userId)
+            ->exists();
+    }
+
     //  MATCHES
     public function matches()
     {

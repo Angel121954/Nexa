@@ -59,6 +59,9 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/profile/photo/{id}', [ProfileController::class, 'deletePhoto'])
         ->name('profile.photo.delete');
     Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
+
+    // Bloquear / desbloquear usuario
+    Route::post('/profile/{user}/block', [ProfileController::class, 'block'])->name('profile.block');
 });
 
 Route::middleware('auth')->prefix('api')->group(function () {  // ← con prefix
