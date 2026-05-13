@@ -15,7 +15,7 @@ use Illuminate\View\View;
 class ExploreController extends Controller
 {
     // ── Feed principal ─────────────────────────
-    public function index(Request $request): View
+    public function index(Request $request): View|JsonResponse
     {
         $me = auth()->user();
 
@@ -120,6 +120,20 @@ class ExploreController extends Controller
             ->toArray();
 
         $interests = Interest::orderBy('name')->get();
+
+        // Si es petición AJAX (live search), devolver solo el HTML del grid
+        if ($request->ajax()) {
+            $cardsHtml = view('explore._cards', compact('users', 'likedIds', 'matchIds'))->render();
+            $paginationHtml = $users->hasPages()
+                ? $users->onEachSide(1)->links('vendor.pagination.simple-nexa')->render()
+                : '';
+
+            return response()->json([
+                'cards'      => $cardsHtml,
+                'pagination' => $paginationHtml,
+                'total'      => $users->total(),
+            ]);
+        }
 
         return view('explore.index', compact('users', 'likedIds', 'matchIds', 'interests', 'tab'));
     }

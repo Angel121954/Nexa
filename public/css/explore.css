@@ -1169,3 +1169,32 @@ body {
         flex-direction: column;
     }
 }
+
+/* ═══════════════ LIVE SEARCH LOADING ═══════════════ */
+.search-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: .75rem 0;
+    gap: .5rem;
+}
+
+.search-loading-spinner {
+    width: 22px;
+    height: 22px;
+    border: 2.5px solid var(--border);
+    border-top-color: var(--pink);
+    border-radius: 50%;
+    animation: spin 600ms linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Atenuar el grid mientras carga */
+#cards-grid.is-loading {
+    opacity: .4;
+    pointer-events: none;
+    transition: opacity 150ms ease;
+}
