@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Events\MatchCreated;
+use App\Events\NotificationCreated;
 use App\Models\Interest;
 use App\Models\Like;
+use App\Models\Notification;
 use App\Models\User;
 use App\Models\UserMatch;
 use Illuminate\Http\JsonResponse;
@@ -153,19 +155,15 @@ class ExploreController extends Controller
         $existing = Like::where('sender_id', $me->id)->where('receiver_id', $userId)->first();
 
         if ($existing) {
-            // Deshacer like
             $existing->delete();
             return response()->json(['liked' => false, 'match' => false]);
         }
 
-        // Dar like
         Like::create(['sender_id' => $me->id, 'receiver_id' => $userId]);
 
-        // Verificar si hay match (el otro también me dio like)
         $isMatch = Like::where('sender_id', $userId)->where('receiver_id', $me->id)->exists();
 
         if ($isMatch) {
-            // Crear match si no existe
             $match = UserMatch::where(function ($q) use ($me, $userId) {
                 $q->where('user1_id', $me->id)->where('user2_id', $userId);
             })->orWhere(function ($q) use ($me, $userId) {
@@ -179,6 +177,34 @@ class ExploreController extends Controller
                 ]);
                 event(new MatchCreated($match));
             }
+
+            foreach ([$me->id, $userId] as $uid) {
+                $notif = Notification::create([
+                    'user_id' => $uid,
+                    'type'    => 'match',
+                    'data'    => [
+                        'actor_name'   => $uid === $me->id ? $target->name : $me->name,
+                        'actor_avatar' => $uid === $me->id ? $target->avatar : $me->avatar,
+                        'message'      => '¡Tienes un nuevo match!',
+                        'action_url'   => route('messages.index'),
+                    ],
+                ]);
+                $unread = Notification::where('user_id', $uid)->whereNull('read_at')->count();
+                broadcast(new NotificationCreated($notif, $unread))->toOthers();
+            }
+        } else {
+            $notif = Notification::create([
+                'user_id' => $userId,
+                'type'    => 'like',
+                'data'    => [
+                    'actor_name'   => $me->name,
+                    'actor_avatar' => $me->avatar,
+                    'message'      => 'te ha dado like.',
+                    'action_url'   => route('profile.show', $me->id),
+                ],
+            ]);
+            $unread = Notification::where('user_id', $userId)->whereNull('read_at')->count();
+            broadcast(new NotificationCreated($notif, $unread))->toOthers();
         }
 
         return response()->json([
