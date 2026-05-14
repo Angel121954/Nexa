@@ -106,5 +106,5 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('js/onboarding.js') }}"></script>
+<script src="{{ asset('js/onboarding/onboarding.js') }}"></script>
 @endpush

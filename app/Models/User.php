@@ -30,7 +30,7 @@ class User extends Authenticatable
         'profile_completed',
         'latitude',
         'longitude',
-        'last_activity_at', // 🔥 IMPORTANTE
+        'last_activity_at',
     ];
 
     protected $hidden = [
@@ -160,6 +160,17 @@ class User extends Authenticatable
     public function hasActiveStories(): bool
     {
         return $this->activeStories()->exists();
+    }
+
+    // 🔔 NOTIFICACIONES
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(Notification::class)->latest();
+    }
+
+    public function unreadNotifications(): HasMany
+    {
+        return $this->hasMany(Notification::class)->whereNull('read_at');
     }
 
     // 🖼️ AVATAR (SOLO CLOUDINARY)

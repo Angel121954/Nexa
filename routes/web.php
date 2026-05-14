@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LocationController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\StoryController;
 
 // Rutas de broadcasting (para autenticación de canales privados)
@@ -64,6 +65,14 @@ Route::middleware(['auth'])->group(function () {
     // Bloquear / desbloquear usuario
     Route::post('/profile/{user}/block', [ProfileController::class, 'block'])->name('profile.block');
     Route::post('/profile/{user}/report', [ProfileController::class, 'report'])->name('profile.report');
+
+    // Notifications
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount'])->name('notifications.unread');
+    Route::patch('/notifications/{notification}/read', [NotificationController::class, 'read'])->name('notifications.read');
+    Route::patch('/notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.read-all');
+    Route::patch('/notifications/preferences', [NotificationController::class, 'preferences'])->name('notifications.preferences');
+    Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
 });
 
 Route::middleware('auth')->prefix('api')->group(function () {  // ← con prefix

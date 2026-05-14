@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\NotificationCreated;
 use App\Http\Controllers\Controller;
 use App\Models\Message;
+use App\Models\Notification;
+use App\Models\User;
 use App\Models\UserMatch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -64,10 +67,24 @@ class MessageController extends Controller
 
         try {
             broadcast(new \App\Events\MessageSent($message))->toOthers();
-            \Log::info('Broadcasting MessageSent', ['match_id' => $matchId, 'message_id' => $message->id]);
         } catch (\Exception $e) {
             \Log::error('Broadcast error: ' . $e->getMessage());
         }
+
+        $sender = Auth::user();
+        $notif = Notification::create([
+            'user_id' => $otherUserId,
+            'type'    => 'message',
+            'data'    => [
+                'actor_name'   => $sender->name,
+                'actor_avatar' => $sender->avatar,
+                'message'      => 'te ha enviado un mensaje.',
+                'preview'      => $message->body,
+                'action_url'   => route('messages.index'),
+            ],
+        ]);
+        $unread = Notification::where('user_id', $otherUserId)->whereNull('read_at')->count();
+        broadcast(new NotificationCreated($notif, $unread))->toOthers();
 
         return response()->json($message, 201);
     }

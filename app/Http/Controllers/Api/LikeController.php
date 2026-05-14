@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\NotificationCreated;
 use App\Http\Controllers\Controller;
 use App\Models\Like;
+use App\Models\Notification;
 use App\Models\UserMatch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -46,6 +48,20 @@ class LikeController extends Controller
 
             return response()->json(['message' => 'Match created!', 'match' => $match], 201);
         }
+
+        $sender = Auth::user();
+        $notif = Notification::create([
+            'user_id' => $receiverId,
+            'type'    => 'like',
+            'data'    => [
+                'actor_name'   => $sender->name,
+                'actor_avatar' => $sender->avatar,
+                'message'      => 'te ha dado like.',
+                'action_url'   => route('profile.show', $senderId),
+            ],
+        ]);
+        $unread = Notification::where('user_id', $receiverId)->whereNull('read_at')->count();
+        broadcast(new NotificationCreated($notif, $unread))->toOthers();
 
         return response()->json(['message' => 'Like sent'], 201);
     }
