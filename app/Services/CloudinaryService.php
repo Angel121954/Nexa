@@ -43,6 +43,16 @@ class CloudinaryService
         return $this->uploadUrl($url, 'nexa/galeria', $index);
     }
 
+    public function uploadStory(UploadedFile $file, int $userId): array
+    {
+        return $this->upload($file, 'nexa/stories', "story_{$userId}_" . time());
+    }
+
+    public function uploadStoryFromUrl(string $url, int $userId): array
+    {
+        return $this->uploadUrl($url, 'nexa/stories', "story_{$userId}_" . time());
+    }
+
     public function delete(string $publicId): void
     {
         $timestamp = time();

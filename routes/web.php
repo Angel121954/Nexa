@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LocationController;
+use App\Http\Controllers\StoryController;
 
 // Rutas de broadcasting (para autenticación de canales privados)
 Broadcast::routes(['middleware' => ['web']]);
@@ -86,6 +87,13 @@ Route::middleware('auth')->prefix('api')->group(function () {  // ← con prefix
 
     // Ubicación del usuario
     Route::post('/update-location', [LocationController::class, 'update']);
+
+    // Stories
+    Route::get('/stories', [StoryController::class, 'index']);
+    Route::get('/stories/user/{userId}', [StoryController::class, 'userStories']);
+    Route::post('/stories', [StoryController::class, 'store']);
+    Route::delete('/stories/{story}', [StoryController::class, 'destroy']);
+    Route::post('/stories/{story}/seen', [StoryController::class, 'markSeen']);
 });
 
 // Página legal (términos y privacidad)

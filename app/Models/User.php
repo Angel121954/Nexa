@@ -146,6 +146,22 @@ class User extends Authenticatable
         })->exists();
     }
 
+    // 📝 STORIES
+    public function stories(): HasMany
+    {
+        return $this->hasMany(Story::class);
+    }
+
+    public function activeStories(): HasMany
+    {
+        return $this->hasMany(Story::class)->active();
+    }
+
+    public function hasActiveStories(): bool
+    {
+        return $this->activeStories()->exists();
+    }
+
     // 🖼️ AVATAR (SOLO CLOUDINARY)
     public function getAvatarUrlAttribute()
     {

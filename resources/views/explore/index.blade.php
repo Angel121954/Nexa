@@ -14,6 +14,27 @@
 {{-- ═══ PAGE ═══ --}}
 <div class="explore-page">
 
+    {{-- Stories bar --}}
+    <div class="stories-bar" id="stories-bar">
+        <div class="stories-scroll" id="stories-scroll">
+            <div class="story-avatar story-create" id="story-create-btn" title="Agregar historia">
+                <div class="story-avatar-ring add">
+                    <div class="story-add-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <line x1="12" y1="5" x2="12" y2="19" stroke-linecap="round"/>
+                            <line x1="5" y1="12" x2="19" y2="12" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                </div>
+                <span class="story-name">Tu historia</span>
+            </div>
+            {{-- JS carga el resto aquí --}}
+        </div>
+    </div>
+
+    {{-- Upload story input (oculto) --}}
+    <input type="file" id="story-upload-input" accept="image/*" style="display:none;">
+
     {{-- Hero --}}
     <div class="explore-hero">
         <h1>Descubre <span>personas increíbles</span></h1>
@@ -398,8 +419,41 @@
     </div>
 </div>
 
+{{-- ═══ STORY VIEWER ═══ --}}
+<div class="story-viewer" id="story-viewer" style="display:none;">
+    <div class="story-viewer-backdrop" id="story-viewer-backdrop"></div>
+    <div class="story-viewer-content">
+        <div class="story-viewer-header">
+            <div class="story-viewer-user">
+                <img src="" alt="" id="story-viewer-avatar" class="story-viewer-avatar">
+                <span id="story-viewer-name"></span>
+            </div>
+            <button class="story-viewer-close" id="story-viewer-close" aria-label="Cerrar">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18" stroke-linecap="round"/>
+                    <line x1="6" y1="6" x2="18" y2="18" stroke-linecap="round"/>
+                </svg>
+            </button>
+        </div>
+        <div class="story-viewer-progress" id="story-viewer-progress"></div>
+        <div class="story-viewer-body" id="story-viewer-body">
+            <img src="" alt="Story" id="story-viewer-media" class="story-viewer-media">
+            <div class="story-viewer-tap-left" id="story-tap-left"></div>
+            <div class="story-viewer-tap-right" id="story-tap-right"></div>
+        </div>
+        <div class="story-viewer-footer">
+            <div class="story-viewer-views" id="story-viewer-views"></div>
+        </div>
+    </div>
+</div>
+
 @endsection
+
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/stories.css') }}">
+@endpush
 
 @push('scripts')
 <script src="{{ asset('js/explore/app.js') }}" type="module"></script>
+<script src="{{ asset('js/stories.js') }}" defer></script>
 @endpush
