@@ -114,4 +114,39 @@
             }
         });
     }
+
+    const readAllForm = ns.$('.notif-readall-form');
+    if (readAllForm) {
+        readAllForm.addEventListener('submit', async e => {
+            e.preventDefault();
+
+            try {
+                const res = await fetch(readAllForm.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': ns.csrf(),
+                        'X-HTTP-Method-Override': 'PATCH',
+                        'Accept': 'application/json',
+                    },
+                });
+
+                if (!res.ok) throw new Error('Server error');
+
+                ns.$$('.notif-item.unread').forEach(item => {
+                    item.classList.remove('unread');
+                    item.querySelector('.notif-mark-btn')?.remove();
+                });
+
+                ns.$('.notif-count-badge')?.remove();
+                ns.$('.tab-count-pink')?.remove();
+                ns.$('.notif-readall-form')?.remove();
+
+                if (window.updateNotifBadge) window.updateNotifBadge(0);
+
+            } catch (err) {
+                console.error('[Nexa] mark-all-read failed', err);
+                readAllForm.submit();
+            }
+        });
+    }
 })(window.NexaNotif);
