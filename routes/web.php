@@ -83,6 +83,9 @@ Route::middleware('auth')->prefix('api')->group(function () {  // ← con prefix
 
     // Estado de usuarios online (fallback con last_activity_at)
     Route::get('/users/online-status', [\App\Http\Controllers\Api\UserController::class, 'onlineStatus']);
+
+    // Ubicación del usuario
+    Route::post('/update-location', [LocationController::class, 'update']);
 });
 
 // Página legal (términos y privacidad)
