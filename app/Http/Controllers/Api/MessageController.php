@@ -71,21 +71,38 @@ class MessageController extends Controller
             \Log::error('Broadcast error: ' . $e->getMessage());
         }
 
-        $sender = Auth::user();
-        $notif = Notification::create([
-            'user_id' => $otherUserId,
-            'type'    => 'message',
-            'data'    => [
-                'actor_name'   => $sender->name,
-                'actor_avatar' => $sender->avatar,
-                'message'      => 'te ha enviado un mensaje.',
-                'preview'      => $message->body,
-                'action_url'   => route('messages.index'),
-            ],
-        ]);
-        $unread = Notification::where('user_id', $otherUserId)->whereNull('read_at')->count();
-        $total = Notification::where('user_id', $otherUserId)->count();
-        broadcast(new NotificationCreated($notif, $unread, $total))->toOthers();
+        $recipientInChat = false;
+        try {
+            $pusher = new \Pusher\Pusher(
+                config('broadcasting.connections.reverb.key'),
+                config('broadcasting.connections.reverb.secret'),
+                config('broadcasting.connections.reverb.app_id'),
+                config('broadcasting.connections.reverb.options')
+            );
+            $channelInfo = $pusher->getUsersInPresenceChannel('presence-match.' . $matchId);
+            $recipientInChat = collect($channelInfo['users'] ?? [])
+                ->contains(fn($u) => (string) $u['id'] === (string) $otherUserId);
+        } catch (\Exception $e) {
+            \Log::warning('[Nexa] Error al consultar presence channel: ' . $e->getMessage());
+        }
+
+        if (!$recipientInChat) {
+            $sender = Auth::user();
+            $notif = Notification::create([
+                'user_id' => $otherUserId,
+                'type'    => 'message',
+                'data'    => [
+                    'actor_name'   => $sender->name,
+                    'actor_avatar' => $sender->avatar,
+                    'message'      => 'te ha enviado un mensaje.',
+                    'preview'      => $message->body,
+                    'action_url'   => route('messages.index'),
+                ],
+            ]);
+            $unread = Notification::where('user_id', $otherUserId)->whereNull('read_at')->count();
+            $total = Notification::where('user_id', $otherUserId)->count();
+            broadcast(new NotificationCreated($notif, $unread, $total))->toOthers();
+        }
 
         return response()->json($message, 201);
     }
