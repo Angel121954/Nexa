@@ -91,8 +91,12 @@
                     item.style.borderLeft = '';
                 }
 
-                // Update unread count in header badge
                 updateBadgeCount(-1);
+                if (window.updateNotifBadge) {
+                    const currentBadge = $('.notif-count-badge');
+                    const next = currentBadge ? parseInt(currentBadge.textContent, 10) || 0 : 0;
+                    window.updateNotifBadge(next);
+                }
 
             } catch (err) {
                 console.error('[Nexa] mark-as-read failed', err);
@@ -126,11 +130,9 @@
                     item.querySelector('.notif-mark-btn')?.remove();
                 });
 
-                // Hide the button
                 readAllForm.closest('.notif-header-actions')
                     ?.querySelector('.btn-readall')?.remove();
 
-                // Clear badge
                 const badge = $('.notif-count-badge');
                 if (badge) badge.remove();
 
@@ -139,6 +141,8 @@
                     tabBadge.classList.remove('tab-count-pink');
                     tabBadge.textContent = '0';
                 }
+
+                if (window.updateNotifBadge) window.updateNotifBadge(0);
 
             } catch (err) {
                 console.error('[Nexa] mark-all-read failed', err);
@@ -311,6 +315,7 @@
                 }
 
                 updateBadgeCount(1);
+                if (window.updateNotifBadge) window.updateNotifBadge(e.unread_count);
             });
     }
 
