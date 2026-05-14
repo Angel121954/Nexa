@@ -31,7 +31,7 @@ class ProfileController extends Controller
         ]);
     }
 
-    public function show(User $user): View
+    public function show(User $user): View|RedirectResponse
     {
         if ($user->id === auth()->id()) {
             return redirect()->route('profile.index');

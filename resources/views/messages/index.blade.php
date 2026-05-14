@@ -130,15 +130,14 @@
                             <path d="M19 12H5M12 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
                     </button>
-
-                    <div class="msg-chat-user-avatar">
+                    <a href="#" class="msg-chat-user-avatar" id="chat-header-avatar-link">
                         <img id="chat-header-avatar" src="" alt="">
                         <span class="msg-status-dot" id="chat-header-dot" style="display:none;"></span>
-                    </div>
+                    </a>
 
                     <div class="msg-chat-user-info">
                         <div class="msg-chat-user-name">
-                            <span id="chat-header-name"></span>
+                            <a href="#" id="chat-header-name-link"><span id="chat-header-name"></span></a>
                             <span class="msg-online-badge" id="chat-header-badge" style="display:none;"></span>
                         </div>
                         <div class="msg-chat-user-status" id="chat-header-status"></div>

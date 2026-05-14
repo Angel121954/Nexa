@@ -77,7 +77,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const activeItem = document.querySelector('.msg-conv-item.active');
             if (activeItem && state.get('chatHeaderName')) {
-                state.get('chatHeaderName').dataset.userId = activeItem.dataset.userId;
+                const userId = activeItem.dataset.userId;
+                state.get('chatHeaderName').dataset.userId = userId;
+                const profileUrl = `/profile/${userId}`;
+                const avatarLink = document.getElementById('chat-header-avatar-link');
+                const nameLink = document.getElementById('chat-header-name-link');
+                if (avatarLink) avatarLink.href = profileUrl;
+                if (nameLink) nameLink.href = profileUrl;
             }
         },
 
