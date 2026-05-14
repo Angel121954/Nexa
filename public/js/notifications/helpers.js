@@ -109,7 +109,8 @@ window.NexaNotif = window.NexaNotif || {};
         const now = Math.floor(Date.now() / 1000);
         const diff = now - ts;
 
-        if (diff < 60) return 'ahora mismo';
+        if (diff < 5) return 'ahora mismo';
+        if (diff < 60) return 'hace ' + diff + ' segundos';
         if (diff < 3600) {
             const m = Math.floor(diff / 60);
             return 'hace ' + m + (m === 1 ? ' minuto' : ' minutos');
@@ -134,5 +135,5 @@ window.NexaNotif = window.NexaNotif || {};
     };
 
     ns.updateTimes();
-    setInterval(ns.updateTimes, 30000);
+    setInterval(ns.updateTimes, 1000);
 })(window.NexaNotif);

@@ -56,7 +56,20 @@
                 newItem.hidden = !visible;
             }
 
-            ns.updateBadgeCount(1);
             if (window.updateNotifBadge) window.updateNotifBadge(e.unread_count);
+            const pageBadge = ns.$('.notif-count-badge');
+            if (pageBadge) {
+                pageBadge.textContent = e.unread_count;
+            } else if (e.unread_count > 0) {
+                const headerLeft = ns.$('.notif-header-left');
+                if (headerLeft) {
+                    const span = document.createElement('span');
+                    span.className = 'notif-count-badge';
+                    span.textContent = e.unread_count;
+                    headerLeft.appendChild(span);
+                }
+            }
+            const pinkTab = ns.$('.tab-count-pink');
+            if (pinkTab) pinkTab.textContent = e.unread_count;
         });
 })(window.NexaNotif);
