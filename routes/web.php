@@ -62,6 +62,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Bloquear / desbloquear usuario
     Route::post('/profile/{user}/block', [ProfileController::class, 'block'])->name('profile.block');
+    Route::post('/profile/{user}/report', [ProfileController::class, 'report'])->name('profile.report');
 });
 
 Route::middleware('auth')->prefix('api')->group(function () {  // ← con prefix

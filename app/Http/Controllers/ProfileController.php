@@ -8,6 +8,7 @@ use App\Services\CloudinaryService;
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Events\UserBlocked;
 use App\Models\Block;
+use App\Models\Report;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -264,5 +265,30 @@ class ProfileController extends Controller
         return $request->expectsJson()
             ? response()->json(['message' => 'Usuario bloqueado.', 'blocked' => true])
             : back()->with('success', 'Usuario bloqueado.');
+    }
+
+    public function report(Request $request, User $user): RedirectResponse|\Illuminate\Http\JsonResponse
+    {
+        if ($user->id === auth()->id()) {
+            return $request->expectsJson()
+                ? response()->json(['error' => 'No puedes reportarte a ti mismo.'], 422)
+                : back()->with('error', 'No puedes reportarte a ti mismo.');
+        }
+
+        $validated = $request->validate([
+            'reason'      => 'required|string|max:255',
+            'description' => 'nullable|string|max:1000',
+        ]);
+
+        Report::create([
+            'reporter_id' => auth()->id(),
+            'reported_id' => $user->id,
+            'reason'      => $validated['reason'],
+            'description' => $validated['description'] ?? null,
+        ]);
+
+        return $request->expectsJson()
+            ? response()->json(['message' => 'Reporte enviado.'])
+            : back()->with('success', 'Reporte enviado.');
     }
 }

@@ -642,6 +642,93 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // ═══ REPORT USER ═══
+    const ReportUI = {
+        modal: document.getElementById('report-modal'),
+        form: document.getElementById('report-form'),
+        reportBtn: document.getElementById('msg-report-btn'),
+        closeBtn: document.getElementById('report-modal-close'),
+        cancelBtn: document.getElementById('report-cancel-btn'),
+        userIdInput: document.getElementById('report-user-id'),
+        reasonSelect: document.getElementById('report-reason'),
+
+        init() {
+            this.reportBtn?.addEventListener('click', () => this.open());
+            this.closeBtn?.addEventListener('click', () => this.close());
+            this.cancelBtn?.addEventListener('click', () => this.close());
+            this.modal?.addEventListener('click', (e) => {
+                if (e.target === this.modal || e.target.classList.contains('modal-backdrop')) {
+                    this.close();
+                }
+            });
+            this.form?.addEventListener('submit', (e) => this.submit(e));
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && this.modal?.style.display !== 'none') this.close();
+            });
+        },
+
+        open() {
+            BlockUI.closeDropdown();
+            const activeItem = document.querySelector('.msg-conv-item.active');
+            if (!activeItem) return;
+            const userId = activeItem.dataset.userId;
+            if (!userId) return;
+            this.userIdInput.value = userId;
+            this.reasonSelect.value = '';
+            document.getElementById('report-description').value = '';
+            if (this.modal) this.modal.style.display = 'flex';
+        },
+
+        close() {
+            if (this.modal) this.modal.style.display = 'none';
+        },
+
+        async submit(e) {
+            e.preventDefault();
+            const userId = this.userIdInput.value;
+            const reason = this.reasonSelect.value;
+            const description = document.getElementById('report-description').value;
+
+            if (!reason) {
+                this.reasonSelect.style.borderColor = '#ef4444';
+                return;
+            }
+            this.reasonSelect.style.borderColor = '';
+
+            const submitBtn = this.form.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Enviando...';
+
+            try {
+                const res = await fetch(`/profile/${userId}/report`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content,
+                    },
+                    body: JSON.stringify({ reason, description }),
+                    credentials: 'same-origin',
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    this.close();
+                    showToast('Reporte enviado. Gracias por ayudarnos a mantener la comunidad segura.', 'success');
+                } else {
+                    showToast(data.error || 'Error al enviar el reporte.', 'error');
+                }
+            } catch (e) {
+                console.error('Error al reportar:', e);
+                showToast('Error de conexión. Intenta de nuevo.', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Enviar reporte';
+            }
+        }
+    };
+
     // ═══ INIT ═══
     state.init();
     Events.bindConversationItems();
@@ -650,6 +737,7 @@ document.addEventListener('DOMContentLoaded', () => {
     Events.setupBackButton();
     Events.setupMessageInput();
     BlockUI.init();
+    ReportUI.init();
     WS.subscribeToUserChannel();
 
     setInterval(updateAllConversationTimes, 1000);

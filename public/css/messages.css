@@ -900,3 +900,158 @@
     border-radius: 12px;
     border: 1px solid var(--border);
 }
+
+/* ── Divider del dropdown ── */
+.msg-dropdown-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 0.25rem 0.5rem;
+}
+
+/* ════════════════════════════════════════
+   REPORT MODAL — overlay
+════════════════════════════════════════ */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 0;
+}
+
+.modal-content {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    background: var(--white);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.modal-header h2 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.125rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.modal-close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: background var(--transition), color var(--transition);
+}
+
+.modal-close-btn:hover {
+    background: var(--bg);
+    color: var(--text-primary);
+}
+
+.modal-close-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-body label {
+    display: block;
+    font-size: .875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: .5rem;
+}
+
+.modal-body select,
+.modal-body textarea {
+    width: 100%;
+    padding: .625rem .75rem;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: .875rem;
+    font-family: 'Inter', sans-serif;
+    color: var(--text-primary);
+    background: var(--white);
+    transition: border-color var(--transition), box-shadow var(--transition);
+    box-sizing: border-box;
+}
+
+.modal-body select:focus,
+.modal-body textarea:focus {
+    outline: none;
+    border-color: var(--pink);
+    box-shadow: 0 0 0 3px rgba(232, 55, 90, .08);
+}
+
+.modal-actions {
+    display: flex;
+    gap: .75rem;
+    justify-content: flex-end;
+}
+
+.modal-actions .btn-secondary {
+    padding: .5rem 1.25rem;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    background: transparent;
+    font-size: .875rem;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--text-primary);
+    transition: background var(--transition), border-color var(--transition);
+}
+
+.modal-actions .btn-secondary:hover {
+    background: var(--bg);
+    border-color: var(--text-muted);
+}
+
+.modal-actions .btn-danger {
+    padding: .5rem 1.25rem;
+    border: none;
+    border-radius: 10px;
+    background: #ef4444;
+    color: #fff;
+    font-size: .875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background var(--transition), opacity var(--transition);
+}
+
+.modal-actions .btn-danger:hover {
+    background: #dc2626;
+}
+
+.modal-actions .btn-danger:disabled {
+    opacity: 0.5;
+    cursor: default;
+}

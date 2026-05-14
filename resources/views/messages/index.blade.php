@@ -161,6 +161,14 @@
                                 </svg>
                                 <span id="msg-block-btn-text">Bloquear usuario</span>
                             </button>
+                            <div class="msg-dropdown-divider"></div>
+                            <button type="button" class="msg-dropdown-item" id="msg-report-btn">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <line x1="4" y1="22" x2="4" y2="15"/>
+                                </svg>
+                                Reportar usuario
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -201,6 +209,58 @@
         </div>
     </section>
 
+</div>
+
+{{-- ═══ REPORT MODAL ═══ --}}
+<div class="modal-overlay" id="report-modal" style="display:none;">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content" style="max-width: 420px;">
+        <div class="modal-header">
+            <h2>Reportar usuario</h2>
+            <button type="button" class="modal-close-btn" id="report-modal-close">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </button>
+        </div>
+        <form id="report-form" class="modal-body" style="padding: 1.5rem;">
+            @csrf
+            <input type="hidden" id="report-user-id" name="user_id" value="">
+
+            <label style="display:block;font-size:.875rem;font-weight:600;color:var(--text-primary);margin-bottom:.5rem;">
+                Motivo del reporte
+            </label>
+            <select name="reason" id="report-reason" required
+                style="width:100%;padding:.625rem .75rem;border:1.5px solid var(--border);border-radius:10px;font-size:.875rem;background:var(--white);margin-bottom:1rem;">
+                <option value="">Selecciona un motivo...</option>
+                <option value="spam">Spam o contenido publicitario</option>
+                <option value="harassment">Acoso o bullying</option>
+                <option value="fake">Perfil falso</option>
+                <option value="inappropriate">Contenido inapropiado</option>
+                <option value="underage">Menor de edad</option>
+                <option value="offensive">Lenguaje ofensivo</option>
+                <option value="other">Otro</option>
+            </select>
+
+            <label style="display:block;font-size:.875rem;font-weight:600;color:var(--text-primary);margin-bottom:.5rem;">
+                Descripción <span style="font-weight:400;color:var(--text-muted);">(opcional)</span>
+            </label>
+            <textarea name="description" id="report-description" rows="3" maxlength="1000"
+                style="width:100%;padding:.625rem .75rem;border:1.5px solid var(--border);border-radius:10px;font-size:.875rem;resize:vertical;margin-bottom:1.5rem;"
+                placeholder="Cuéntanos más detalles..."></textarea>
+
+            <div class="modal-actions" style="display:flex;gap:.75rem;justify-content:flex-end;">
+                <button type="button" id="report-cancel-btn"
+                    style="padding:.5rem 1.25rem;border:1.5px solid var(--border);border-radius:10px;background:transparent;font-size:.875rem;cursor:pointer;">
+                    Cancelar
+                </button>
+                <button type="submit"
+                    style="padding:.5rem 1.25rem;border:none;border-radius:10px;background:#ef4444;color:#fff;font-size:.875rem;font-weight:600;cursor:pointer;">
+                    Enviar reporte
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 
 @endsection
