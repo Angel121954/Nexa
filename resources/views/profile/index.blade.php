@@ -232,5 +232,6 @@
 <script src="{{ asset('js/profile/bioCounter.js') }}"></script>
 <script src="{{ asset('js/profile/successMessage.js') }}"></script>
 <script src="{{ asset('js/profile/index.js') }}"></script>
+<script src="{{ asset('js/profile/gallery-modal.js') }}"></script>
 
 @endsection
