@@ -290,5 +290,4 @@
 <script src="{{ asset('js/notifications/read.js') }}" defer></script>
 <script src="{{ asset('js/notifications/settings.js') }}" defer></script>
 <script src="{{ asset('js/notifications/realtime.js') }}" defer></script>
-<script src="{{ asset('js/notifications/timer.js') }}" defer></script>
 @endpush

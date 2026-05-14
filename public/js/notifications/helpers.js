@@ -132,4 +132,7 @@ window.NexaNotif = window.NexaNotif || {};
             if (ts) el.textContent = ns.timeAgo(ts);
         });
     };
+
+    ns.updateTimes();
+    setInterval(ns.updateTimes, 30000);
 })(window.NexaNotif);
