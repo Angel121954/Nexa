@@ -369,5 +369,5 @@
 
 @push('scripts')
 <script src="{{ asset('js/explore/app.js') }}" type="module"></script>
-<script src="{{ asset('js/stories.js') }}" defer></script>
+<script src="{{ asset('js/stories/stories.js') }}" defer></script>
 @endpush

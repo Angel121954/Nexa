@@ -133,7 +133,7 @@
 </div>
 
 @push('scripts')
-<script src="{{ asset('js/togglePassword.js') }}"></script>
+<script src="{{ asset('js/auth/togglePassword.js') }}"></script>
 @endpush
 
 @endsection

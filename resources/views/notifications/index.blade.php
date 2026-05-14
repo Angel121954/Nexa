@@ -294,7 +294,7 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('js/notifications.js') }}" defer></script>
+<script src="{{ asset('js/notifications/init.js') }}" defer></script>
 <script src="{{ asset('js/notifications/helpers.js') }}" defer></script>
 <script src="{{ asset('js/notifications/filters.js') }}" defer></script>
 <script src="{{ asset('js/notifications/read.js') }}" defer></script>

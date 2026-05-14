@@ -18,7 +18,7 @@
 
     @stack('styles')
     <link rel="stylesheet" href="{{ asset('css/toast.css') }}">
-    <script src="{{ asset('js/toast.js') }}"></script>
+    <script src="{{ asset('js/components/toast.js') }}"></script>
 </head>
 
 <body class="antialiased bg-gray-50 text-gray-900">

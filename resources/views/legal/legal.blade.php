@@ -645,5 +645,5 @@
 </div>{{-- /legal-page --}}
 
 @push('scripts')
-<script src="{{ asset('js/legal.js') }}"></script>
+<script src="{{ asset('js/legal/legal.js') }}"></script>
 @endpush

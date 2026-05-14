@@ -132,5 +132,5 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('js/auth.js') }}"></script>
+<script src="{{ asset('js/auth/auth.js') }}"></script>
 @endpush
