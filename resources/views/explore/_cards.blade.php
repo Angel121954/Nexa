@@ -18,9 +18,7 @@
             <div class="card-photo">
                 <img src="{{ $photo }}" alt="{{ $person->name }}" loading="lazy">
 
-                @if($person->id % 3 === 0)
                 <span class="card-online" title="En línea"></span>
-                @endif
             </div>
 
             <div class="card-body">
