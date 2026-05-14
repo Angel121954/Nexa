@@ -101,6 +101,12 @@
                     window.updateNotifBadge(json.unread_count);
                 }
 
+                if (json.unread_count === 0) {
+                    ns.$('.notif-count-badge')?.remove();
+                    ns.$('.tab-count-pink')?.remove();
+                    ns.$('.notif-readall-form')?.remove();
+                }
+
             } catch (err) {
                 btn.innerHTML = originalHtml;
                 btn.disabled = false;
