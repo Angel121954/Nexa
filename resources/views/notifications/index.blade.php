@@ -142,7 +142,7 @@
                 @if(!empty($data['preview']))
                 <p class="notif-preview">"{{ Str::limit($data['preview'], 80) }}"</p>
                 @endif
-                <span class="notif-time">{{ $notification->created_at->diffForHumans() }}</span>
+                <span class="notif-time" data-timestamp="{{ $notification->created_at->timestamp }}">{{ $notification->created_at->diffForHumans() }}</span>
             </div>
 
             {{-- Actions --}}
@@ -290,4 +290,5 @@
 <script src="{{ asset('js/notifications/read.js') }}" defer></script>
 <script src="{{ asset('js/notifications/settings.js') }}" defer></script>
 <script src="{{ asset('js/notifications/realtime.js') }}" defer></script>
+<script src="{{ asset('js/notifications/timer.js') }}" defer></script>
 @endpush

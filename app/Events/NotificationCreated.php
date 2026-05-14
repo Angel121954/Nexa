@@ -42,7 +42,7 @@ class NotificationCreated implements ShouldBroadcastNow
             'id'           => $this->notification->id,
             'type'         => $this->notification->type,
             'data'         => $data,
-            'created_at'   => $this->notification->created_at->diffForHumans(),
+            'timestamp'    => $this->notification->created_at->timestamp,
             'unread_count' => $this->unreadCount,
         ];
     }

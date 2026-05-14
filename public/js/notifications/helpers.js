@@ -53,6 +53,7 @@ window.NexaNotif = window.NexaNotif || {};
         const preview = data.preview ? '<p class="notif-preview">"' + ns.escapeHtml(String(data.preview).substring(0, 80)) + '"</p>' : '';
         const actionUrl = data.action_url || '';
         const actionLabel = ns.getActionLabel(n.type);
+        const ts = n.timestamp || Math.floor(Date.now() / 1000);
 
         return '<div class="notif-item unread" data-id="' + n.id + '" data-type="' + n.type + '" data-filter="' + n.type + '">'
             + '<div class="notif-avatar-wrap">'
@@ -62,7 +63,7 @@ window.NexaNotif = window.NexaNotif || {};
             + '<div class="notif-content">'
             + '<p class="notif-text"><span class="notif-actor">' + ns.escapeHtml(data.actor_name || 'Alguien') + '</span> ' + ns.escapeHtml(data.message || '') + '</p>'
             + preview
-            + '<span class="notif-time">' + n.created_at + '</span>'
+            + '<span class="notif-time" data-timestamp="' + ts + '">' + ns.timeAgo(ts) + '</span>'
             + '</div>'
             + '<div class="notif-actions">'
             + '<form method="POST" action="' + ns.getReadUrl(n.id) + '" class="notif-mark-form">'
@@ -102,5 +103,33 @@ window.NexaNotif = window.NexaNotif || {};
 
         const anyVisible = items.some(i => !i.hidden);
         if (emptyState) emptyState.hidden = anyVisible;
+    };
+
+    ns.timeAgo = function (ts) {
+        const now = Math.floor(Date.now() / 1000);
+        const diff = now - ts;
+
+        if (diff < 60) return 'ahora mismo';
+        if (diff < 3600) {
+            const m = Math.floor(diff / 60);
+            return 'hace ' + m + (m === 1 ? ' minuto' : ' minutos');
+        }
+        if (diff < 86400) {
+            const h = Math.floor(diff / 3600);
+            return 'hace ' + h + (h === 1 ? ' hora' : ' horas');
+        }
+        if (diff < 604800) {
+            const d = Math.floor(diff / 86400);
+            return 'hace ' + d + (d === 1 ? ' día' : ' días');
+        }
+        const date = new Date(ts * 1000);
+        return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+    };
+
+    ns.updateTimes = function () {
+        document.querySelectorAll('.notif-time[data-timestamp]').forEach(el => {
+            const ts = parseInt(el.dataset.timestamp, 10);
+            if (ts) el.textContent = ns.timeAgo(ts);
+        });
     };
 })(window.NexaNotif);
