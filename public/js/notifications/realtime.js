@@ -116,5 +116,34 @@
                     unreadTab.appendChild(span);
                 }
             }
+
+            const activeTab = ns.$('.notif-tab.active');
+            if (activeTab) {
+                const filter = activeTab.dataset.filter;
+                let activeBadge = activeTab.querySelector('.tab-count');
+                if (filter === 'all') {
+                    const totalTab = ns.$('.notif-tab[data-filter="all"] .tab-count');
+                    if (totalTab) {
+                        totalTab.textContent = e.total_count;
+                    } else if (e.total_count > 0) {
+                        const span = document.createElement('span');
+                        span.className = 'tab-count';
+                        span.textContent = e.total_count;
+                        activeTab.appendChild(span);
+                    }
+                } else if (e.unread_count > 0) {
+                    if (activeBadge) {
+                        activeBadge.textContent = e.unread_count;
+                    } else {
+                        const span = document.createElement('span');
+                        span.className = filter === 'unread' ? 'tab-count tab-count-pink' : 'tab-count';
+                        span.textContent = e.unread_count;
+                        activeTab.appendChild(span);
+                    }
+                }
+                if (e.unread_count === 0) {
+                    if (activeBadge) activeBadge.remove();
+                }
+            }
         });
 })(window.NexaNotif);

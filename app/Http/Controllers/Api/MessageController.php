@@ -84,7 +84,8 @@ class MessageController extends Controller
             ],
         ]);
         $unread = Notification::where('user_id', $otherUserId)->whereNull('read_at')->count();
-        broadcast(new NotificationCreated($notif, $unread))->toOthers();
+        $total = Notification::where('user_id', $otherUserId)->count();
+        broadcast(new NotificationCreated($notif, $unread, $total))->toOthers();
 
         return response()->json($message, 201);
     }

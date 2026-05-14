@@ -15,11 +15,13 @@ class NotificationCreated implements ShouldBroadcastNow
 
     public Notification $notification;
     public int $unreadCount;
+    public int $totalCount;
 
-    public function __construct(Notification $notification, int $unreadCount)
+    public function __construct(Notification $notification, int $unreadCount, int $totalCount)
     {
         $this->notification = $notification;
         $this->unreadCount = $unreadCount;
+        $this->totalCount = $totalCount;
     }
 
     public function broadcastAs(): string
@@ -44,6 +46,7 @@ class NotificationCreated implements ShouldBroadcastNow
             'data'         => $data,
             'timestamp'    => $this->notification->created_at->timestamp,
             'unread_count' => $this->unreadCount,
+            'total_count'  => $this->totalCount,
         ];
     }
 }
