@@ -18,7 +18,7 @@
             <div class="card-photo">
                 <img src="{{ $photo }}" alt="{{ $person->name }}" loading="lazy">
 
-                <span class="card-online" title="En línea"></span>
+
             </div>
 
             <div class="card-body">
