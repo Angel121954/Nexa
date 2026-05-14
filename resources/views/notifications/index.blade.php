@@ -285,4 +285,9 @@
 
 @push('scripts')
 <script src="{{ asset('js/notifications.js') }}" defer></script>
+<script src="{{ asset('js/notifications/helpers.js') }}" defer></script>
+<script src="{{ asset('js/notifications/filters.js') }}" defer></script>
+<script src="{{ asset('js/notifications/read.js') }}" defer></script>
+<script src="{{ asset('js/notifications/settings.js') }}" defer></script>
+<script src="{{ asset('js/notifications/realtime.js') }}" defer></script>
 @endpush
