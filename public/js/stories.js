@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+    const currentUserId = document.querySelector('meta[name="user-id"]')?.content;
 
     // ═══ HELPERS ═══
     function escapeHtml(text) {
@@ -142,8 +143,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Start progress
         startProgress();
 
-        // Mark as seen
-        markSeen(story.id);
+        // Mark as seen (skip for own stories)
+        if (String(group.user.id) !== String(currentUserId)) {
+            markSeen(story.id);
+        }
     }
 
     function renderProgress(total, activeIndex) {
