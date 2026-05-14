@@ -47,6 +47,10 @@ window.NexaNotif = window.NexaNotif || {};
         return '/notifications/' + id + '/read';
     };
 
+    ns.getDeleteUrl = function (id) {
+        return '/notifications/' + id;
+    };
+
     ns.buildNotifHtml = function (n) {
         const data = n.data;
         const avatar = data.actor_avatar || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(data.actor_name || 'U') + '&background=E8375A&color=fff&size=80';
@@ -72,6 +76,13 @@ window.NexaNotif = window.NexaNotif || {};
             + '<button type="submit" class="notif-mark-btn" title="Marcar como leída"><span class="unread-dot"></span></button>'
             + '</form>'
             + (actionUrl ? '<a href="' + actionUrl + '" class="notif-action-link">' + actionLabel + '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/></svg></a>' : '')
+            + '<form method="POST" action="' + ns.getDeleteUrl(n.id) + '" class="notif-delete-form">'
+            + '<input type="hidden" name="_token" value="' + ns.csrf() + '">'
+            + '<input type="hidden" name="_method" value="DELETE">'
+            + '<button type="submit" class="notif-delete-btn" title="Eliminar notificación">'
+            + '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>'
+            + '</button>'
+            + '</form>'
             + '</div>'
             + '</div>';
     };

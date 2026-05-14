@@ -72,6 +72,7 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/notifications/{notification}/read', [NotificationController::class, 'read'])->name('notifications.read');
     Route::patch('/notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.read-all');
     Route::patch('/notifications/preferences', [NotificationController::class, 'preferences'])->name('notifications.preferences');
+    Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
 });
 
 Route::middleware('auth')->prefix('api')->group(function () {  // ← con prefix

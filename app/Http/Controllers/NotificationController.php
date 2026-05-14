@@ -69,4 +69,17 @@ class NotificationController extends Controller
 
         return response()->json(['message' => 'Preferencias guardadas.']);
     }
+
+    public function destroy(Notification $notification): JsonResponse
+    {
+        if ($notification->user_id !== auth()->id()) {
+            return response()->json(['error' => 'No autorizado.'], 403);
+        }
+
+        $notification->delete();
+
+        $unreadCount = auth()->user()->unreadNotifications()->count();
+
+        return response()->json(['message' => 'Notificación eliminada.', 'unread_count' => $unreadCount]);
+    }
 }

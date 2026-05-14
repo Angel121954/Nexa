@@ -39,45 +39,63 @@
         });
     });
 
-    const readAllForm = ns.$('.notif-readall-form');
-    if (readAllForm) {
-        readAllForm.addEventListener('submit', async e => {
+    const notifList = document.getElementById('notif-list');
+    if (notifList) {
+        notifList.addEventListener('submit', async e => {
+            const form = e.target.closest('.notif-delete-form');
+            if (!form) return;
             e.preventDefault();
 
+            const item = form.closest('.notif-item');
+            const url = form.action;
+            const btn = form.querySelector('.notif-delete-btn');
+            const originalHtml = btn.innerHTML;
+
+            btn.innerHTML = '<span class="notif-spinner"></span>';
+            btn.disabled = true;
+
             try {
-                const res = await fetch(readAllForm.action, {
+                const res = await fetch(url, {
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': ns.csrf(),
-                        'X-HTTP-Method-Override': 'PATCH',
+                        'X-HTTP-Method-Override': 'DELETE',
                         'Accept': 'application/json',
                     },
                 });
 
                 if (!res.ok) throw new Error('Server error');
 
-                ns.$$('.notif-item.unread').forEach(item => {
-                    item.classList.remove('unread');
-                    item.querySelector('.notif-mark-btn')?.remove();
-                });
+                const json = await res.json();
 
-                readAllForm.closest('.notif-header-actions')
-                    ?.querySelector('.btn-readall')?.remove();
+                item.style.transition = 'opacity .25s, transform .25s';
+                item.style.opacity = '0';
+                item.style.transform = 'translateX(-20px)';
 
-                const badge = ns.$('.notif-count-badge');
-                if (badge) badge.remove();
+                setTimeout(() => item.remove(), 260);
 
-                const tabBadge = ns.$('.tab-count-pink');
-                if (tabBadge) {
-                    tabBadge.classList.remove('tab-count-pink');
-                    tabBadge.textContent = '0';
+                if (json.unread_count !== undefined && window.updateNotifBadge) {
+                    window.updateNotifBadge(json.unread_count);
                 }
 
-                if (window.updateNotifBadge) window.updateNotifBadge(0);
+                const label = item.previousElementSibling;
+                if (label && label.classList.contains('notif-group-label')) {
+                    const next = label.nextElementSibling;
+                    if (!next || next.classList.contains('notif-group-label') || next.id === 'notif-empty') {
+                        label.remove();
+                    }
+                }
+
+                const remaining = ns.$$('.notif-item:not([hidden])').length;
+                if (remaining === 0) {
+                    const empty = ns.$('#notif-empty');
+                    if (empty) empty.hidden = false;
+                }
 
             } catch (err) {
-                console.error('[Nexa] mark-all-read failed', err);
-                readAllForm.submit();
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+                console.error('[Nexa] delete notification failed', err);
             }
         });
     }

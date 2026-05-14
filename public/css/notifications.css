@@ -440,6 +440,28 @@ body {
     transform: translateY(-1px);
 }
 
+.notif-delete-form {
+    display: flex;
+}
+
+.notif-delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: #bbb;
+    transition: background var(--transition), color var(--transition);
+}
+
+.notif-delete-btn:hover {
+    background: var(--pink-muted);
+    color: var(--pink);
+}
+
 /* ═══════════════ EMPTY STATE ═══════════════ */
 .notif-empty {
     text-align: center;
@@ -817,6 +839,25 @@ body {
 
 .notif-item:nth-child(8) {
     animation-delay: 280ms;
+}
+
+/* ─── Delete spinner ─── */
+.notif-spinner {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 2px solid var(--text-muted);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: notif-spin .5s linear infinite;
+}
+
+@keyframes notif-spin {
+    to { transform: rotate(360deg); }
+}
+
+.notif-delete-btn:disabled {
+    cursor: default;
 }
 
 /* ═══════════════ RESPONSIVE ═══════════════ */
