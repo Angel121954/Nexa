@@ -105,6 +105,16 @@
     position: absolute;
     inset: 0;
     background: rgba(0, 0, 0, 0.92);
+    opacity: 0;
+    transition: opacity .3s ease;
+}
+
+.story-viewer.open .story-viewer-backdrop {
+    opacity: 1;
+}
+
+.story-viewer.closing .story-viewer-backdrop {
+    opacity: 0;
 }
 
 .story-viewer-content {
@@ -119,6 +129,19 @@
     background: #000;
     border-radius: 0;
     overflow: hidden;
+    opacity: 0;
+    transform: scale(.92) translateY(20px);
+    transition: opacity .35s cubic-bezier(.22,1,.36,1), transform .35s cubic-bezier(.22,1,.36,1), border-radius .35s ease;
+}
+
+.story-viewer.open .story-viewer-content {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+}
+
+.story-viewer.closing .story-viewer-content {
+    opacity: 0;
+    transform: scale(.92) translateY(20px);
 }
 
 @media (min-width: 500px) {
@@ -140,6 +163,14 @@
     right: 0;
     z-index: 10;
     background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent);
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: opacity .3s ease .15s, transform .3s ease .15s;
+}
+
+.story-viewer.open .story-viewer-header {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .story-viewer-user {
@@ -190,6 +221,14 @@
     left: 0;
     right: 0;
     z-index: 10;
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: opacity .3s ease .25s, transform .3s ease .25s;
+}
+
+.story-viewer.open .story-viewer-progress {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .story-progress-segment {
@@ -228,6 +267,11 @@
     object-fit: contain;
     user-select: none;
     -webkit-user-drag: none;
+    transition: opacity .3s ease;
+}
+
+.story-viewer-media.changing {
+    opacity: 0;
 }
 
 /* Tap zones */
@@ -258,6 +302,14 @@
     left: 0;
     right: 0;
     background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity .3s ease .15s, transform .3s ease .15s;
+}
+
+.story-viewer.open .story-viewer-footer {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .story-viewer-views {

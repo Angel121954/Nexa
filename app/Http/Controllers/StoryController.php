@@ -18,13 +18,16 @@ class StoryController extends Controller
     public function index(): JsonResponse
     {
         $me = auth()->user();
-        $blockedIds = $me->blocksSent()->pluck('blocked_id');
-        $blockedByIds = $me->blocksReceived()->pluck('blocker_id');
-        $excludeIds = $blockedIds->merge($blockedByIds)->push($me->id)->unique();
+
+        $matchUserIds = $me->matchedUsers()->pluck('users.id');
+
+        $visibleIds = collect([$me->id])
+            ->merge($matchUserIds)
+            ->unique();
 
         $stories = Story::with(['user:id,name,avatar'])
             ->active()
-            ->whereNotIn('user_id', $excludeIds)
+            ->whereIn('user_id', $visibleIds)
             ->orderBy('created_at', 'desc')
             ->get()
             ->groupBy('user_id')
@@ -39,10 +42,10 @@ class StoryController extends Controller
                         'avatar' => $first->user->avatar_url,
                     ],
                     'stories'    => $userStories->map(fn($s) => [
-                        'id'        => $s->id,
-                        'media_url' => $s->media_path,
+                        'id'         => $s->id,
+                        'media_url'  => $s->media_path,
                         'created_at' => $s->created_at->diffForHumans(),
-                        'viewed'    => $s->isViewedBy($me->id),
+                        'viewed'     => $s->isViewedBy($me->id),
                     ]),
                     'all_viewed' => $allViewed,
                 ];
@@ -54,6 +57,10 @@ class StoryController extends Controller
     public function userStories(int $userId): JsonResponse
     {
         $me = auth()->user();
+
+        if ($userId !== $me->id && !$me->isMatchedWith($userId)) {
+            return response()->json(['error' => 'No autorizado.'], 403);
+        }
 
         $stories = Story::with('user:id,name,avatar')
             ->active()
@@ -142,6 +149,10 @@ class StoryController extends Controller
 
         if ($story->user_id === $me->id) {
             return response()->json(['error' => 'No puedes ver tu propia story.'], 422);
+        }
+
+        if (!$me->isMatchedWith($story->user_id)) {
+            return response()->json(['error' => 'No autorizado.'], 403);
         }
 
         StoryView::firstOrCreate([

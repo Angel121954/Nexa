@@ -86,18 +86,27 @@ document.addEventListener('DOMContentLoaded', () => {
         state.currentStoryIndex = 0;
         state.isPaused = false;
         state.isClosing = false;
+        elements.viewer.classList.remove('closing');
         elements.viewer.style.display = 'flex';
         document.body.style.overflow = 'hidden';
         showCurrentStory();
+        requestAnimationFrame(() => {
+            elements.viewer.classList.add('open');
+        });
     }
 
     function closeViewer() {
         if (state.isClosing) return;
         state.isClosing = true;
         clearInterval(state.progressInterval);
-        elements.viewer.style.display = 'none';
-        document.body.style.overflow = '';
-        state.isClosing = false;
+        elements.viewer.classList.remove('open');
+        elements.viewer.classList.add('closing');
+        setTimeout(() => {
+            elements.viewer.style.display = 'none';
+            document.body.style.overflow = '';
+            elements.viewer.classList.remove('closing');
+            state.isClosing = false;
+        }, 350);
     }
 
     // ═══ SHOW STORY ═══
@@ -112,9 +121,13 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.avatar.src = group.user.avatar;
         elements.name.textContent = group.user.name;
 
-        // Media
-        elements.media.src = story.media_url;
-        elements.media.alt = `Story de ${group.user.name}`;
+        // Media crossfade
+        elements.media.classList.add('changing');
+        setTimeout(() => {
+            elements.media.src = story.media_url;
+            elements.media.alt = `Story de ${group.user.name}`;
+            elements.media.classList.remove('changing');
+        }, 150);
 
         // Progress segments
         renderProgress(group.stories.length, state.currentStoryIndex);
@@ -124,9 +137,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Mark as seen
         markSeen(story.id);
-
-        // Views count
-        // elements.views.textContent = story.viewed ? 'Visto' : '';
     }
 
     function renderProgress(total, activeIndex) {
