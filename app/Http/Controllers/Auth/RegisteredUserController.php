@@ -106,7 +106,9 @@ class RegisteredUserController extends Controller
 
     public function redirectToFacebook(): RedirectResponse
     {
-        return Socialite::driver('facebook')->redirect();
+        return Socialite::driver('facebook')
+            ->scopes(['public_profile'])
+            ->redirect();
     }
 
     public function handleFacebookCallback()
@@ -118,8 +120,13 @@ class RegisteredUserController extends Controller
                 ->withErrors(['email' => 'No se pudo autenticar con Facebook. Intenta de nuevo.']);
         }
 
+        $fbEmail = $fbUser->getEmail();
+        if (!$fbEmail) {
+            $fbEmail = 'fb_' . $fbUser->getId() . '@facebook.nexa';
+        }
+
         $user = User::where('facebook_id', $fbUser->getId())->first()
-            ?? User::where('email', $fbUser->getEmail())->first();
+            ?? User::where('email', $fbEmail)->first();
 
         if ($user) {
             if (!$user->facebook_id) {
@@ -128,7 +135,7 @@ class RegisteredUserController extends Controller
         } else {
             $user = User::create([
                 'name'        => $fbUser->getName(),
-                'email'       => $fbUser->getEmail(),
+                'email'       => $fbEmail,
                 'facebook_id' => $fbUser->getId(),
                 'avatar'      => $fbUser->getAvatar(),
                 'password'    => null,
