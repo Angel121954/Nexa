@@ -69,7 +69,52 @@
                     headerLeft.appendChild(span);
                 }
             }
+            if (!ns.$('.notif-readall-form')) {
+                const headerActions = ns.$('.notif-header-actions');
+                if (headerActions) {
+                    headerActions.insertAdjacentHTML('afterbegin', ns.buildReadAllFormHtml());
+                    const newForm = ns.$('.notif-readall-form');
+                    if (newForm) {
+                        newForm.addEventListener('submit', async function (ev) {
+                            ev.preventDefault();
+                            try {
+                                const res = await fetch(newForm.action, {
+                                    method: 'POST',
+                                    headers: {
+                                        'X-CSRF-TOKEN': ns.csrf(),
+                                        'X-HTTP-Method-Override': 'PATCH',
+                                        'Accept': 'application/json',
+                                    },
+                                });
+                                if (!res.ok) throw new Error();
+                                ns.$$('.notif-item.unread').forEach(item => {
+                                    item.classList.remove('unread');
+                                    item.querySelector('.notif-mark-btn')?.remove();
+                                });
+                                ns.$('.notif-count-badge')?.remove();
+                                ns.$('.tab-count-pink')?.remove();
+                                ns.$('.notif-readall-form')?.remove();
+                                if (window.updateNotifBadge) window.updateNotifBadge(0);
+                            } catch (err) {
+                                console.error('[Nexa] mark-all-read failed', err);
+                                newForm.submit();
+                            }
+                        });
+                    }
+                }
+            }
+
             const pinkTab = ns.$('.tab-count-pink');
-            if (pinkTab) pinkTab.textContent = e.unread_count;
+            if (pinkTab) {
+                pinkTab.textContent = e.unread_count;
+            } else if (e.unread_count > 0) {
+                const unreadTab = ns.$('.notif-tab[data-filter="unread"]');
+                if (unreadTab) {
+                    const span = document.createElement('span');
+                    span.className = 'tab-count tab-count-pink';
+                    span.textContent = e.unread_count;
+                    unreadTab.appendChild(span);
+                }
+            }
         });
 })(window.NexaNotif);

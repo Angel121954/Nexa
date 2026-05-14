@@ -51,6 +51,20 @@ window.NexaNotif = window.NexaNotif || {};
         return '/notifications/' + id;
     };
 
+    ns.buildReadAllFormHtml = function () {
+        return '<form method="POST" action="/notifications/read-all" class="notif-readall-form">'
+            + '<input type="hidden" name="_token" value="' + ns.csrf() + '">'
+            + '<input type="hidden" name="_method" value="PATCH">'
+            + '<button type="submit" class="btn-readall">'
+            + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'
+            + '<path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round" />'
+            + '<path d="M27 6L16 17" stroke-linecap="round" stroke-linejoin="round" />'
+            + '</svg>'
+            + ' Marcar todo como leído'
+            + '</button>'
+            + '</form>';
+    };
+
     ns.buildEmptyHtml = function () {
         return '<div class="notif-empty" id="notif-empty">'
             + '<div class="notif-empty-illustration">'
