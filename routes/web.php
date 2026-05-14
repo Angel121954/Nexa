@@ -74,6 +74,7 @@ Route::middleware('auth')->prefix('api')->group(function () {  // ← con prefix
     // Matches
     Route::get('/matches', [MatchController::class, 'index']);
     Route::get('/matches/{id}', [MatchController::class, 'show']);
+    Route::delete('/matches/{id}', [MatchController::class, 'destroy']);
 
     // Messages
     Route::get('/unread-messages-count', [MessageController::class, 'unreadCount']);

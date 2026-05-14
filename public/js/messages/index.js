@@ -369,6 +369,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
         },
 
+        subscribeToMatchesChannel() {
+            if (!window.Echo || !state.currentUserId) return;
+            window.Echo.channel('matches')
+                .listen('.MatchDeleted', (e) => {
+                    if (String(e.deleted_by_user_id) !== String(state.currentUserId)) {
+                        DeleteUI.removeMatchFromUI(e.match_id);
+                        showToast('Un match ha sido eliminado.', 'info');
+                    }
+                });
+        },
+
         subscribeToMatch(matchId) {
             if (!window.Echo) { console.error('Echo no disponible'); return; }
 
@@ -729,6 +740,107 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // ═══ DELETE MATCH ═══
+    const DeleteUI = {
+        modal: document.getElementById('delete-modal'),
+        deleteBtn: document.getElementById('msg-delete-btn'),
+        confirmBtn: document.getElementById('delete-confirm-btn'),
+        cancelBtn: document.getElementById('delete-cancel-btn'),
+        closeBtn: document.getElementById('delete-modal-close'),
+
+        init() {
+            this.deleteBtn?.addEventListener('click', () => this.open());
+            this.cancelBtn?.addEventListener('click', () => this.close());
+            this.closeBtn?.addEventListener('click', () => this.close());
+            this.modal?.addEventListener('click', (e) => {
+                if (e.target === this.modal || e.target.classList.contains('modal-backdrop')) {
+                    this.close();
+                }
+            });
+            this.confirmBtn?.addEventListener('click', () => this.delete());
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && this.modal?.style.display !== 'none') this.close();
+            });
+        },
+
+        open() {
+            BlockUI.closeDropdown();
+            if (this.modal) this.modal.style.display = 'flex';
+        },
+
+        close() {
+            if (this.modal) this.modal.style.display = 'none';
+        },
+
+        async delete() {
+            const activeItem = document.querySelector('.msg-conv-item.active');
+            if (!activeItem) return;
+            const matchId = activeItem.dataset.convId;
+            if (!matchId) return;
+
+            this.confirmBtn.disabled = true;
+            this.confirmBtn.textContent = 'Eliminando...';
+
+            try {
+                const res = await fetch(`/api/matches/${matchId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content,
+                    },
+                    credentials: 'same-origin',
+                });
+
+                if (res.ok) {
+                    this.close();
+                    showToast('Conversación eliminada.', 'success');
+                    Events.closeChat();
+                    activeItem.remove();
+                    if (!document.querySelector('.msg-conv-item')) {
+                        document.getElementById('msg-conv-list').innerHTML = `
+                            <div class="msg-empty-state">
+                                <div class="msg-empty-icon">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <p class="msg-empty-title">Aún no hay mensajes</p>
+                                <p class="msg-empty-sub">Cuando hagas match con alguien podrán escribirse aquí.</p>
+                            </div>`;
+                    }
+                } else {
+                    const data = await res.json();
+                    showToast(data.error || 'Error al eliminar.', 'error');
+                }
+            } catch {
+                showToast('Error de conexión.', 'error');
+            } finally {
+                this.confirmBtn.disabled = false;
+                this.confirmBtn.textContent = 'Sí, eliminar';
+            }
+        },
+
+        removeMatchFromUI(matchId) {
+            const item = document.querySelector(`.msg-conv-item[data-conv-id="${matchId}"]`);
+            if (!item) return;
+            const wasActive = item.classList.contains('active');
+            if (wasActive) Events.closeChat();
+            item.remove();
+            if (!document.querySelector('.msg-conv-item')) {
+                document.getElementById('msg-conv-list').innerHTML = `
+                    <div class="msg-empty-state">
+                        <div class="msg-empty-icon">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </div>
+                        <p class="msg-empty-title">Aún no hay mensajes</p>
+                        <p class="msg-empty-sub">Cuando hagas match con alguien podrán escribirse aquí.</p>
+                    </div>`;
+            }
+        }
+    };
+
     // ═══ INIT ═══
     state.init();
     Events.bindConversationItems();
@@ -738,7 +850,9 @@ document.addEventListener('DOMContentLoaded', () => {
     Events.setupMessageInput();
     BlockUI.init();
     ReportUI.init();
+    DeleteUI.init();
     WS.subscribeToUserChannel();
+    WS.subscribeToMatchesChannel();
 
     setInterval(updateAllConversationTimes, 1000);
     updateAllConversationTimes();
