@@ -30,9 +30,7 @@
                 <!-- Imagen -->
                 <img
                     id="avatar-img"
-                    src="{{ !empty(auth()->user()->avatar) 
-        ? auth()->user()->avatar 
-        : 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->name).'&background=E8375A&color=fff' }}"
+                    src="{{ auth()->user()->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->name).'&background=E8375A&color=fff' }}"
                     class="w-36 h-36 rounded-full border-[5px] border-white object-cover shadow-xl"
                     onclick="document.getElementById('avatarInput').click()">
 

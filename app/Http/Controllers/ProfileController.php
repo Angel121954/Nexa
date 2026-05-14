@@ -109,7 +109,6 @@ class ProfileController extends Controller
         return Redirect::to('/');
     }
 
-    // 📸 SUBIR FOTO → CLOUDINARY (archivo o URL)
     public function uploadPhoto(Request $request, CloudinaryService $cloudinary)
     {
         if (auth()->user()->photos()->count() >= 6) {
@@ -215,7 +214,6 @@ class ProfileController extends Controller
             return back()->with('error', 'Error actualizando avatar');
         }
     }
-
     public function deletePhoto($id, CloudinaryService $cloudinary)
     {
         $photo = UserPhoto::where('id', $id)
@@ -234,11 +232,6 @@ class ProfileController extends Controller
             Log::error('Error eliminando foto: ' . $e->getMessage());
             return back()->with('error', 'Error eliminando foto');
         }
-
-        // borrar registro BD
-        $photo->delete();
-
-        return back()->with('success', 'Foto eliminada correctamente');
     }
 
     public function block(Request $request, User $user): RedirectResponse|\Illuminate\Http\JsonResponse

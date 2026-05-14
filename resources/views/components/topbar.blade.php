@@ -53,9 +53,7 @@ $onlyLogoAvatar = $onlyLogoAvatar ?? false;
 
         @auth
         <a href="{{ route('profile.index') }}" class="nav-avatar">
-            <img id="topbar-avatar" src="{{ !empty(auth()->user()->avatar) 
-        ? auth()->user()->avatar 
-        : 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->name).'&background=E8375A&color=fff' }}"
+            <img id="topbar-avatar" src="{{ auth()->user()->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->name).'&background=E8375A&color=fff' }}"
                 alt="{{ auth()->user()->name }}">
 
             @if(!$onlyLogoAvatar)
