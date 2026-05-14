@@ -102,7 +102,7 @@
         <div class="gallery-grid">
             @foreach($user->photos as $photo)
             <div class="gallery-item">
-                <img src="{{ str_starts_with($photo->path, 'http') ? $photo->path : Storage::url($photo->path) }}">
+                <img src="{{ $photo->path }}">
             </div>
             @endforeach
         </div>

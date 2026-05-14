@@ -116,67 +116,41 @@ class ProfileController extends Controller
     }
 
     //  SUBIR FOTO 
-    public function uploadPhoto(Request $request)
+    public function uploadPhoto(Request $request, CloudinaryService $cloudinary)
     {
         if (auth()->user()->photos()->count() >= 6) {
             return back()->with('error', 'Máximo 6 fotos');
         }
         $request->validate([
-            'photo' => 'required|image|max:2048'
+            'photo' => 'required|image|max:5120',
         ]);
 
-        $path = $request->file('photo')->store('photos', 'public');
+        $count = auth()->user()->photos()->count();
+        $uploaded = $cloudinary->uploadGallery($request->file('photo'), auth()->id(), $count);
 
         UserPhoto::create([
-            'user_id' => auth()->id(),
-            'path' => $path
+            'user_id'   => auth()->id(),
+            'path'      => $uploaded['url'],
+            'public_id' => $uploaded['public_id'],
         ]);
 
-        return back();
+        return back()->with('success', 'Foto agregada');
     }
 
-    public function uploadAvatar(Request $request, CloudinaryService $cloudinary)
-    {
-        $request->validate([
-            'avatar' => 'required|image|max:5120',
-        ]);
-
-        $user = auth()->user();
-
-        if ($user->avatar_public_id) {
-            try {
-                $cloudinary->delete($user->avatar_public_id);
-            } catch (\Exception $e) {
-                Log::warning('Failed to delete old avatar: ' . $e->getMessage());
-            }
-        }
-
-        $avatar = $cloudinary->uploadAvatar($request->file('avatar'), $user->id);
-
-        $user->update([
-            'avatar'           => $avatar['url'],
-            'avatar_public_id' => $avatar['public_id'],
-        ]);
-
-        if ($request->expectsJson()) {
-            return response()->json(['message' => 'avatar-updated', 'avatar' => $avatar['url']]);
-        }
-
-        return back()->with('status', 'avatar-updated');
-    }
-
-    public function deletePhoto($id)
+    public function deletePhoto($id, CloudinaryService $cloudinary)
     {
         $photo = UserPhoto::where('id', $id)
             ->where('user_id', auth()->id())
             ->firstOrFail();
 
-        // borrar archivo físico
-        if (Storage::disk('public')->exists($photo->path)) {
-            Storage::disk('public')->delete($photo->path);
+        if ($photo->public_id) {
+            try {
+                $cloudinary->delete($photo->public_id);
+            } catch (\Exception $e) {
+                Log::warning('Failed to delete photo from Cloudinary: ' . $e->getMessage());
+            }
         }
 
-        // borrar registro BD
         $photo->delete();
 
         return back()->with('success', 'Foto eliminada correctamente');
@@ -214,25 +188,28 @@ class ProfileController extends Controller
             : back()->with('success', 'Usuario bloqueado.');
     }
 
-    public function updateAvatar(Request $request)
+    public function updateAvatar(Request $request, CloudinaryService $cloudinary)
     {
         $request->validate([
-            'avatar' => 'required|image|mimes:jpg,jpeg,png|max:2048'
+            'avatar' => 'required|image|max:5120',
         ]);
 
         $user = auth()->user();
 
-        // eliminar anterior (opcional)
-        if ($user->avatar) {
-            \Storage::delete($user->avatar);
+        if ($user->avatar_public_id) {
+            try {
+                $cloudinary->delete($user->avatar_public_id);
+            } catch (\Exception $e) {
+                Log::warning('Failed to delete old avatar: ' . $e->getMessage());
+            }
         }
 
-        // guardar nueva
-        $path = $request->file('avatar')->store('avatars', 'public');
+        $uploaded = $cloudinary->uploadAvatar($request->file('avatar'), $user->id);
 
-        // guardar en BD
-        $user->avatar = $path;
-        $user->save();
+        $user->update([
+            'avatar'           => $uploaded['url'],
+            'avatar_public_id' => $uploaded['public_id'],
+        ]);
 
         return back()->with('success', 'Avatar actualizado');
     }
