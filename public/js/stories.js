@@ -79,6 +79,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function getScrollbarWidth() {
+        return window.innerWidth - document.documentElement.clientWidth;
+    }
+
     // ═══ OPEN VIEWER ═══
     function openViewer(userIndex) {
         if (state.isClosing) return;
@@ -88,7 +92,9 @@ document.addEventListener('DOMContentLoaded', () => {
         state.isClosing = false;
         elements.viewer.classList.remove('closing');
         elements.viewer.style.display = 'flex';
+        const sbw = getScrollbarWidth();
         document.body.style.overflow = 'hidden';
+        document.body.style.paddingRight = sbw + 'px';
         showCurrentStory();
         requestAnimationFrame(() => {
             elements.viewer.classList.add('open');
@@ -104,6 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             elements.viewer.style.display = 'none';
             document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
             elements.viewer.classList.remove('closing');
             state.isClosing = false;
         }, 350);
