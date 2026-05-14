@@ -15,7 +15,7 @@ use Illuminate\View\View;
 class ExploreController extends Controller
 {
     // ── Feed principal ─────────────────────────
-    public function index(Request $request): View
+    public function index(Request $request): View|JsonResponse
     {
         $me = auth()->user();
 
@@ -122,6 +122,15 @@ class ExploreController extends Controller
             ->toArray();
 
         $interests = Interest::orderBy('name')->get();
+
+        if ($request->wantsJson()) {
+            $html = view('explore._cards', compact('users', 'likedIds', 'matchIds'))->render();
+
+            return response()->json([
+                'html'  => $html,
+                'count' => $users->total(),
+            ]);
+        }
 
         return view('explore.index', compact('users', 'likedIds', 'matchIds', 'interests', 'tab'));
     }

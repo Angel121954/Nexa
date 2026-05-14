@@ -1,7 +1,10 @@
 import { animateLike, showMatchToast } from '../ui.js';
 
-export function init(CSRF) {
-    document.querySelectorAll('.card-like-btn').forEach(btn => {
+let CSRF;
+
+function attachLikeButtons() {
+    document.querySelectorAll('.card-like-btn:not([data-likes-initialized])').forEach(btn => {
+        btn.dataset.likesInitialized = '1';
         btn.addEventListener('click', async (e) => {
             e.stopPropagation();
             const userId = btn.dataset.user;
@@ -10,7 +13,6 @@ export function init(CSRF) {
 
             btn.disabled = true;
 
-            // Optimistic UI update
             const newLiked = !wasLiked;
             btn.dataset.liked = newLiked ? '1' : '0';
             btn.title = newLiked ? 'Quitar like' : 'Dar like';
@@ -40,7 +42,6 @@ export function init(CSRF) {
                 }
             } catch (err) {
                 console.error(err);
-                // Rollback on error
                 btn.dataset.liked = wasLiked ? '1' : '0';
                 btn.title = wasLiked ? 'Quitar like' : 'Dar like';
                 svg.setAttribute('fill', wasLiked ? 'currentColor' : 'none');
@@ -54,4 +55,11 @@ export function init(CSRF) {
             }
         });
     });
+}
+
+export function init(csrf) {
+    CSRF = csrf;
+    attachLikeButtons();
+
+    document.addEventListener('explore-cards-rendered', attachLikeButtons);
 }
