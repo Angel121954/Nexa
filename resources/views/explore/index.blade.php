@@ -21,8 +21,8 @@
                 <div class="story-avatar-ring add">
                     <div class="story-add-icon">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                            <line x1="12" y1="5" x2="12" y2="19" stroke-linecap="round"/>
-                            <line x1="5" y1="12" x2="19" y2="12" stroke-linecap="round"/>
+                            <line x1="12" y1="5" x2="12" y2="19" stroke-linecap="round" />
+                            <line x1="5" y1="12" x2="19" y2="12" stroke-linecap="round" />
                         </svg>
                     </div>
                 </div>
@@ -143,6 +143,34 @@
 
             Cerca de ti
         </a>
+        <select class="qtab qselect"
+            onchange="window.location.href=this.value">
+
+            <option disabled {{ !request('distance') ? 'selected' : '' }}>
+                Distancia
+            </option>
+
+            <option value="{{ route('explore.index', array_merge(request()->except('page'), ['nearby' => 1, 'distance' => 5])) }}"
+                {{ request('distance') == 5 ? 'selected' : '' }}>
+                5 km
+            </option>
+
+            <option value="{{ route('explore.index', array_merge(request()->except('page'), ['nearby' => 1, 'distance' => 10])) }}"
+                {{ request('distance') == 10 ? 'selected' : '' }}>
+                10 km
+            </option>
+
+            <option value="{{ route('explore.index', array_merge(request()->except('page'), ['nearby' => 1, 'distance' => 50])) }}"
+                {{ request('distance') == 50 ? 'selected' : '' }}>
+                50 km
+            </option>
+
+            <option value="{{ route('explore.index', array_merge(request()->except('page'), ['nearby' => 1, 'distance' => 500])) }}"
+                {{ request('distance') == 500 ? 'selected' : '' }}>
+                500 km
+            </option>
+
+        </select>
         <a href="{{ route('explore.index', array_merge(request()->except('tab', 'page'), ['tab' => 'new'])) }}"
             class="qtab {{ $tab === 'new' ? 'active' : '' }}">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -344,8 +372,8 @@
             </div>
             <button class="story-viewer-close" id="story-viewer-close" aria-label="Cerrar">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <line x1="18" y1="6" x2="6" y2="18" stroke-linecap="round"/>
-                    <line x1="6" y1="6" x2="18" y2="18" stroke-linecap="round"/>
+                    <line x1="18" y1="6" x2="6" y2="18" stroke-linecap="round" />
+                    <line x1="6" y1="6" x2="18" y2="18" stroke-linecap="round" />
                 </svg>
             </button>
         </div>

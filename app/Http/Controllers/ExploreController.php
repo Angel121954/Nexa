@@ -66,14 +66,14 @@ class ExploreController extends Controller
                 $query->whereHas('interests', fn($q) => $q->whereIn('interests.id', $ids));
             }
         }
-        // 🔥 FILTRO: personas cercanas
+        //  FILTRO: personas cercanas
         if ($request->get('nearby')) {
 
             if ($me->latitude && $me->longitude) {
 
                 $lat = $me->latitude;
                 $lng = $me->longitude;
-                $radius = 10; // km
+                $radius = (int) $request->get('distance', 10);
 
                 $query->selectRaw("
             users.*,
