@@ -68,28 +68,37 @@
 
                 const json = await res.json();
 
+                const label = item.previousElementSibling;
+                const isLabel = label && label.classList.contains('notif-group-label');
+
                 item.style.transition = 'opacity .25s, transform .25s';
                 item.style.opacity = '0';
                 item.style.transform = 'translateX(-20px)';
 
-                setTimeout(() => item.remove(), 260);
+                setTimeout(() => {
+                    item.remove();
+
+                    if (isLabel) {
+                        const next = label.nextElementSibling;
+                        if (!next || next.classList.contains('notif-group-label') || next.id === 'notif-empty') {
+                            label.remove();
+                        }
+                    }
+
+                    const remaining = ns.$$('.notif-item:not([hidden])').length;
+                    if (remaining === 0) {
+                        ns.$$('.notif-group-label').forEach(el => el.remove());
+                        const empty = ns.$('#notif-empty');
+                        if (empty) {
+                            empty.hidden = false;
+                        } else {
+                            notifList.insertAdjacentHTML('beforeend', ns.buildEmptyHtml());
+                        }
+                    }
+                }, 260);
 
                 if (json.unread_count !== undefined && window.updateNotifBadge) {
                     window.updateNotifBadge(json.unread_count);
-                }
-
-                const label = item.previousElementSibling;
-                if (label && label.classList.contains('notif-group-label')) {
-                    const next = label.nextElementSibling;
-                    if (!next || next.classList.contains('notif-group-label') || next.id === 'notif-empty') {
-                        label.remove();
-                    }
-                }
-
-                const remaining = ns.$$('.notif-item:not([hidden])').length;
-                if (remaining === 0) {
-                    const empty = ns.$('#notif-empty');
-                    if (empty) empty.hidden = false;
                 }
 
             } catch (err) {

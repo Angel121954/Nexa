@@ -51,6 +51,29 @@ window.NexaNotif = window.NexaNotif || {};
         return '/notifications/' + id;
     };
 
+    ns.buildEmptyHtml = function () {
+        return '<div class="notif-empty" id="notif-empty">'
+            + '<div class="notif-empty-illustration">'
+            + '<div class="empty-ring empty-ring-1"></div>'
+            + '<div class="empty-ring empty-ring-2"></div>'
+            + '<div class="empty-icon-wrap">'
+            + '<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">'
+            + '<path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" stroke-linecap="round" stroke-linejoin="round" />'
+            + '<path d="M13.73 21a2 2 0 01-3.46 0" stroke-linecap="round" stroke-linejoin="round" />'
+            + '</svg>'
+            + '</div>'
+            + '</div>'
+            + '<h3>Sin notificaciones aún</h3>'
+            + '<p>Cuando alguien te dé like, haga match contigo o te escriba, aparecerá aquí.</p>'
+            + '<a href="/explore" class="btn-empty-cta">'
+            + 'Explorar personas'
+            + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">'
+            + '<path d="M5 12h14M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />'
+            + '</svg>'
+            + '</a>'
+            + '</div>';
+    };
+
     ns.buildNotifHtml = function (n) {
         const data = n.data;
         const avatar = data.actor_avatar || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(data.actor_name || 'U') + '&background=E8375A&color=fff&size=80';
