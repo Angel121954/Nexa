@@ -18,7 +18,6 @@
             <div class="card-photo">
                 <img src="{{ $photo }}" alt="{{ $person->name }}" loading="lazy">
 
-
             </div>
 
             <div class="card-body">
