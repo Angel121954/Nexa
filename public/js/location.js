@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+function updateUserLocation() {
     const userMeta = document.querySelector('meta[name="user-id"]');
     if (!userMeta) return;
 
@@ -11,7 +11,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 credentials: "same-origin",
                 headers: {
                     "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')?.content,
+                    "X-CSRF-TOKEN": document.querySelector(
+                        'meta[name="csrf-token"]',
+                    )?.content,
                     Accept: "application/json",
                 },
                 body: JSON.stringify({
@@ -22,4 +24,12 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         () => {},
     );
-});
+}
+
+document.addEventListener(
+    "click",
+    () => {
+        updateUserLocation();
+    },
+    { once: true },
+);
