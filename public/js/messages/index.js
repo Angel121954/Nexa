@@ -500,6 +500,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const userId = item.dataset.userId;
 
             state.currentMatchId = matchId;
+            window.currentChatMatchId = matchId;
 
             const isOnline = window.isUserOnline ? window.isUserOnline(userId) : false;
             UI.updateChatHeader(userName, userAvatar, isOnline);
@@ -527,6 +528,7 @@ document.addEventListener('DOMContentLoaded', () => {
         closeChat() {
             WS.unsubscribeFromCurrentMatch();
             state.currentMatchId = null;
+            window.currentChatMatchId = null;
             UI.toggleChatPanels(false);
             if (window.innerWidth < 768) {
                 document.getElementById('msg-sidebar')?.classList.remove('hidden-mobile');

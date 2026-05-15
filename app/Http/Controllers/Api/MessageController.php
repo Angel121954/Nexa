@@ -65,8 +65,16 @@ class MessageController extends Controller
 
         $message->load('sender');
 
+        $unreadCount = Message::whereHas('match', function ($query) use ($otherUserId) {
+            $query->where('user1_id', $otherUserId)
+                ->orWhere('user2_id', $otherUserId);
+        })
+            ->where('sender_id', '!=', $otherUserId)
+            ->whereNull('read_at')
+            ->count();
+
         try {
-            broadcast(new \App\Events\MessageSent($message))->toOthers();
+            broadcast(new \App\Events\MessageSent($message, $unreadCount))->toOthers();
         } catch (\Exception $e) {
             \Log::error('Broadcast error: ' . $e->getMessage());
         }

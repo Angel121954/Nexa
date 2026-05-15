@@ -16,10 +16,12 @@ class MessageSent implements ShouldBroadcastNow
 
     public $message;
     public $recipientId;
+    public $recipientUnreadCount;
 
-    public function __construct(Message $message)
+    public function __construct(Message $message, ?int $recipientUnreadCount = null)
     {
         $this->message = $message;
+        $this->recipientUnreadCount = $recipientUnreadCount;
         $match = $message->match;
         $this->recipientId = $match->user1_id == $message->sender_id 
             ? $match->user2_id 
@@ -52,6 +54,7 @@ class MessageSent implements ShouldBroadcastNow
             ],
             'created_at' => $this->message->created_at->toIso8601String(),
             'match_id' => $this->message->match_id,
+            'recipient_unread_count' => $this->recipientUnreadCount,
         ];
     }
 }
