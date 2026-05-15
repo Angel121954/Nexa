@@ -105,6 +105,8 @@
                     ns.$('.notif-count-badge')?.remove();
                     ns.$('.tab-count-pink')?.remove();
                     ns.$('.notif-readall-form')?.remove();
+                    const activeTab = ns.$('.notif-tab.active');
+                    if (activeTab) activeTab.querySelector('.tab-count')?.remove();
                 }
 
             } catch (err) {
@@ -140,6 +142,8 @@
                 ns.$('.notif-count-badge')?.remove();
                 ns.$('.tab-count-pink')?.remove();
                 ns.$('.notif-readall-form')?.remove();
+                const activeTab = ns.$('.notif-tab.active');
+                if (activeTab) activeTab.querySelector('.tab-count')?.remove();
 
                 if (window.updateNotifBadge) window.updateNotifBadge(0);
 

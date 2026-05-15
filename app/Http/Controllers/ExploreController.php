@@ -190,7 +190,8 @@ class ExploreController extends Controller
                     ],
                 ]);
                 $unread = Notification::where('user_id', $uid)->whereNull('read_at')->count();
-                broadcast(new NotificationCreated($notif, $unread))->toOthers();
+                $total = Notification::where('user_id', $uid)->count();
+                broadcast(new NotificationCreated($notif, $unread, $total))->toOthers();
             }
         } else {
             $notif = Notification::create([
@@ -204,7 +205,8 @@ class ExploreController extends Controller
                 ],
             ]);
             $unread = Notification::where('user_id', $userId)->whereNull('read_at')->count();
-            broadcast(new NotificationCreated($notif, $unread))->toOthers();
+            $total = Notification::where('user_id', $userId)->count();
+            broadcast(new NotificationCreated($notif, $unread, $total))->toOthers();
         }
 
         return response()->json([

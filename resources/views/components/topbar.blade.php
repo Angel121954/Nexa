@@ -53,7 +53,7 @@ $onlyLogoAvatar = $onlyLogoAvatar ?? false;
 
         <a href="{{ route('messages.index') }}" class="nav-icon-btn nav-messages-icon" title="Mensajes" id="nav-messages-link">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
             <span class="nav-notif-badge" id="nav-unread-badge" style="display:none;"></span>
         </a>

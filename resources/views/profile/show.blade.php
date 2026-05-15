@@ -113,3 +113,7 @@
 </div>
 
 @endsection
+
+@push('scripts')
+<script src="{{ asset('js/profile/gallery-modal.js') }}"></script>
+@endpush

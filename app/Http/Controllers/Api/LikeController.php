@@ -61,7 +61,8 @@ class LikeController extends Controller
             ],
         ]);
         $unread = Notification::where('user_id', $receiverId)->whereNull('read_at')->count();
-        broadcast(new NotificationCreated($notif, $unread))->toOthers();
+        $total = Notification::where('user_id', $receiverId)->count();
+        broadcast(new NotificationCreated($notif, $unread, $total))->toOthers();
 
         return response()->json(['message' => 'Like sent'], 201);
     }
