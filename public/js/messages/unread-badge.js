@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const count = data.count || 0;
 
             if (count > 0) {
-                badge.style.display = 'flex';
+                badge.style.display = '';
                 badge.textContent = count > 9 ? '9+' : count;
                 badge.title = `${count} mensaje${count !== 1 ? 's' : ''} no leído${count !== 1 ? 's' : ''}`;
             } else {
