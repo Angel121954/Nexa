@@ -52,6 +52,7 @@ class RegisteredUserController extends Controller
     // ─────────────────────────────────────────
     // Google OAuth
     // ─────────────────────────────────────────
+    // ─────────────────────────────────────────
 
     public function redirectToGoogle(): RedirectResponse
     {
@@ -94,6 +95,12 @@ class RegisteredUserController extends Controller
         }
 
         Auth::login($user, remember: true);
+
+        if ($user->hasEnabledTwoFactorAuthentication()) {
+            request()->session()->put('login.id', $user->id);
+            Auth::logout();
+            return redirect()->route('two-factor.challenge');
+        }
 
         return ($user->profile?->profile_completed ?? false)
             ? redirect()->route('explore.index')
@@ -149,6 +156,12 @@ class RegisteredUserController extends Controller
         }
 
         Auth::login($user, remember: true);
+
+        if ($user->hasEnabledTwoFactorAuthentication()) {
+            request()->session()->put('login.id', $user->id);
+            Auth::logout();
+            return redirect()->route('two-factor.challenge');
+        }
 
         return ($user->profile?->profile_completed ?? false)
             ? redirect()->route('explore.index')
