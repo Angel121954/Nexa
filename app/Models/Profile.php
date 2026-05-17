@@ -10,6 +10,7 @@ class Profile extends Model
     protected $fillable = [
         'bio',
         'city',
+        'department',
         'birth_date',
         'gender',
         'pronouns',

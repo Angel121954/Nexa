@@ -5,12 +5,13 @@ namespace App\Providers;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Fortify\Fortify;
 
 class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        //
+        Fortify::$registersRoutes = false;
     }
 
     public function boot(): void

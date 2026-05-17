@@ -114,6 +114,23 @@
     border-radius: 2px 2px 0 0;
 }
 
+.nav-link-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    margin-left: 6px;
+    background: var(--pink);
+    color: #fff;
+    font-size: .6875rem;
+    font-weight: 700;
+    border-radius: 9px;
+    line-height: 1;
+    vertical-align: middle;
+}
+
 /* Right side container */
 .nav-right {
     display: flex;

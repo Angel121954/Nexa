@@ -227,11 +227,15 @@
 
 </div>
 
+<style>
+    .qr-wrapper svg { max-width: 100%; height: auto; display: block; }
+</style>
 <script src="{{ asset('js/profile/modal.js') }}"></script>
 <script src="{{ asset('js/profile/tabs.js') }}"></script>
 <script src="{{ asset('js/profile/bioCounter.js') }}"></script>
 <script src="{{ asset('js/profile/successMessage.js') }}"></script>
 <script src="{{ asset('js/profile/index.js') }}"></script>
 <script src="{{ asset('js/profile/gallery-modal.js') }}"></script>
+<script src="{{ asset('js/profile/twofactor.js') }}"></script>
 
 @endsection

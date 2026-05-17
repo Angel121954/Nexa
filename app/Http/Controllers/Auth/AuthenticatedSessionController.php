@@ -26,9 +26,16 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
 
-        $request->session()->regenerate();
-
         $user = Auth::user();
+
+        if ($user->hasEnabledTwoFactorAuthentication()) {
+            $request->session()->put('login.id', $user->id);
+            Auth::logout();
+
+            return redirect()->route('two-factor.challenge');
+        }
+
+        $request->session()->regenerate();
 
         // Si el perfil ya está completo → feed principal
         if ($user->profile?->profile_completed) {

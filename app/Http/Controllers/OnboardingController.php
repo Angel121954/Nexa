@@ -19,23 +19,40 @@ class OnboardingController extends Controller
     {
         $user = auth()->user();
         $profile = $user->profile ?? new Profile(['user_id' => $user->id]);
+        $departments = collect(config('colombia'));
+
+        $selectedDepartment = null;
+        if ($profile->city) {
+            $selectedDepartment = $departments->search(fn ($cities) => in_array($profile->city, $cities));
+        }
 
         return view('onboarding.basic', [
-            'user' => $user,
-            'profile' => $profile,
+            'user'               => $user,
+            'profile'            => $profile,
+            'departments'        => $departments,
+            'selectedDepartment' => $selectedDepartment,
         ]);
     }
 
     public function storeBasic(Request $request): RedirectResponse
     {
+        $departments = config('colombia');
+
         $request->validate([
             'bio'        => ['nullable', 'string', 'max:160'],
-            'city'       => ['required', 'string', 'max:100'],
+            'department' => ['required', 'string', 'in:' . implode(',', array_keys($departments))],
+            'city'       => ['required', 'string', function ($attr, $value, $fail) use ($request, $departments) {
+                $cities = $departments[$request->department] ?? [];
+                if (!in_array($value, $cities)) {
+                    $fail('La ciudad seleccionada no es válida para el departamento escogido.');
+                }
+            }],
             'birth_date' => ['required', 'date', 'before:-18 years'],
             'gender'     => ['required', 'in:male,female,non_binary,other'],
             'pronouns'   => ['nullable', 'string', 'max:50'],
         ], [
             'birth_date.before' => 'Debes tener al menos 18 años.',
+            'department.in'     => 'El departamento seleccionado no es válido.',
         ]);
 
         $user = auth()->user();
@@ -43,6 +60,7 @@ class OnboardingController extends Controller
         $profile->fill([
             'bio'             => $request->bio,
             'city'            => $request->city,
+            'department'      => $request->department,
             'birth_date'      => $request->birth_date,
             'gender'          => $request->gender,
             'pronouns'        => $request->pronouns,

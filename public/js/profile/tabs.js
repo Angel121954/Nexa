@@ -4,6 +4,7 @@
 window.ProfileTabs = (() => {
     const tabButtons = document.querySelectorAll('.profile-tab-btn');
     const tabContents = document.querySelectorAll('.tab-content');
+    const formActions = document.querySelector('.form-actions');
 
     function switchTab(tabName) {
         // Hide all contents
@@ -17,6 +18,11 @@ window.ProfileTabs = (() => {
             targetContent.classList.add('active');
         }
 
+        // Hide form actions (cancel/save) on seguridad tab
+        if (formActions) {
+            formActions.style.display = tabName === 'twofactor' ? 'none' : '';
+        }
+
         // Update buttons state
         tabButtons.forEach(btn => {
             if (btn.dataset.tab === tabName) {
@@ -25,6 +31,11 @@ window.ProfileTabs = (() => {
                 btn.classList.remove('active');
             }
         });
+
+        // Load 2FA state when switching to seguridad tab
+        if (tabName === 'twofactor' && window.TwoFactorAuth) {
+            window.TwoFactorAuth.init();
+        }
     }
 
     function init() {

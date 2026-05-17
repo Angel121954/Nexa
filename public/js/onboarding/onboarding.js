@@ -5,6 +5,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     initBirthDateCalculator();
+    initCitySelects();
     initInterestTags();
     initPreferenceOptions();
     initAvatarPreview();
@@ -106,4 +107,37 @@ function initGalleryPreview() {
             reader.readAsDataURL(file);
         });
     };
+}
+
+/**
+ * Cascading city/department selects (basic.blade.php)
+ */
+function initCitySelects() {
+    const deptSelect = document.getElementById('department');
+    const citySelect = document.getElementById('city');
+    if (!deptSelect || !citySelect) return;
+
+    const allOptions = Array.from(citySelect.options);
+
+    function filterCities() {
+        const selectedDept = deptSelect.value;
+
+        allOptions.forEach(opt => {
+            if (!opt.value) return;
+            opt.hidden = opt.dataset.department !== selectedDept;
+        });
+
+        if (citySelect.value) {
+            const selected = citySelect.options[citySelect.selectedIndex];
+            if (selected && selected.hidden) {
+                citySelect.value = '';
+            }
+        }
+    }
+
+    deptSelect.addEventListener('change', filterCities);
+
+    if (deptSelect.value) {
+        filterCities();
+    }
 }

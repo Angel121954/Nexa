@@ -50,6 +50,24 @@
                 @error('bio')<span class="field-error">{{ $message }}</span>@enderror
             </div>
 
+            {{-- Departamento --}}
+            <div class="field">
+                <label for="department" class="field-label">Departamento</label>
+                <div class="field-input-wrap">
+                    <svg class="field-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M2 4h12M2 8h12M2 12h12" stroke-linecap="round" />
+                    </svg>
+                    <select id="department" name="department"
+                        class="field-select @error('department') is-invalid @enderror" required>
+                        <option value="" disabled {{ old('department', $selectedDepartment ?? '') ? '' : 'selected' }}>Selecciona tu departamento</option>
+                        @foreach($departments as $dept => $cities)
+                        <option value="{{ $dept }}" {{ old('department', $selectedDepartment ?? '') === $dept ? 'selected' : '' }}>{{ $dept }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                @error('department')<span class="field-error">{{ $message }}</span>@enderror
+            </div>
+
             {{-- Ciudad --}}
             <div class="field">
                 <label for="city" class="field-label">Ciudad</label>
@@ -59,10 +77,18 @@
                         <path d="M8 6.5a1.5 1.5 0 100 3 1.5 1.5 0 000-3z" fill="currentColor" stroke="none" />
                         <path d="M8 11.5v3" stroke-linecap="round" />
                     </svg>
-                    <input type="text" id="city" name="city"
-                        class="field-input @error('city') is-invalid @enderror"
-                        placeholder="Ej: Bogotá, Colombia"
-                        value="{{ old('city', $profile->city ?? '') }}" required />
+                    <select id="city" name="city"
+                        class="field-select @error('city') is-invalid @enderror" required>
+                        <option value="" disabled {{ old('city', $profile->city ?? '') ? '' : 'selected' }}>Selecciona tu ciudad</option>
+                        @foreach($departments as $dept => $cities)
+                            @foreach($cities as $cityOption)
+                            <option value="{{ $cityOption }}" data-department="{{ $dept }}"
+                                {{ old('city', $profile->city ?? '') === $cityOption ? 'selected' : '' }}>
+                                {{ $cityOption }}
+                            </option>
+                            @endforeach
+                        @endforeach
+                    </select>
                 </div>
                 @error('city')<span class="field-error">{{ $message }}</span>@enderror
             </div>
@@ -116,8 +142,7 @@
             </div>
 
             <div class="onboarding-actions">
-                <a href="{{ route('login') }}" class="btn btn-outline">Atrás</a>
-                <button type="submit" class="btn btn-primary btn-main">Continuar</button>
+                <button type="submit" class="btn btn-primary btn-main" style="flex: 1;">Continuar</button>
             </div>
         </form>
     </div>

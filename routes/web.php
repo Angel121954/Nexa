@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\StoryController;
+use App\Http\Controllers\TwoFactorController;
 
 // Rutas de broadcasting (para autenticación de canales privados)
 Broadcast::routes(['middleware' => ['web']]);
@@ -49,6 +50,16 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/explore/like/{user}', [ExploreController::class, 'like'])->name('explore.like');
 
     Route::get('/messages', [MessagePageController::class, 'index'])->name('messages.index');
+
+    // 2FA (antes de /profile/{user} para evitar conflicto)
+    Route::prefix('profile/two-factor')->name('profile.two-factor.')->group(function () {
+        Route::get('/', [TwoFactorController::class, 'show'])->name('show');
+        Route::post('/setup', [TwoFactorController::class, 'setup'])->name('setup');
+        Route::post('/confirm', [TwoFactorController::class, 'confirmJson'])->name('confirm');
+        Route::post('/disable', [TwoFactorController::class, 'disableJson'])->name('disable');
+        Route::post('/recovery-codes', [TwoFactorController::class, 'recoveryCodes'])->name('recovery-codes');
+    });
+
     // VER PERFIL
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::get('/profile/{user}', [ProfileController::class, 'show'])->name('profile.show');
@@ -105,6 +116,12 @@ Route::middleware('auth')->prefix('api')->group(function () {  // ← con prefix
     Route::delete('/stories/{story}', [StoryController::class, 'destroy']);
     Route::post('/stories/{story}/seen', [StoryController::class, 'markSeen']);
 });
+
+// 2FA Challenge (sin auth middleware, requiere sesión con login.id)
+Route::get('/two-factor-challenge', [\App\Http\Controllers\Auth\TwoFactorChallengeController::class, 'create'])
+    ->name('two-factor.challenge');
+Route::post('/two-factor-challenge', [\App\Http\Controllers\Auth\TwoFactorChallengeController::class, 'store'])
+    ->name('two-factor.challenge.store');
 
 // Página legal (términos y privacidad)
 Route::view('/legal', 'legal.legal')->name('legal');

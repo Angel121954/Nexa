@@ -20,7 +20,7 @@ class MessageController extends Controller
         UserMatch::where('id', $matchId)
             ->where(function ($query) use ($userId) {
                 $query->where('user1_id', $userId)
-                      ->orWhere('user2_id', $userId);
+                    ->orWhere('user2_id', $userId);
             })
             ->firstOrFail();
 
@@ -43,7 +43,7 @@ class MessageController extends Controller
         $match = UserMatch::where('id', $matchId)
             ->where(function ($query) use ($userId) {
                 $query->where('user1_id', $userId)
-                      ->orWhere('user2_id', $userId);
+                    ->orWhere('user2_id', $userId);
             })
             ->firstOrFail();
 
@@ -65,8 +65,16 @@ class MessageController extends Controller
 
         $message->load('sender');
 
+        $unreadCount = Message::whereHas('match', function ($query) use ($otherUserId) {
+            $query->where('user1_id', $otherUserId)
+                ->orWhere('user2_id', $otherUserId);
+        })
+            ->where('sender_id', '!=', $otherUserId)
+            ->whereNull('read_at')
+            ->count();
+
         try {
-            broadcast(new \App\Events\MessageSent($message))->toOthers();
+            broadcast(new \App\Events\MessageSent($message, $unreadCount))->toOthers();
         } catch (\Exception $e) {
             \Log::error('Broadcast error: ' . $e->getMessage());
         }
@@ -124,9 +132,9 @@ class MessageController extends Controller
         $userId = Auth::id();
 
         $count = Message::whereHas('match', function ($query) use ($userId) {
-                $query->where('user1_id', $userId)
-                      ->orWhere('user2_id', $userId);
-            })
+            $query->where('user1_id', $userId)
+                ->orWhere('user2_id', $userId);
+        })
             ->where('sender_id', '!=', $userId)
             ->whereNull('read_at')
             ->count();

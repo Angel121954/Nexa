@@ -30,35 +30,18 @@ $onlyLogoAvatar = $onlyLogoAvatar ?? false;
             class="nav-link {{ request()->routeIs('explore.index') && request('tab') === 'interests' ? 'active' : '' }}">
             Mismos intereses
         </a>
-        <a href="{{ route('messages.index') }}" class="nav-link {{ request()->routeIs('messages.*') ? 'active' : '' }}">Mensajes</a>
-        <a href="{{ route('notifications.index') }}" class="nav-link {{ request()->routeIs('notifications.*') ? 'active' : '' }}">Notificaciones</a>
+        <a href="{{ route('messages.index') }}" class="nav-link {{ request()->routeIs('messages.*') ? 'active' : '' }}">
+            Mensajes
+            <span class="nav-link-badge" id="nav-unread-badge" style="display:none;"></span>
+        </a>
+        <a href="{{ route('notifications.index') }}" class="nav-link {{ request()->routeIs('notifications.*') ? 'active' : '' }}">
+            Notificaciones
+            <span class="nav-link-badge" id="nav-notif-badge" style="display:none;"></span>
+        </a>
     </div>
     @endif
 
     <div class="nav-right">
-        @if(!$onlyLogoAvatar)
-        <!-- <button type="button" class="btn-premium" id="open-premium-modal" aria-haspopup="dialog">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" />
-            </svg>
-            Suscríbete a Nexa Premium
-        </button> -->
-
-        <a href="{{ route('notifications.index') }}" class="nav-icon-btn" title="Notificaciones" id="nav-notif-link">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-            <span class="nav-notif-badge" id="nav-notif-badge" style="display:none;"></span>
-        </a>
-
-        <a href="{{ route('messages.index') }}" class="nav-icon-btn nav-messages-icon" title="Mensajes" id="nav-messages-link">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-            <span class="nav-notif-badge" id="nav-unread-badge" style="display:none;"></span>
-        </a>
-        @endif
-
         @auth
         <a href="{{ route('profile.index') }}" class="nav-avatar">
             <img id="topbar-avatar" src="{{ auth()->user()->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->name).'&background=E8375A&color=fff' }}"

@@ -8,10 +8,11 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Laravel\Fortify\TwoFactorAuthenticatable as FortifyTwoFactor;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, FortifyTwoFactor;
 
     protected $fillable = [
         'name',
@@ -35,7 +36,9 @@ class User extends Authenticatable
 
     protected $hidden = [
         'password',
-        'remember_token'
+        'remember_token',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
     ];
 
     protected function casts(): array
@@ -49,6 +52,7 @@ class User extends Authenticatable
             'latitude' => 'float',
             'longitude' => 'float',
             'last_activity_at' => 'datetime',
+            'two_factor_confirmed_at' => 'datetime',
         ];
     }
 
