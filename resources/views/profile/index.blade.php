@@ -87,13 +87,34 @@
             <div class="profile-info-icons">
 
                 <!-- ciudad -->
-                <span class="flex items-center gap-1">
-                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2"
+                <span id="user-location" class="flex items-center gap-1">
+
+                    <svg class="w-4 h-4 text-gray-400"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
                         viewBox="0 0 24 24">
+
                         <path d="M12 21s7-4.35 7-11a7 7 0 10-14 0c0 6.65 7 11 7 11z" />
                         <circle cx="12" cy="10" r="3" />
                     </svg>
-                    {{ $profile->city ?? 'Sin ciudad' }}
+
+                    @if($user->current_city && $user->home_city !== $user->current_city)
+
+                    <span>
+                        {{ $user->home_city }}
+                        ·
+                        <span class="text-yellow-500">
+                            Visitando {{ $user->current_city }}
+                        </span>
+                    </span>
+
+                    @else
+
+                    {{ $user->home_city ?? 'Sin ciudad' }}
+
+                    @endif
+
                 </span>
 
                 <!-- edad -->
@@ -162,8 +183,8 @@
 
             <div class="gallery-item">
 
-                    <img
-                        src="{{ $photo->path }}">
+                <img
+                    src="{{ $photo->path }}">
 
                 <!-- overlay -->
                 <div class="gallery-item-overlay"></div>
@@ -228,7 +249,11 @@
 </div>
 
 <style>
-    .qr-wrapper svg { max-width: 100%; height: auto; display: block; }
+    .qr-wrapper svg {
+        max-width: 100%;
+        height: auto;
+        display: block;
+    }
 </style>
 <script src="{{ asset('js/profile/modal.js') }}"></script>
 <script src="{{ asset('js/profile/tabs.js') }}"></script>

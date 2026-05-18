@@ -2,12 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use Geocoder\Provider\Nominatim\Nominatim;
+use Geocoder\Query\ReverseQuery;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Psr\Http\Client\ClientInterface;
 
 class LocationController extends Controller
 {
+    protected ClientInterface $httpClient;
+
+    public function __construct(?ClientInterface $httpClient = null)
+    {
+        $this->httpClient = $httpClient ?? new Client();
+    }
+
     public function update(Request $request)
     {
         $user = $request->user();
@@ -26,27 +36,18 @@ class LocationController extends Controller
         $lat = $validated['lat'];
         $lng = $validated['lng'];
 
-        // Obtener ciudad y país desde OpenStreetMap
-        $response = Http::withHeaders([
-            'User-Agent' => 'Nexa App'
-        ])->get('https://nominatim.openstreetmap.org/reverse', [
-            'format' => 'json',
-            'lat'    => $lat,
-            'lon'    => $lng,
-        ]);
+        // Obtener ciudad y país desde OpenStreetMap vía geocoder-php
+        $provider = Nominatim::withOpenStreetMapServer($this->httpClient, 'Nexa App');
+        $result = $provider->reverseQuery(ReverseQuery::fromCoordinates($lat, $lng));
 
-        $data = $response->json();
+        $city = null;
+        $country = null;
 
-        $city =
-            $data['address']['city']
-            ?? $data['address']['town']
-            ?? $data['address']['village']
-            ?? $data['address']['state']
-            ?? null;
-
-        $country =
-            $data['address']['country']
-            ?? null;
+        if ($result->count() > 0) {
+            $location = $result->first();
+            $city = self::cleanCityName($location->getLocality());
+            $country = $location->getCountry()?->getName();
+        }
 
         // Guardar ubicación actual
         $user->forceFill([
@@ -87,5 +88,35 @@ class LocationController extends Controller
             'traveling' =>
             $user->home_city !== $user->current_city
         ]);
+    }
+
+    public static function cleanCityName(?string $locality): ?string
+    {
+        if ($locality === null) {
+            return null;
+        }
+
+        $prefixes = [
+            'Perímetro Urbano',
+            'Municipio de',
+            'Comuna',
+            'Zona Urbana',
+            'Distrito de',
+            'Pueblo de',
+            'Villa de',
+            'Barrio',
+            'Corregimiento',
+        ];
+
+        $cleaned = $locality;
+
+        foreach ($prefixes as $prefix) {
+            if (str_starts_with($cleaned, $prefix)) {
+                $cleaned = trim(substr($cleaned, strlen($prefix)));
+                break;
+            }
+        }
+
+        return $cleaned ?: $locality;
     }
 }

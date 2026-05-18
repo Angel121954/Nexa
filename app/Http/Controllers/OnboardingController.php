@@ -6,6 +6,9 @@ use App\Models\Interest;
 use App\Models\Profile;
 use App\Models\UserPhoto;
 use App\Services\CloudinaryService;
+use Geocoder\Provider\Nominatim\Nominatim;
+use Geocoder\Query\GeocodeQuery;
+use GuzzleHttp\Client;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -71,6 +74,30 @@ class OnboardingController extends Controller
             $user->profile()->save($profile);
         } else {
             $profile->save();
+        }
+
+        // Geocodificar la ciudad seleccionada para establecer home_latitude/home_longitude
+        $httpClient = new Client();
+        $provider = Nominatim::withOpenStreetMapServer($httpClient, 'Nexa App');
+        $query = GeocodeQuery::create($request->city . ', ' . $request->department . ', Colombia');
+
+        try {
+            $result = $provider->geocodeQuery($query);
+
+            if ($result->count() > 0) {
+                $location = $result->first();
+                $coords = $location->getCoordinates();
+                $homeCity = LocationController::cleanCityName($location->getLocality()) ?: $request->city;
+
+                $user->forceFill([
+                    'home_latitude'  => $coords->getLatitude(),
+                    'home_longitude' => $coords->getLongitude(),
+                    'home_city'      => $homeCity,
+                    'home_country'   => 'Colombia',
+                ])->save();
+            }
+        } catch (\Exception $e) {
+            Log::warning('No se pudo geocodificar la ciudad natal: ' . $e->getMessage());
         }
 
         return redirect()->route('onboarding.photos');

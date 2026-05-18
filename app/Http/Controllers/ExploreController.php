@@ -71,25 +71,24 @@ class ExploreController extends Controller
         //  FILTRO: personas cercanas
         if ($request->get('nearby')) {
 
-            if ($me->latitude && $me->longitude) {
+            if ($me->current_latitude && $me->current_longitude) {
 
-                $lat = $me->latitude;
-                $lng = $me->longitude;
+                $lat = $me->current_latitude;
+                $lng = $me->current_longitude;
                 $radius = (int) $request->get('distance', 10);
 
-                $query->selectRaw("
-            users.*,
-            (6371 * acos(
-                cos(radians(?))
-                * cos(radians(latitude))
-                * cos(radians(longitude) - radians(?))
-                + sin(radians(?))
-                * sin(radians(latitude))
-            )) AS distance
-        ", [$lat, $lng, $lat])
-                    ->whereNotNull('latitude')
-                    ->whereNotNull('longitude')
-                    ->having('distance', '<=', $radius)
+                $haversine = "(6371 * acos(
+                    cos(radians(?))
+                    * cos(radians(current_latitude))
+                    * cos(radians(current_longitude) - radians(?))
+                    + sin(radians(?))
+                    * sin(radians(current_latitude))
+                ))";
+
+                $query->selectRaw("users.*, {$haversine} AS distance", [$lat, $lng, $lat])
+                    ->whereNotNull('current_latitude')
+                    ->whereNotNull('current_longitude')
+                    ->whereRaw("{$haversine} <= ?", [$lat, $lng, $lat, $radius])
                     ->orderBy('distance');
             }
         }

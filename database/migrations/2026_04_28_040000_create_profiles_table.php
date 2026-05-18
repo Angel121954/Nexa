@@ -25,7 +25,7 @@ return new class extends Migration
         // Migrar datos existentes de users a profiles
         \DB::statement("
             INSERT INTO profiles (user_id, bio, city, birth_date, gender, pronouns, looking_for, profile_completed, onboarding_step, created_at, updated_at)
-            SELECT id, bio, city, birth_date, gender, pronouns, looking_for, profile_completed, onboarding_step, NOW(), NOW()
+            SELECT id, bio, city, birth_date, gender, pronouns, looking_for, profile_completed, onboarding_step, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
             FROM users
             WHERE bio IS NOT NULL OR city IS NOT NULL OR birth_date IS NOT NULL OR gender IS NOT NULL
         ");

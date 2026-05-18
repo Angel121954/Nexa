@@ -31,6 +31,14 @@ class User extends Authenticatable
         'profile_completed',
         'latitude',
         'longitude',
+        'current_latitude',
+        'current_longitude',
+        'current_city',
+        'current_country',
+        'home_latitude',
+        'home_longitude',
+        'home_city',
+        'home_country',
         'last_activity_at',
     ];
 
@@ -51,6 +59,10 @@ class User extends Authenticatable
             'profile_completed' => 'boolean',
             'latitude' => 'float',
             'longitude' => 'float',
+            'current_latitude' => 'float',
+            'current_longitude' => 'float',
+            'home_latitude' => 'float',
+            'home_longitude' => 'float',
             'last_activity_at' => 'datetime',
             'two_factor_confirmed_at' => 'datetime',
         ];

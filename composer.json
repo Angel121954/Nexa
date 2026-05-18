@@ -9,6 +9,7 @@
         "php": "^8.3",
         "cloudinary/cloudinary_php": "*",
         "geocoder-php/common-http": "^4.7",
+        "geocoder-php/nominatim-provider": "*",
         "laravel/fortify": "^1.37",
         "laravel/framework": "^13.0",
         "laravel/reverb": "^1.10",
