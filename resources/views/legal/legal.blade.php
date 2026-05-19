@@ -98,7 +98,7 @@
                     <div class="section-body">
                         <p>Al registrarte, acceder o usar <strong>Nexa</strong>, aceptas quedar vinculado por estos Términos de Uso. Si no estás de acuerdo con alguna parte de estos términos, no debes utilizar la plataforma.</p>
                         <div class="notice-block">
-                            <p><strong>Importante:</strong> el uso de Nexa está restringido a personas mayores de 18 años. Al crear una cuenta confirmas que cumples con este requisito.</p>
+                            <p><strong>Importante:</strong> el uso de Nexa está restringido a personas mayores de 15 años. Al crear una cuenta confirmas que cumples con este requisito.</p>
                         </div>
                         <p>Estos términos constituyen un acuerdo legal entre tú (<strong>"Usuario"</strong>) y <strong>Nexa</strong> (<strong>"nosotros"</strong>, <strong>"la plataforma"</strong>). Aplican a todas las funciones disponibles, incluyendo perfiles, mensajes, exploración y cualquier servicio Premium.</p>
                     </div>
@@ -569,7 +569,7 @@
                         </div>
                     </div>
                     <div class="section-body">
-                        <p>Nexa está dirigida exclusivamente a personas mayores de <strong>18 años</strong>. No recopilamos intencionalmente información de menores de edad. Si detectamos que un menor ha creado una cuenta, procederemos a eliminarla de inmediato junto con todos sus datos asociados.</p>
+                        <p>Nexa está dirigida exclusivamente a personas mayores de <strong>15 años</strong>. No recopilamos intencionalmente información de menores de edad. Si detectamos que un menor ha creado una cuenta, procederemos a eliminarla de inmediato junto con todos sus datos asociados.</p>
                         <div class="notice-block">
                             <p>Si eres padre, madre o tutor y crees que tu hijo/a puede tener una cuenta en Nexa, contáctanos de inmediato en <strong>privacidad@nexa.app</strong>.</p>
                         </div>

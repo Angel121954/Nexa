@@ -80,6 +80,7 @@
 
             <select name="age_range" id="age-range-select" class="filter-select">
                 <option value="">Edad</option>
+                <option value="15-17" {{ (request('age_min')=='15' && request('age_max')=='17') ? 'selected' : '' }}>15 – 17</option>
                 <option value="18-24" {{ (request('age_min')=='18' && request('age_max')=='24') ? 'selected' : '' }}>18 – 24</option>
                 <option value="25-30" {{ (request('age_min')=='25' && request('age_max')=='30') ? 'selected' : '' }}>25 – 30</option>
                 <option value="31-40" {{ (request('age_min')=='31' && request('age_max')=='40') ? 'selected' : '' }}>31 – 40</option>

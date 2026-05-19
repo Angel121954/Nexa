@@ -28,7 +28,7 @@ class ProfileUpdateRequest extends FormRequest
             ],
             'bio' => ['nullable', 'string', 'max:500'],
             'city' => ['nullable', 'string', 'max:100'],
-            'birth_date' => ['nullable', 'date', 'before:today'],
+            'birth_date' => ['nullable', 'date', 'before:-15 years'],
             'gender' => ['nullable', 'in:male,female,non_binary,other'],
             'pronouns' => ['nullable', 'string', 'max:50'],
             'looking_for' => ['nullable', 'array'],
@@ -59,7 +59,7 @@ class ProfileUpdateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'birth_date.before' => 'La fecha de nacimiento debe ser anterior a hoy.',
+            'birth_date.before' => 'Debes tener al menos 15 años.',
         ];
     }
 }
