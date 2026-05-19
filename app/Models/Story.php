@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Story extends Model
 {
-    protected $fillable = ['user_id', 'media_path', 'expires_at'];
+    protected $fillable = ['user_id', 'media_path', 'public_id', 'expires_at'];
 
     protected function casts(): array
     {

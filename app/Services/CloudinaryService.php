@@ -53,6 +53,41 @@ class CloudinaryService
         return $this->uploadUrl($url, 'nexa/stories', "story_{$userId}_" . time());
     }
 
+    /**
+     * List all resources in a folder using the Cloudinary Admin API.
+     */
+    public function listResources(string $prefix, int $maxResults = 500): array
+    {
+        $allResources = [];
+        $nextCursor = null;
+
+        do {
+            $params = [
+                'prefix'      => $prefix,
+                'max_results' => $maxResults,
+                'type'        => 'upload',
+            ];
+
+            if ($nextCursor) {
+                $params['next_cursor'] = $nextCursor;
+            }
+
+            $response = Http::withBasicAuth($this->apiKey, $this->apiSecret)
+                ->get("https://api.cloudinary.com/v1_1/{$this->cloudName}/resources/image/upload", $params);
+
+            if ($response->failed()) {
+                Log::error('Cloudinary Admin API error', ['body' => $response->body()]);
+                throw new \Exception('Cloudinary Admin API error: ' . $response->body());
+            }
+
+            $body = $response->json();
+            $allResources = array_merge($allResources, $body['resources'] ?? []);
+            $nextCursor = $body['next_cursor'] ?? null;
+        } while ($nextCursor);
+
+        return $allResources;
+    }
+
     public function delete(string $publicId): void
     {
         $timestamp = time();
