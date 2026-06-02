@@ -26,28 +26,17 @@ class RegisteredUserController extends Controller
 
     public function create(): View
     {
-        $pendingGoogle = session('pending_google_user');
-
-        return view('auth.register', [
-            'pendingGoogle' => $pendingGoogle,
-        ]);
+        return view('auth.register');
     }
 
     public function store(Request $request): RedirectResponse
     {
-        $pendingGoogle = session('pending_google_user');
-
-        $rules = [
+        $request->validate([
             'name'              => ['required', 'string', 'max:255'],
             'email'             => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password'          => ['required', 'confirmed', Rules\Password::defaults()],
             'verification_code' => ['required', 'string', 'size:6'],
-        ];
-
-        if (!$pendingGoogle) {
-            $rules['password'] = ['required', 'confirmed', Rules\Password::defaults()];
-        }
-
-        $request->validate($rules);
+        ]);
 
         $code = EmailVerificationCode::where('email', $request->email)
             ->where('code', $request->verification_code)
@@ -64,18 +53,14 @@ class RegisteredUserController extends Controller
         $code->update(['used' => true]);
 
         $user = User::create([
-            'name'      => $request->name,
-            'email'     => $request->email,
-            'password'  => $pendingGoogle ? null : Hash::make($request->password),
-            'google_id' => $pendingGoogle['google_id'] ?? null,
-            'avatar'    => $pendingGoogle['avatar'] ?? null,
+            'name'     => $request->name,
+            'email'    => $request->email,
+            'password' => Hash::make($request->password),
         ]);
 
         $user->profile()->create([
             'onboarding_step' => 1,
         ]);
-
-        session()->forget('pending_google_user');
 
         event(new Registered($user));
         Auth::login($user);
@@ -155,28 +140,33 @@ class RegisteredUserController extends Controller
             if (!$user->google_id) {
                 $user->update(['google_id' => $googleUser->getId()]);
             }
+        } else {
+            $user = User::create([
+                'name'      => $googleUser->getName(),
+                'email'     => $googleUser->getEmail(),
+                'google_id' => $googleUser->getId(),
+                'avatar'    => $googleUser->getAvatar(),
+                'password'  => null,
+            ]);
 
-            Auth::login($user, remember: true);
+            $user->profile()->create([
+                'onboarding_step' => 1,
+            ]);
 
-            if ($user->hasEnabledTwoFactorAuthentication()) {
-                request()->session()->put('login.id', $user->id);
-                Auth::logout();
-                return redirect()->route('two-factor.challenge');
-            }
-
-            return ($user->profile?->profile_completed ?? false)
-                ? redirect()->route('explore.index')
-                : redirect()->route('onboarding.basic');
+            event(new Registered($user));
         }
 
-        session()->put('pending_google_user', [
-            'name'      => $googleUser->getName(),
-            'email'     => $googleUser->getEmail(),
-            'google_id' => $googleUser->getId(),
-            'avatar'    => $googleUser->getAvatar(),
-        ]);
+        Auth::login($user, remember: true);
 
-        return redirect()->route('register', ['google' => 1]);
+        if ($user->hasEnabledTwoFactorAuthentication()) {
+            request()->session()->put('login.id', $user->id);
+            Auth::logout();
+            return redirect()->route('two-factor.challenge');
+        }
+
+        return ($user->profile?->profile_completed ?? false)
+            ? redirect()->route('explore.index')
+            : redirect()->route('onboarding.basic');
     }
 
     // ─────────────────────────────────────────
@@ -211,27 +201,32 @@ class RegisteredUserController extends Controller
             if (!$user->facebook_id) {
                 $user->update(['facebook_id' => $fbUser->getId()]);
             }
+        } else {
+            $user = User::create([
+                'name'        => $fbUser->getName(),
+                'email'       => $fbEmail,
+                'facebook_id' => $fbUser->getId(),
+                'avatar'      => $fbUser->getAvatar(),
+                'password'    => null,
+            ]);
 
-            Auth::login($user, remember: true);
+            $user->profile()->create([
+                'onboarding_step' => 1,
+            ]);
 
-            if ($user->hasEnabledTwoFactorAuthentication()) {
-                request()->session()->put('login.id', $user->id);
-                Auth::logout();
-                return redirect()->route('two-factor.challenge');
-            }
-
-            return ($user->profile?->profile_completed ?? false)
-                ? redirect()->route('explore.index')
-                : redirect()->route('onboarding.basic');
+            event(new Registered($user));
         }
 
-        session()->put('pending_facebook_user', [
-            'name'        => $fbUser->getName(),
-            'email'       => $fbEmail,
-            'facebook_id' => $fbUser->getId(),
-            'avatar'      => $fbUser->getAvatar(),
-        ]);
+        Auth::login($user, remember: true);
 
-        return redirect()->route('register', ['facebook' => 1]);
+        if ($user->hasEnabledTwoFactorAuthentication()) {
+            request()->session()->put('login.id', $user->id);
+            Auth::logout();
+            return redirect()->route('two-factor.challenge');
+        }
+
+        return ($user->profile?->profile_completed ?? false)
+            ? redirect()->route('explore.index')
+            : redirect()->route('onboarding.basic');
     }
 }

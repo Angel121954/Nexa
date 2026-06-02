@@ -18,8 +18,6 @@
         <h1 class="auth-heading">Crea tu cuenta ♡</h1>
         <p class="auth-subheading">Únete y conecta con personas nuevas.</p>
 
-        @empty($pendingGoogle)
-        {{-- OAuth — solo mostrar si NO viene de Google pendiente --}}
         <a href="{{ route('google.redirect') }}" class="btn btn-social" style="margin-bottom: 0.625rem;">
             <svg width="16" height="16" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -31,16 +29,10 @@
         </a>
 
         <div class="auth-divider"><span>o continúa con</span></div>
-        @endempty
 
         {{-- Formulario --}}
         <form method="POST" action="{{ route('register') }}" id="registerForm">
             @csrf
-
-            @if (!empty($pendingGoogle))
-            {{-- Campos ocultos con datos de Google --}}
-            <input type="hidden" name="name" value="{{ $pendingGoogle['name'] }}">
-            @endif
 
             <div class="field">
                 <label for="name" class="field-label">Nombre completo</label>
@@ -52,8 +44,7 @@
                     <input type="text" id="name" name="name"
                         class="field-input @error('name') is-invalid @enderror"
                         placeholder="Tu nombre completo"
-                        value="{{ old('name', $pendingGoogle['name'] ?? '') }}" required autofocus autocomplete="name"
-                        @if (!empty($pendingGoogle)) readonly @endif />
+                        value="{{ old('name') }}" required autofocus autocomplete="name" />
                 </div>
                 @error('name')<span class="field-error">{{ $message }}</span>@enderror
             </div>
@@ -69,8 +60,7 @@
                         <input type="email" id="email" name="email"
                             class="field-input @error('email') is-invalid @enderror"
                             placeholder="tu@correo.com"
-                            value="{{ old('email', $pendingGoogle['email'] ?? '') }}" required autocomplete="username"
-                            @if (!empty($pendingGoogle)) readonly @endif />
+                            value="{{ old('email') }}" required autocomplete="username" />
                     </div>
                     <button type="button" id="btnSendCode" class="btn btn-outline btn-send-code" style="flex-shrink:0;">
                         Enviar código
@@ -96,7 +86,6 @@
                 @error('verification_code')<span class="field-error">{{ $message }}</span>@enderror
             </div>
 
-            @if (empty($pendingGoogle))
             <div class="field">
                 <label for="password" class="field-label">Contraseña</label>
                 <div class="field-input-wrap">
@@ -136,18 +125,15 @@
                 </div>
                 @error('password_confirmation')<span class="field-error">{{ $message }}</span>@enderror
             </div>
-            @endif
 
             <button type="submit" class="btn btn-primary" style="margin-top: 0.25rem;">
                 Crear cuenta
             </button>
         </form>
 
-        @if (empty($pendingGoogle))
         <p class="auth-footer">
             ¿Ya tienes cuenta? <a href="{{ route('login') }}">Inicia sesión</a>
         </p>
-        @endif
 
         <p class="auth-copyright" style="margin-top: 1rem;">
             Al registrarte aceptas nuestros
