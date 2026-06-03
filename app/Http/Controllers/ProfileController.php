@@ -93,13 +93,33 @@ class ProfileController extends Controller
         return back()->with('status', 'profile-updated');
     }
 
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request, CloudinaryService $cloudinary): RedirectResponse
     {
         $request->validateWithBag('userDeletion', [
             'password' => ['required', 'current_password'],
         ]);
 
         $user = $request->user();
+
+        // Eliminar avatar de Cloudinary
+        if ($user->avatar_public_id) {
+            try {
+                $cloudinary->delete($user->avatar_public_id);
+            } catch (\Exception $e) {
+                Log::warning('Error eliminando avatar de Cloudinary: ' . $e->getMessage());
+            }
+        }
+
+        // Eliminar fotos de galería de Cloudinary
+        foreach ($user->photos as $photo) {
+            if ($photo->public_id) {
+                try {
+                    $cloudinary->delete($photo->public_id);
+                } catch (\Exception $e) {
+                    Log::warning("Error eliminando foto {$photo->id} de Cloudinary: " . $e->getMessage());
+                }
+            }
+        }
 
         Auth::logout();
         $user->delete();

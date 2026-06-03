@@ -101,7 +101,7 @@
                         class="field-input @error('birth_date') is-invalid @enderror"
                         style="padding-left: 12px;"
                         value="{{ old('birth_date', $profile->birth_date?->format('Y-m-d')) }}"
-                        max="{{ now()->subYears(18)->format('Y-m-d') }}" required />
+                        max="{{ now()->subYears(15)->format('Y-m-d') }}" required />
                     @error('birth_date')<span class="field-error">{{ $message }}</span>@enderror
                 </div>
                 <div class="field">

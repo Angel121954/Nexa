@@ -50,11 +50,11 @@ class OnboardingController extends Controller
                     $fail('La ciudad seleccionada no es válida para el departamento escogido.');
                 }
             }],
-            'birth_date' => ['required', 'date', 'before:-18 years'],
+            'birth_date' => ['required', 'date', 'before:-15 years'],
             'gender'     => ['required', 'in:male,female,non_binary,other'],
             'pronouns'   => ['nullable', 'string', 'max:50'],
         ], [
-            'birth_date.before' => 'Debes tener al menos 18 años.',
+            'birth_date.before' => 'Debes tener al menos 15 años.',
             'department.in'     => 'El departamento seleccionado no es válido.',
         ]);
 

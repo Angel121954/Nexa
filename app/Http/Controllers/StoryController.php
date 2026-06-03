@@ -112,6 +112,7 @@ class StoryController extends Controller
             $story = Story::create([
                 'user_id'    => $me->id,
                 'media_path' => $result['url'],
+                'public_id'  => $result['public_id'] ?? null,
                 'expires_at' => now()->addHours(24),
             ]);
 
@@ -135,6 +136,14 @@ class StoryController extends Controller
     {
         if ($story->user_id !== auth()->id()) {
             return response()->json(['error' => 'No autorizado.'], 403);
+        }
+
+        if ($story->public_id) {
+            try {
+                $this->cloudinary->delete($story->public_id);
+            } catch (\Exception $e) {
+                Log::warning('Error eliminando story de Cloudinary: ' . $e->getMessage());
+            }
         }
 
         $story->views()->delete();
