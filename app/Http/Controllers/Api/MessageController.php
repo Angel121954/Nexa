@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\UserMatch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class MessageController extends Controller
 {
@@ -24,10 +25,9 @@ class MessageController extends Controller
             })
             ->firstOrFail();
 
-        // latest() trae los 50 más recientes; el frontend los invierte
-        // para que el chat muestre los mensajes de más antiguo a más nuevo.
         $messages = Message::where('match_id', $matchId)
             ->with('sender')
+            ->withTrashed()
             ->latest()
             ->paginate(50);
 
@@ -140,5 +140,58 @@ class MessageController extends Controller
             ->count();
 
         return response()->json(['count' => $count]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate(['body' => 'required|string|max:5000']);
+
+        $message = Message::findOrFail($id);
+
+        if ($message->sender_id !== Auth::id()) {
+            return response()->json(['error' => 'No puedes editar este mensaje.'], 403);
+        }
+
+        if (! $message->isEditable()) {
+            return response()->json(['error' => 'Ya no puedes editar este mensaje (límite de 30 min).'], 403);
+        }
+
+        $message->update([
+            'body'       => $request->body,
+            'edited_at'  => now(),
+        ]);
+
+        $message->load('sender');
+
+        try {
+            broadcast(new \App\Events\MessageEdited($message))->toOthers();
+        } catch (\Exception $e) {
+            \Log::error('Broadcast error: ' . $e->getMessage());
+        }
+
+        return response()->json($message);
+    }
+
+    public function destroy($id)
+    {
+        $message = Message::findOrFail($id);
+
+        if ($message->sender_id !== Auth::id()) {
+            return response()->json(['error' => 'No puedes eliminar este mensaje.'], 403);
+        }
+
+        if (! $message->isDeletable()) {
+            return response()->json(['error' => 'Ya no puedes eliminar este mensaje (límite de 60 min).'], 403);
+        }
+
+        $message->delete();
+
+        try {
+            broadcast(new \App\Events\MessageDeleted($message))->toOthers();
+        } catch (\Exception $e) {
+            \Log::error('Broadcast error: ' . $e->getMessage());
+        }
+
+        return response()->json(['success' => true]);
     }
 }
