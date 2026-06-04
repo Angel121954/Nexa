@@ -176,6 +176,11 @@ class ExploreController extends Controller
                     'user2_id' => max($me->id, $userId),
                 ]);
                 event(new MatchCreated($match));
+            } else {
+                $match->update([
+                    'user1_deleted_at' => null,
+                    'user2_deleted_at' => null,
+                ]);
             }
 
             foreach ([$me->id, $userId] as $uid) {

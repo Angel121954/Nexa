@@ -63,6 +63,11 @@ class MessageController extends Controller
             'body'      => $request->body,
         ]);
 
+        $match->update([
+            'user1_deleted_at' => null,
+            'user2_deleted_at' => null,
+        ]);
+
         $message->load('sender');
 
         $unreadCount = Message::whereHas('match', function ($query) use ($otherUserId) {
