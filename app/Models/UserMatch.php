@@ -10,7 +10,23 @@ class UserMatch extends Model
 {
     protected $table = 'matches';
 
-    protected $fillable = ['user1_id', 'user2_id'];
+    protected $fillable = ['user1_id', 'user2_id', 'user1_deleted_at', 'user2_deleted_at'];
+
+    protected $casts = [
+        'user1_deleted_at' => 'datetime',
+        'user2_deleted_at' => 'datetime',
+    ];
+
+    public function isDeletedByUser(int $userId): bool
+    {
+        if ($this->user1_id === $userId) {
+            return !is_null($this->user1_deleted_at);
+        }
+        if ($this->user2_id === $userId) {
+            return !is_null($this->user2_deleted_at);
+        }
+        return false;
+    }
 
     public function user1(): BelongsTo
     {

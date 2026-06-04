@@ -215,19 +215,29 @@ const DeleteUI = {
             if (res.ok) {
                 this.close();
                 showToast('Conversación eliminada.', 'success');
-                Events.closeChat();
+                const nextItem = activeItem.nextElementSibling?.classList.contains('msg-conv-item')
+                    ? activeItem.nextElementSibling
+                    : activeItem.previousElementSibling?.classList.contains('msg-conv-item')
+                        ? activeItem.previousElementSibling
+                        : null;
                 activeItem.remove();
-                if (!document.querySelector('.msg-conv-item')) {
-                    document.getElementById('msg-conv-list').innerHTML = `
-                        <div class="msg-empty-state">
-                            <div class="msg-empty-icon">
-                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-linecap="round" stroke-linejoin="round" />
-                                </svg>
-                            </div>
-                            <p class="msg-empty-title">Aún no hay mensajes</p>
-                            <p class="msg-empty-sub">Cuando hagas match con alguien podrán escribirse aquí.</p>
-                        </div>`;
+                if (nextItem) {
+                    Events.openChat(nextItem);
+                } else {
+                    Events.closeChat();
+                    if (!document.querySelector('.msg-conv-item')) {
+                        document.getElementById('msg-conv-list').innerHTML = `
+                            <div class="msg-empty-state">
+                                <div class="msg-empty-icon">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <p class="msg-empty-title">Aún no hay mensajes</p>
+                                <p class="msg-empty-sub">Cuando hagas match con alguien podrán escribirse aquí.</p>
+                                <a href="/explorar" class="msg-empty-cta">Explorar personas</a>
+                            </div>`;
+                    }
                 }
             } else {
                 const data = await res.json();
@@ -241,25 +251,6 @@ const DeleteUI = {
         }
     },
 
-    removeMatchFromUI(matchId) {
-        const item = document.querySelector(`.msg-conv-item[data-conv-id="${matchId}"]`);
-        if (!item) return;
-        const wasActive = item.classList.contains('active');
-        if (wasActive) Events.closeChat();
-        item.remove();
-        if (!document.querySelector('.msg-conv-item')) {
-            document.getElementById('msg-conv-list').innerHTML = `
-                <div class="msg-empty-state">
-                    <div class="msg-empty-icon">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                    </div>
-                    <p class="msg-empty-title">Aún no hay mensajes</p>
-                    <p class="msg-empty-sub">Cuando hagas match con alguien podrán escribirse aquí.</p>
-                </div>`;
-        }
-    }
 };
 
 // ═══ MESSAGE EDIT/DELETE ═══

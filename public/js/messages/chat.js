@@ -14,14 +14,7 @@ const WS = {
     },
 
     subscribeToMatchesChannel() {
-        if (!window.Echo || !state.currentUserId) return;
-        window.Echo.channel('matches')
-            .listen('.MatchDeleted', (e) => {
-                if (String(e.deleted_by_user_id) !== String(state.currentUserId)) {
-                    DeleteUI.removeMatchFromUI(e.match_id);
-                    showToast('Un match ha sido eliminado.', 'info');
-                }
-            });
+        // No se necesita listener: cada usuario controla su propio eliminado
     },
 
     subscribeToMatch(matchId) {
