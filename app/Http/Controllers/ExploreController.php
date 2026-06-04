@@ -25,7 +25,8 @@ class ExploreController extends Controller
             ->whereHas('profile', fn($q) => $q->where('profile_completed', true))
             ->where('id', '!=', $me->id)
             ->whereDoesntHave('blocksReceived', fn($q) => $q->where('blocker_id', $me->id))
-            ->whereDoesntHave('blocksSent', fn($q) => $q->where('blocked_id', $me->id));
+            ->whereDoesntHave('blocksSent', fn($q) => $q->where('blocked_id', $me->id))
+            ->whereDoesntHave('likesReceived', fn($q) => $q->where('sender_id', $me->id));
 
         // Filtro: búsqueda por nombre, bio o ciudad
         if ($search = $request->get('q')) {
