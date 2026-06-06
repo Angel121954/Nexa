@@ -272,7 +272,7 @@
     </div>
 </div>
 
-{{-- ═══ DELETE CONFIRMATION MODAL ═══ --}}
+{{-- ═══ DELETE CONVERSATION MODAL ═══ --}}
 <div class="modal-overlay" id="delete-modal" style="display:none;">
     <div class="modal-backdrop"></div>
     <div class="modal-content" style="max-width: 380px;">
@@ -303,9 +303,45 @@
     </div>
 </div>
 
+{{-- ═══ DELETE MESSAGE MODAL ═══ --}}
+<div class="modal-overlay" id="delete-msg-modal" style="display:none;">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content" style="max-width: 380px;">
+        <div class="modal-header">
+            <h2>Eliminar mensaje</h2>
+            <button type="button" class="modal-close-btn" id="delete-msg-modal-close">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </button>
+        </div>
+        <div class="modal-body" style="padding: 1.5rem;">
+            <p style="color:var(--text-secondary);font-size:.9375rem;line-height:1.6;margin-bottom:1.5rem;">
+                ¿Estás seguro de que quieres eliminar este mensaje?<br>
+                <strong style="color:var(--text-primary);">Esta acción no se puede deshacer.</strong>
+            </p>
+            <div class="modal-actions">
+                <button type="button" id="delete-msg-cancel-btn"
+                    style="padding:.5rem 1.25rem;border:1.5px solid var(--border);border-radius:10px;background:transparent;font-size:.875rem;cursor:pointer;color:var(--text-primary);">
+                    Cancelar
+                </button>
+                <button type="button" id="delete-msg-confirm-btn"
+                    style="padding:.5rem 1.25rem;border:none;border-radius:10px;background:#ef4444;color:#fff;font-size:.875rem;font-weight:600;cursor:pointer;">
+                    Sí, eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @push('scripts')
-<script src="{{ asset('js/messages/online-status.js') }}"></script>
+<script src="{{ asset('js/messages/state.js') }}"></script>
+<script src="{{ asset('js/messages/api.js') }}"></script>
+<script src="{{ asset('js/messages/ui.js') }}"></script>
+<script src="{{ asset('js/messages/interactions.js') }}"></script>
+<script src="{{ asset('js/messages/chat.js') }}"></script>
 <script src="{{ asset('js/messages/index.js') }}"></script>
+<script src="{{ asset('js/messages/online-status.js') }}"></script>
 @endpush

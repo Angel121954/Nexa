@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Message;
 use App\Models\UserMatch;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -84,13 +83,11 @@ class MatchController extends Controller
             return response()->json(['error' => 'Match no encontrado.'], 404);
         }
 
-        $otherUserId = $match->user1_id === $userId ? $match->user2_id : $match->user1_id;
-
-        Message::where('match_id', $match->id)->delete();
-
-        $match->delete();
-
-        broadcast(new \App\Events\MatchDeleted($match->id, $userId))->toOthers();
+        if ($match->user1_id === $userId) {
+            $match->update(['user1_deleted_at' => now()]);
+        } else {
+            $match->update(['user2_deleted_at' => now()]);
+        }
 
         return response()->json(['message' => 'Conversación eliminada.']);
     }

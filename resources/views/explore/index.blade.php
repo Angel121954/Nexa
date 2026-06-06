@@ -63,10 +63,22 @@
                 </button>
             </div>
 
+            <select name="department" class="filter-select" id="filter-department">
+                <option value="">Departamento</option>
+                @foreach($departments as $dept => $cities)
+                <option value="{{ $dept }}" {{ request('department') == $dept ? 'selected' : '' }}>{{ $dept }}</option>
+                @endforeach
+            </select>
+
             <select name="city" class="filter-select" id="filter-city">
-                <option value="">Ubicación</option>
-                @foreach($users->pluck('profile.city')->filter()->unique()->sort() as $city)
-                <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>{{ $city }}</option>
+                <option value="">Ciudad</option>
+                @foreach($departments as $dept => $cities)
+                    @foreach($cities as $cityOption)
+                    <option value="{{ $cityOption }}" data-department="{{ $dept }}"
+                        {{ request('city') == $cityOption ? 'selected' : '' }}>
+                        {{ $cityOption }}
+                    </option>
+                    @endforeach
                 @endforeach
             </select>
 

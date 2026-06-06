@@ -3,6 +3,7 @@ export function init(CSRF) {
     const searchInput = document.getElementById('q');
     const searchBtn = document.getElementById('search-btn');
     const container = document.getElementById('cards-container');
+    const deptSelect = document.getElementById('filter-department');
     const citySelect = document.getElementById('filter-city');
     const genderSelect = document.getElementById('filter-gender');
     const ageSelect = document.getElementById('age-range-select');
@@ -46,6 +47,28 @@ export function init(CSRF) {
             fetchResults();
         }
     });
+
+    // Cascade: department → city options
+    const allCityOptions = citySelect ? Array.from(citySelect.options) : [];
+
+    function filterCities() {
+        const selectedDept = deptSelect?.value;
+        allCityOptions.forEach(opt => {
+            if (!opt.value) return;
+            opt.hidden = selectedDept ? opt.dataset.department !== selectedDept : false;
+        });
+        if (citySelect?.value) {
+            const selected = citySelect.options[citySelect.selectedIndex];
+            if (selected?.hidden) citySelect.value = '';
+        }
+    }
+
+    deptSelect?.addEventListener('change', () => {
+        filterCities();
+        fetchResults();
+    });
+
+    if (deptSelect?.value) filterCities();
 
     citySelect?.addEventListener('change', () => fetchResults());
     genderSelect?.addEventListener('change', () => fetchResults());

@@ -16,6 +16,10 @@ class MessagePageController extends Controller
         $matches = UserMatch::where(function ($q) use ($userId) {
                 $q->where('user1_id', $userId)->orWhere('user2_id', $userId);
             })
+            ->where(function ($q) use ($userId) {
+                $q->where('user1_id', $userId)->whereNull('user1_deleted_at')
+                  ->orWhere('user2_id', $userId)->whereNull('user2_deleted_at');
+            })
             ->with(['user1', 'user2', 'latestMessage'])
             ->get();
 

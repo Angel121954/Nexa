@@ -25,7 +25,18 @@ class ExploreController extends Controller
             ->whereHas('profile', fn($q) => $q->where('profile_completed', true))
             ->where('id', '!=', $me->id)
             ->whereDoesntHave('blocksReceived', fn($q) => $q->where('blocker_id', $me->id))
-            ->whereDoesntHave('blocksSent', fn($q) => $q->where('blocked_id', $me->id));
+            ->whereDoesntHave('blocksSent', fn($q) => $q->where('blocked_id', $me->id))
+            ->whereDoesntHave('likesReceived', fn($q) => $q->where('sender_id', $me->id));
+
+        // Filtro: departamento
+        if ($dept = $request->get('department')) {
+            $query->whereHas('profile', fn($q) => $q->where('department', $dept));
+        }
+
+        // Filtro: ciudad
+        if ($city = $request->get('city')) {
+            $query->whereHas('profile', fn($q) => $q->where('city', $city));
+        }
 
         // Filtro: búsqueda por nombre, bio o ciudad
         if ($search = $request->get('q')) {
@@ -38,11 +49,6 @@ class ExploreController extends Controller
                             ->orWhere('city', 'like', "%{$search}%")
                     );
             });
-        }
-
-        // Filtro: ciudad
-        if ($city = $request->get('city')) {
-            $query->whereHas('profile', fn($q) => $q->where('city', 'like', "%{$city}%"));
         }
 
         // Filtro: género
@@ -123,6 +129,7 @@ class ExploreController extends Controller
             ->toArray();
 
         $interests = Interest::orderBy('name')->get();
+        $departments = config('colombia');
 
         if ($request->wantsJson()) {
             $html = view('explore._cards', compact('users', 'likedIds', 'matchIds'))->render();
@@ -133,7 +140,7 @@ class ExploreController extends Controller
             ]);
         }
 
-        return view('explore.index', compact('users', 'likedIds', 'matchIds', 'interests', 'tab'));
+        return view('explore.index', compact('users', 'likedIds', 'matchIds', 'interests', 'tab', 'departments'));
     }
 
     // ── Toggle Like (AJAX) ──────────────────────
@@ -175,6 +182,11 @@ class ExploreController extends Controller
                     'user2_id' => max($me->id, $userId),
                 ]);
                 event(new MatchCreated($match));
+            } else {
+                $match->update([
+                    'user1_deleted_at' => null,
+                    'user2_deleted_at' => null,
+                ]);
             }
 
             foreach ([$me->id, $userId] as $uid) {

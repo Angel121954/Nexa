@@ -102,6 +102,8 @@ Route::middleware('auth')->prefix('api')->group(function () {  // ← con prefix
     Route::post('/matches/{matchId}/messages', [MessageController::class, 'store']);
     Route::post('/matches/{matchId}/messages/read', [MessageController::class, 'markAsRead']);
     Route::post('/matches/{matchId}/messages/mark-read', [MessageController::class, 'markAsRead']);
+    Route::put('/messages/{id}', [MessageController::class, 'update']);
+    Route::delete('/messages/{id}', [MessageController::class, 'destroy']);
 
     // Estado de usuarios online (fallback con last_activity_at)
     Route::get('/users/online-status', [\App\Http\Controllers\Api\UserController::class, 'onlineStatus']);
