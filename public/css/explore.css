@@ -1191,7 +1191,6 @@ body {
 
 .pm-btn-gold:hover {
     opacity: .92;
-    transform: translateY(-1px);
     box-shadow: 0 6px 20px rgba(255, 140, 0, .45);
 }
 

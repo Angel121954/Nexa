@@ -160,7 +160,6 @@
 
 .btn-premium:hover {
     opacity: .9;
-    transform: translateY(-1px);
     color: var(--white);
 }
 
