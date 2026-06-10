@@ -1243,9 +1243,8 @@ body {
 }
 
 .pm-btn-gold:hover {
-    opacity: 0.92;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(255, 140, 0, 0.45);
+    opacity: .92;
+    box-shadow: 0 6px 20px rgba(255, 140, 0, .45);
 }
 
 .pm-disclaimer {

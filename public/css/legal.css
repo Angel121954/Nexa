@@ -400,7 +400,6 @@
 
 .contact-link:hover {
     background: var(--pink-dark);
-    transform: translateY(-1px);
 }
 
 /* ═══ PANEL VISIBILITY ═══ */

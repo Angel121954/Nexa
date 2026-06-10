@@ -985,7 +985,6 @@
 
 .msg-empty-cta:hover {
     background: var(--pink-dark);
-    transform: translateY(-1px);
 }
 
 /* ══════════════════════════════════════════

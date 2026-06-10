@@ -144,7 +144,6 @@ body {
 
 .btn-readall:hover {
     background: #fbd3dd;
-    transform: translateY(-1px);
 }
 
 .btn-notif-settings {
@@ -437,7 +436,6 @@ body {
 
 .notif-action-link:hover {
     background: #fbd3dd;
-    transform: translateY(-1px);
 }
 
 .notif-delete-form {
@@ -558,7 +556,6 @@ body {
 
 .btn-empty-cta:hover {
     background: var(--pink-dark);
-    transform: translateY(-2px);
     box-shadow: 0 6px 18px rgba(232, 55, 90, .38);
 }
 
@@ -782,7 +779,6 @@ body {
 
 .btn-nsp-save:hover {
     background: var(--pink-dark);
-    transform: translateY(-1px);
 }
 
 /* ═══════════════ HIDDEN ITEMS (JS filter) ═══════════════ */
