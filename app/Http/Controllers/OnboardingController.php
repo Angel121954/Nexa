@@ -215,6 +215,8 @@ class OnboardingController extends Controller
             'interests.*'  => ['exists:interests,id'],
             'looking_for' => ['nullable', 'array'],
             'looking_for.*' => ['in:friends,dating,networking,activities'],
+            'gender_preference' => ['nullable', 'array'],
+            'gender_preference.*' => ['in:male,female,non_binary,other'],
         ]);
 
         $user = auth()->user();
@@ -225,6 +227,10 @@ class OnboardingController extends Controller
             'looking_for'      => $request->looking_for ?? [],
             'profile_completed' => true,
             'onboarding_step'  => 4,
+        ]);
+
+        $user->update([
+            'looking_for' => $request->gender_preference ?? [],
         ]);
 
         return redirect()->route('onboarding.welcome');

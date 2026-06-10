@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initCitySelects();
     initInterestTags();
     initPreferenceOptions();
+    initGenderPrefAutoFill();
     initAvatarPreview();
     initGalleryPreview();
 });
@@ -107,6 +108,37 @@ function initGalleryPreview() {
             reader.readAsDataURL(file);
         });
     };
+}
+
+/**
+ * Toggle gender preference chips (preferences.blade.php)
+ */
+function initGenderPrefAutoFill() {
+    const section = document.getElementById('gender-pref-section');
+    if (!section) return;
+
+    const userGender = section.dataset.userGender;
+
+    window.toggleGenderPref = function(label, value) {
+        const input = document.getElementById('gp-input-' + value);
+        if (!input) return;
+        input.checked = !input.checked;
+        label.classList.toggle('selected', input.checked);
+    };
+
+    if (userGender === 'male') {
+        autoCheckGenderPref('female');
+    } else if (userGender === 'female') {
+        autoCheckGenderPref('male');
+    }
+}
+
+function autoCheckGenderPref(value) {
+    const input = document.getElementById('gp-input-' + value);
+    const label = document.getElementById('gp-opt-' + value);
+    if (!input || !label) return;
+    input.checked = true;
+    label.classList.add('selected');
 }
 
 /**

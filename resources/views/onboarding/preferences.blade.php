@@ -76,6 +76,29 @@
                 @endforeach
             </div>
 
+            {{-- Busco conectar con --}}
+            <p class="field-label" style="margin-bottom: 0.25rem; margin-top: 1.5rem;">Busco conectar con</p>
+            <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.75rem;">
+                Selecciona una o varias opciones
+            </p>
+
+            @php
+                $userGender = auth()->user()->profile?->gender ?? '';
+                $genderPrefs = old('gender_preference', []);
+            @endphp
+            <div id="gender-pref-section" data-user-gender="{{ $userGender }}" style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:1.5rem;">
+                @foreach(['male' => 'Masculino', 'female' => 'Femenino', 'non_binary' => 'No binario', 'other' => 'Otro'] as $value => $label)
+                <label class="interest-tag @if(in_array($value, $genderPrefs)) selected @endif"
+                       id="gp-opt-{{ $value }}"
+                       onclick="toggleGenderPref(this, '{{ $value }}')">
+                    <input type="checkbox" name="gender_preference[]" value="{{ $value }}"
+                           style="display:none;" id="gp-input-{{ $value }}"
+                           @if(in_array($value, $genderPrefs)) checked @endif>
+                    <span>{{ $label }}</span>
+                </label>
+                @endforeach
+            </div>
+
             <div class="onboarding-actions">
                 <a href="{{ route('onboarding.photos') }}" class="btn btn-outline">Atrás</a>
                 <button type="submit" class="btn btn-primary btn-main">Crear cuenta</button>
