@@ -31,8 +31,8 @@ class ProfileUpdateRequest extends FormRequest
             'birth_date' => ['nullable', 'date', 'before:-15 years'],
             'gender' => ['nullable', 'in:male,female,non_binary,other'],
             'pronouns' => ['nullable', 'string', 'max:50'],
-            'looking_for' => ['nullable', 'array'],
-            'looking_for.*' => ['in:male,female,non_binary,other'],
+            'gender_preference' => ['nullable', 'array'],
+            'gender_preference.*' => ['in:male,female,non_binary,other'],
         ];
     }
 
@@ -49,7 +49,7 @@ class ProfileUpdateRequest extends FormRequest
             'birth_date' => 'fecha de nacimiento',
             'gender' => 'género',
             'pronouns' => 'pronombres',
-            'looking_for' => 'busca conectar con',
+            'gender_preference' => 'busca conectar con',
         ];
     }
 

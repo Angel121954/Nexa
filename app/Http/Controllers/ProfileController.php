@@ -85,7 +85,7 @@ class ProfileController extends Controller
             'birth_date',
             'gender',
             'pronouns',
-            'looking_for',
+            'gender_preference',
         ]));
 
         $profile->save();

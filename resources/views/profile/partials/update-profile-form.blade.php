@@ -159,19 +159,19 @@
                 <label class="form-label">Busco conectar con</label>
                 <p class="form-hint mb-3">Selecciona una o varias opciones</p>
                 @php
-                $lookingFor = old('looking_for', $user->looking_for ?? ($profile->looking_for ?? []));
-                if (is_string($lookingFor)) $lookingFor = json_decode($lookingFor, true) ?? [];
+                $genderPref = old('gender_preference', $profile->gender_preference ?? []);
+                if (is_string($genderPref)) $genderPref = json_decode($genderPref, true) ?? [];
                 @endphp
                 <div class="space-y-2">
                     @foreach(['male' => 'Masculino', 'female' => 'Femenino', 'non_binary' => 'No binario', 'other' => 'Otro / Prefiero no decirlo'] as $value => $label)
                     <div class="checkbox-option">
-                        <input type="checkbox" name="looking_for[]" value="{{ $value }}"
-                            {{ in_array($value, $lookingFor) ? 'checked' : '' }}>
+                        <input type="checkbox" name="gender_preference[]" value="{{ $value }}"
+                            {{ in_array($value, $genderPref) ? 'checked' : '' }}>
                         <span>{{ $label }}</span>
                     </div>
                     @endforeach
                 </div>
-                <x-input-error class="mt-1" :messages="$errors->get('looking_for')" />
+                <x-input-error class="mt-1" :messages="$errors->get('gender_preference')" />
             </div>
         </div>
 
