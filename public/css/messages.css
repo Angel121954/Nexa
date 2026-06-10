@@ -595,12 +595,6 @@
     color: var(--text-muted);
 }
 
-.msg-bubble-ticks {
-    display: flex;
-    align-items: center;
-    color: var(--pink);
-}
-
 /* ── Editado tag ── */
 .msg-edited {
     font-size: .625rem;
