@@ -15,6 +15,7 @@ class Profile extends Model
         'gender',
         'pronouns',
         'looking_for',
+        'gender_preference',
         'profile_completed',
         'onboarding_step',
     ];
@@ -22,6 +23,7 @@ class Profile extends Model
     protected $casts = [
         'birth_date' => 'date',
         'looking_for' => 'array',
+        'gender_preference' => 'array',
         'profile_completed' => 'boolean',
     ];
 
