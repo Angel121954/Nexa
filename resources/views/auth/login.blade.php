@@ -10,6 +10,9 @@
 
 <div class="auth-page">
     <div class="auth-card">
+        <p style="font-size:14px;color:#6b7280;margin-top:8px;">
+            💕 Comunidad exclusiva para mayores de 18 años.
+        </p>
 
         {{-- Logo --}}
         <div class="auth-logo">

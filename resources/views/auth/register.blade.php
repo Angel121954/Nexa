@@ -135,12 +135,26 @@
             ¿Ya tienes cuenta? <a href="{{ route('login') }}">Inicia sesión</a>
         </p>
 
-        <p class="auth-copyright" style="margin-top: 1rem;">
-            Al registrarte aceptas nuestros
-            <a href="{{ route('legal') }}" style="color: var(--pink); text-decoration: none; font-weight: 500;">Términos</a>
-            y
-            <a href="{{ route('legal') }}" style="color: var(--pink); text-decoration: none; font-weight: 500;">Política de Privacidad</a>
-        </p>
+        <div class="auth-copyright" style="margin-top: 1rem;">
+            <label>
+                <input type="checkbox" name="accept_terms">
+
+                Acepto los
+                <a href="{{ route('legal') }}" style="color: var(--pink); text-decoration: none; font-weight: 500;">
+                    Términos
+                </a>
+                y la
+                <a href="{{ route('legal') }}" style="color: var(--pink); text-decoration: none; font-weight: 500;">
+                    Política de Privacidad
+                </a>
+            </label>
+
+            @error('accept_terms')
+            <p style="color:red; margin-top:5px;">
+                {{ $message }}
+            </p>
+            @enderror
+        </div>
     </div>
 </div>
 @endsection
