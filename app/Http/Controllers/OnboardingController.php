@@ -229,8 +229,8 @@ class OnboardingController extends Controller
             'onboarding_step'  => 4,
         ]);
 
-        $user->update([
-            'looking_for' => $request->gender_preference ?? [],
+        $profile->update([
+            'gender_preference' => $request->gender_preference ?? [],
         ]);
 
         return redirect()->route('onboarding.welcome');
