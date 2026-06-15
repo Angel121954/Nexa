@@ -29,6 +29,8 @@ class User extends Authenticatable
         'bio',
         'city',
         'profile_completed',
+        'role',
+        'blocked_at',
         'latitude',
         'longitude',
         'current_latitude',
@@ -57,6 +59,8 @@ class User extends Authenticatable
             'birth_date' => 'date',
             'looking_for' => 'array',
             'profile_completed' => 'boolean',
+            'role' => 'string',
+            'blocked_at' => 'datetime',
             'latitude' => 'float',
             'longitude' => 'float',
             'current_latitude' => 'float',
@@ -66,6 +70,53 @@ class User extends Authenticatable
             'last_activity_at' => 'datetime',
             'two_factor_confirmed_at' => 'datetime',
         ];
+    }
+
+    public function getIsOnlineAttribute(): bool
+    {
+        return $this->last_activity_at && $this->last_activity_at->gt(now()->subMinutes(5));
+    }
+
+    public function getIsPremiumAttribute(): bool
+    {
+        return false;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isBlocked(): bool
+    {
+        return $this->blocked_at !== null;
+    }
+
+    public function block(): void
+    {
+        $this->update(['blocked_at' => now()]);
+    }
+
+    public function unblock(): void
+    {
+        $this->update(['blocked_at' => null]);
+    }
+
+    public function toggleBlock(): bool
+    {
+        if ($this->isBlocked()) {
+            $this->unblock();
+            return false;
+        }
+        $this->block();
+        return true;
+    }
+
+    public function toggleAdmin(): bool
+    {
+        $newRole = $this->role === 'admin' ? 'user' : 'admin';
+        $this->update(['role' => $newRole]);
+        return $newRole === 'admin';
     }
 
     // 🟢 PERFIL
