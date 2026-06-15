@@ -165,14 +165,14 @@ class ProfileController extends Controller
                 );
             }
 
-            UserPhoto::create([
+            $photo = UserPhoto::create([
                 'user_id'   => $userId,
                 'path'      => $upload['url'],
                 'public_id' => $upload['public_id']
             ]);
 
             if ($request->expectsJson()) {
-                return response()->json(['message' => 'Foto subida', 'url' => $upload['url']]);
+                return response()->json(['message' => 'Foto subida', 'url' => $upload['url'], 'id' => $photo->id]);
             }
 
             return back()->with('success', 'Foto subida');

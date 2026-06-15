@@ -42,11 +42,22 @@ function initGalleryUpload() {
                 const placeholder = grid.querySelector('.gallery-empty');
                 if (placeholder) placeholder.remove();
 
+                const token = document.querySelector('meta[name="csrf-token"]').content;
+
                 const item = document.createElement('div');
                 item.className = 'gallery-item';
                 item.innerHTML = `
                     <img src="${data.url}">
                     <div class="gallery-item-overlay"></div>
+                    <form action="/profile/photo/${data.id}" method="POST" class="gallery-item-delete">
+                        <input type="hidden" name="_token" value="${token}">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit" class="bg-white/90 hover:bg-white p-2 rounded-full shadow border-0">
+                            <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M6 6l12 12M18 6L6 18" />
+                            </svg>
+                        </button>
+                    </form>
                 `;
                 grid.insertBefore(item, grid.querySelector('.gallery-item') || null);
             }
