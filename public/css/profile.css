@@ -440,6 +440,25 @@
     color: #dc2626;
 }
 
+.gallery-item-spinner {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.3);
+    border-radius: 12px;
+    color: #fff;
+}
+
+@keyframes gallerySpin {
+    to { transform: rotate(360deg); }
+}
+
+.gallery-item-spinner svg {
+    animation: gallerySpin 0.8s linear infinite;
+}
+
 .gallery-empty {
     grid-column: span 5;
     text-align: center;

@@ -18,9 +18,29 @@ function initGalleryUpload() {
         const file = input.files[0];
         if (!file || !file.type.startsWith('image/')) return;
 
+        const preview = URL.createObjectURL(file);
+        const token = document.querySelector('meta[name="csrf-token"]').content;
+        const placeholder = grid?.querySelector('.gallery-empty');
+        if (placeholder) placeholder.remove();
+
+        const item = document.createElement('div');
+        item.className = 'gallery-item';
+        item.innerHTML = `
+            <img src="${preview}">
+            <div class="gallery-item-overlay"></div>
+            <div class="gallery-item-spinner">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" opacity=".25"/>
+                    <path d="M4 12a8 8 0 018-8" stroke="currentColor" stroke-width="2"/>
+                </svg>
+            </div>
+        `;
+        grid?.insertBefore(item, grid?.querySelector('.gallery-item') || null);
+        input.value = '';
+
         const formData = new FormData();
         formData.append('photo', file);
-        formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
+        formData.append('_token', token);
 
         try {
             const res = await fetch(form.action, {
@@ -32,38 +52,28 @@ function initGalleryUpload() {
             const data = await res.json();
 
             if (!res.ok) {
+                item.remove();
                 showToast(data.message, 'error');
                 return;
             }
 
+            item.querySelector('img').src = data.url;
+            item.querySelector('.gallery-item-spinner')?.remove();
+            item.insertAdjacentHTML('beforeend', `
+                <form action="/profile/photo/${data.id}" method="POST" class="gallery-item-delete">
+                    <input type="hidden" name="_token" value="${token}">
+                    <input type="hidden" name="_method" value="DELETE">
+                    <button type="submit" class="bg-white/90 hover:bg-white p-2 rounded-full shadow border-0">
+                        <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M6 6l12 12M18 6L6 18" />
+                        </svg>
+                    </button>
+                </form>
+            `);
+
             showToast(data.message, 'success');
-
-            if (grid && data.url) {
-                const placeholder = grid.querySelector('.gallery-empty');
-                if (placeholder) placeholder.remove();
-
-                const token = document.querySelector('meta[name="csrf-token"]').content;
-
-                const item = document.createElement('div');
-                item.className = 'gallery-item';
-                item.innerHTML = `
-                    <img src="${data.url}">
-                    <div class="gallery-item-overlay"></div>
-                    <form action="/profile/photo/${data.id}" method="POST" class="gallery-item-delete">
-                        <input type="hidden" name="_token" value="${token}">
-                        <input type="hidden" name="_method" value="DELETE">
-                        <button type="submit" class="bg-white/90 hover:bg-white p-2 rounded-full shadow border-0">
-                            <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path d="M6 6l12 12M18 6L6 18" />
-                            </svg>
-                        </button>
-                    </form>
-                `;
-                grid.insertBefore(item, grid.querySelector('.gallery-item') || null);
-            }
-
-            input.value = '';
         } catch (err) {
+            item.remove();
             console.error(err);
             showToast('Error subiendo foto', 'error');
         }
