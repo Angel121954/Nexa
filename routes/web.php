@@ -15,6 +15,7 @@ use App\Http\Controllers\LocationController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\StoryController;
 use App\Http\Controllers\TwoFactorController;
+use App\Http\Controllers\DashboardController;
 
 // Rutas de broadcasting (para autenticación de canales privados)
 Broadcast::routes(['middleware' => ['web']]);
@@ -76,6 +77,15 @@ Route::middleware(['auth'])->group(function () {
     // Bloquear / desbloquear usuario
     Route::post('/profile/{user}/block', [ProfileController::class, 'block'])->name('profile.block');
     Route::post('/profile/{user}/report', [ProfileController::class, 'report'])->name('profile.report');
+
+    // Dashboard (solo admin)
+    Route::middleware('admin')->prefix('dashboard')->name('dashboard.')->group(function () {
+        Route::get('/', [DashboardController::class, 'index'])->name('index');
+        Route::get('/users', [DashboardController::class, 'users'])->name('users');
+        Route::get('/activity', [DashboardController::class, 'activity'])->name('activity');
+        Route::post('/users/{user}/toggle-block', [DashboardController::class, 'toggleBlock'])->name('toggle-block');
+        Route::post('/users/{user}/toggle-admin', [DashboardController::class, 'toggleAdmin'])->name('toggle-admin');
+    });
 
     // Notifications
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');

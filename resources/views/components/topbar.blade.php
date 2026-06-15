@@ -38,6 +38,13 @@ $onlyLogoAvatar = $onlyLogoAvatar ?? false;
             Notificaciones
             <span class="nav-link-badge" id="nav-notif-badge" style="display:none;"></span>
         </a>
+        @auth
+            @if(auth()->user()->isAdmin())
+            <a href="{{ route('dashboard.index') }}" class="nav-link {{ request()->routeIs('dashboard.*') ? 'active' : '' }}">
+                Panel
+            </a>
+            @endif
+        @endauth
     </div>
     @endif
 

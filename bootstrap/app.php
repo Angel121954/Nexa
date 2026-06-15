@@ -22,6 +22,10 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Update last activity for authenticated users
         $middleware->web(\App\Http\Middleware\UpdateLastActivity::class);
+
+        $middleware->alias([
+            'admin' => \App\Http\Middleware\AdminMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
