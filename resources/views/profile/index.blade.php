@@ -11,6 +11,12 @@
 
 @include('components.topbar')
 <x-toast />
+@if(session('success'))
+<script>document.addEventListener('DOMContentLoaded', () => showToast(@json(session('success')), 'success'));</script>
+@endif
+@if(session('error'))
+<script>document.addEventListener('DOMContentLoaded', () => showToast(@json(session('error')), 'error'));</script>
+@endif
 
 <div class="bg-gray-50 min-h-screen pb-16">
 
@@ -147,11 +153,6 @@
 
         </div>
     </div>
-    @if(session('error'))
-    <div class="error-message mx-6">
-        {{ session('error') }}
-    </div>
-    @endif
     <!-- GALERÍA -->
     <div class="profile-gallery">
 
