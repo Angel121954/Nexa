@@ -1,3 +1,14 @@
+function haversineDistance(lat1, lng1, lat2, lng2) {
+    const R = 6371000;
+    const toRad = (deg) => (deg * Math.PI) / 180;
+    const dLat = toRad(lat2 - lat1);
+    const dLng = toRad(lng2 - lng1);
+    const a =
+        Math.sin(dLat / 2) ** 2 +
+        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
 /**
  * Inicia el sistema de tracking GPS del usuario.
  *
@@ -31,6 +42,12 @@ function startLocationTracking() {
 
     console.log("Iniciando tracking GPS");
 
+    let lastUpdateTime = 0;
+    let lastLat = null;
+    let lastLng = null;
+    const MIN_INTERVAL_MS = 30000; // 30 segundos entre peticiones
+    const MIN_DISTANCE_M = 100;    // 100 metros de desplazamiento mínimo
+
     /**
      * watchPosition escucha cambios de ubicación
      * continuamente en tiempo real.
@@ -40,11 +57,25 @@ function startLocationTracking() {
          * Callback ejecutado cuando cambia la ubicación.
          */
         async (position) => {
+            const now = Date.now();
+
+            if (now - lastUpdateTime < MIN_INTERVAL_MS) return;
+
             /**
              * Coordenadas actuales del usuario.
              */
             const lat = position.coords.latitude;
             const lng = position.coords.longitude;
+
+            // Si ya tenemos coordenadas previas, calcular distancia
+            if (lastLat !== null && lastLng !== null) {
+                const d = haversineDistance(lastLat, lastLng, lat, lng);
+                if (d < MIN_DISTANCE_M) return;
+            }
+
+            lastLat = lat;
+            lastLng = lng;
+            lastUpdateTime = now;
 
             console.log("Nueva ubicación:", lat, lng);
 

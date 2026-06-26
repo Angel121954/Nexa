@@ -36,17 +36,24 @@ class LocationController extends Controller
         $lat = $validated['lat'];
         $lng = $validated['lng'];
 
-        // Obtener ciudad y país desde OpenStreetMap vía geocoder-php
-        $provider = Nominatim::withOpenStreetMapServer($this->httpClient, 'Nexa App');
-        $result = $provider->reverseQuery(ReverseQuery::fromCoordinates($lat, $lng));
-
         $city = null;
         $country = null;
 
-        if ($result->count() > 0) {
-            $location = $result->first();
-            $city = self::cleanCityName($location->getLocality());
-            $country = $location->getCountry()?->getName();
+        try {
+            // Obtener ciudad y país desde OpenStreetMap vía geocoder-php
+            $provider = Nominatim::withOpenStreetMapServer($this->httpClient, 'Nexa App');
+            $result = $provider->reverseQuery(ReverseQuery::fromCoordinates($lat, $lng));
+
+            if ($result->count() > 0) {
+                $location = $result->first();
+                $city = self::cleanCityName($location->getLocality());
+                $country = $location->getCountry()?->getName();
+            }
+        } catch (\Throwable $e) {
+            Log::warning('Error al obtener ubicación desde Nominatim', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+            ]);
         }
 
         // Guardar ubicación actual
