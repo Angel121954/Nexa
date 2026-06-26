@@ -121,7 +121,11 @@ class RegisteredUserController extends Controller
 
     public function redirectToGoogle(): RedirectResponse
     {
-        return Socialite::driver('google')->redirect();
+        $driver = Socialite::driver('google');
+        $response = $driver->redirect();
+        \Log::debug('Google OAuth authorization URL: ' . $response->getTargetUrl());
+        \Log::debug('Google OAuth config redirect: ' . config('services.google.redirect'));
+        return $response;
     }
 
     public function handleGoogleCallback()
