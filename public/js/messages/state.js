@@ -25,6 +25,7 @@ const state = {
             sendBtn: document.getElementById('msg-send-btn'),
             backBtn: document.getElementById('msg-back-btn'),
             searchInput: document.getElementById('msg-search-input'),
+            attachBtn: document.querySelector('.msg-attach-btn'),
             tabs: document.querySelectorAll('.msg-tab'),
             chatHeaderAvatar: document.getElementById('chat-header-avatar'),
             chatHeaderDot: document.getElementById('chat-header-dot'),

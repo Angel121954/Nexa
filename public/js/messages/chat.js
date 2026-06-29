@@ -183,6 +183,19 @@ const Events = {
         const sendBtn = state.get('sendBtn');
         const textInput = state.get('textInput');
         if (sendBtn) sendBtn.addEventListener('click', () => this.handleSendMessage());
+
+        const attachBtn = state.get('attachBtn');
+        if (attachBtn) {
+            attachBtn.addEventListener('click', () => {
+                const input = state.get('textInput');
+                if (input) {
+                    input.value = 'https://';
+                    input.focus();
+                    input.setSelectionRange(input.value.length, input.value.length);
+                }
+            });
+        }
+
         if (textInput) {
             textInput.addEventListener('input', () => UI.updateSendButtonState());
             textInput.addEventListener('keypress', (e) => {
