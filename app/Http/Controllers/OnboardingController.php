@@ -42,7 +42,7 @@ class OnboardingController extends Controller
         $departments = config('colombia');
 
         $request->validate([
-            'bio'        => ['nullable', 'string', 'max:160'],
+            'bio'        => ['nullable', 'string', 'max:700'],
             'department' => ['required', 'string', 'in:' . implode(',', array_keys($departments))],
             'city'       => ['required', 'string', function ($attr, $value, $fail) use ($request, $departments) {
                 $cities = $departments[$request->department] ?? [];

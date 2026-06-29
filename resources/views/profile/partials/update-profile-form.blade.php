@@ -142,12 +142,12 @@
             <div class="form-group mt-4">
                 <label for="bio" class="flex items-center justify-between form-label">
                     <span>Biografía</span>
-                    <span class="text-gray-400 font-normal text-xs" id="bioCounter">0/500</span>
+                    <span class="text-gray-400 font-normal text-xs" id="bioCounter">0/700</span>
                 </label>
-                <textarea id="bio" name="bio" rows="3" maxlength="500"
+                <textarea id="bio" name="bio" rows="3" maxlength="700"
                     class="form-textarea"
                     placeholder="Cuéntanos un poco sobre ti, tus intereses, qué te gusta hacer...">{{ old('bio', $user->bio ?? ($profile->bio ?? '')) }}</textarea>
-                <p class="form-hint">Máximo 500 caracteres</p>
+                <p class="form-hint">Máximo 700 caracteres</p>
                 <x-input-error class="mt-1" :messages="$errors->get('bio')" />
             </div>
         </div>

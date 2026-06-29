@@ -44,9 +44,9 @@
                 <textarea id="bio" name="bio" rows="3"
                     class="field-textarea @error('bio') is-invalid @enderror"
                     placeholder="Escribe una breve presentación sobre ti..."
-                    maxlength="160"
+                    maxlength="700"
                     oninput="document.getElementById('bio-count').textContent = this.value.length">{{ old('bio', $profile->bio ?? '') }}</textarea>
-                <div class="char-count"><span id="bio-count">{{ strlen(old('bio', $profile->bio ?? '')) }}</span>/160</div>
+                <div class="char-count"><span id="bio-count">{{ strlen(old('bio', $profile->bio ?? '')) }}</span>/700</div>
                 @error('bio')<span class="field-error">{{ $message }}</span>@enderror
             </div>
 

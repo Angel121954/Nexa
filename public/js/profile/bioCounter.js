@@ -3,7 +3,7 @@ window.BioCounter = (() => {
 
     function updateCounter() {
         if (bioTextarea && bioCounter) {
-            bioCounter.textContent = `${bioTextarea.value.length}/500`;
+            bioCounter.textContent = `${bioTextarea.value.length}/700`;
         }
     }
 
