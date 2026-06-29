@@ -89,25 +89,95 @@ function initAvatarPreview() {
 }
 
 /**
- * Preview gallery images (photos.blade.php)
+ * Preview & accumulate gallery images (photos.blade.php)
+ * Acumula archivos seleccionados en múltiples aperturas y los envía
+ * todos vía fetch al enviar el formulario.
  */
 function initGalleryPreview() {
-    // This function can be called from onchange in the view
+    const accumulated = [];
+
     window.previewGallery = function(input) {
         const grid = document.getElementById('gallery-grid');
         if (!grid) return;
 
+        // Limpiar previsualizaciones anteriores
+        grid.querySelectorAll('.gallery-item[data-preview]').forEach(el => el.remove());
+
+        // Acumular nuevos archivos
         Array.from(input.files).forEach(file => {
+            accumulated.push(file);
+        });
+
+        // Mostrar preview de TODOS los acumulados
+        accumulated.forEach((file, i) => {
             const reader = new FileReader();
             reader.onload = e => {
                 const div = document.createElement('div');
                 div.className = 'gallery-item';
+                div.setAttribute('data-preview', '1');
                 div.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
                 grid.appendChild(div);
             };
             reader.readAsDataURL(file);
         });
+
+        // Resetear el input para permitir seleccionar el mismo archivo de nuevo
+        input.value = '';
     };
+
+    // Interceptar el envío para incluir todos los archivos acumulados
+    const form = document.querySelector('form[action*="photos"]');
+    if (form) {
+        let submitting = false;
+        form.addEventListener('submit', async function(e) {
+            if (submitting) return;
+            submitting = true;
+            e.preventDefault();
+
+            const btn = form.querySelector('button[type="submit"]');
+            if (btn) {
+                btn.disabled = true;
+                btn.textContent = 'Subiendo...';
+                btn.style.opacity = '0.6';
+                btn.style.pointerEvents = 'none';
+            }
+
+            const formData = new FormData(form);
+            formData.delete('gallery[]');
+
+            accumulated.forEach(file => {
+                formData.append('gallery[]', file);
+            });
+
+            try {
+                const res = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'text/html,application/xhtml+xml',
+                    },
+                });
+
+                if (res.redirected) {
+                    window.location.href = res.url;
+                } else {
+                    document.open();
+                    document.write(await res.text());
+                    document.close();
+                }
+            } catch (err) {
+                console.error('Error al enviar formulario:', err);
+                alert('Error al enviar el formulario. Intenta de nuevo.');
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = 'Continuar';
+                    btn.style.opacity = '1';
+                    btn.style.pointerEvents = 'auto';
+                }
+                submitting = false;
+            }
+        });
+    }
 }
 
 /**
