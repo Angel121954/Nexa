@@ -116,7 +116,7 @@ class OnboardingController extends Controller
     {
         $request->validate([
             'avatar'    => ['required', 'image', 'max:5120', 'mimes:jpg,jpeg,png'],
-            'gallery.*' => ['nullable', 'image', 'max:5120', 'mimes:jpg,jpeg,png'],
+            'gallery.*' => ['image', 'max:5120', 'mimes:jpg,jpeg,png'],
         ]);
 
         $user = auth()->user();
