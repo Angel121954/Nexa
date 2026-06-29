@@ -140,18 +140,34 @@ class OnboardingController extends Controller
 
         // 🔥 GALERÍA
         if ($request->hasFile('gallery')) {
+            $files = $request->file('gallery');
+
+            Log::debug('📸 Galería debug', [
+                'hasFile'      => $request->hasFile('gallery'),
+                'files_type'   => gettype($files),
+                'is_array'     => is_array($files),
+                'count'        => is_array($files) ? count($files) : 'N/A',
+                'class'        => is_object($files) ? get_class($files) : 'N/A',
+            ]);
+
             $currentCount = $user->photos()->count();
 
-            foreach ($request->file('gallery') as $index => $photo) {
+            foreach ($files as $index => $photo) {
+                Log::debug('📸 Procesando índice', ['index' => $index, 'photo_type' => gettype($photo), 'photo_class' => is_object($photo) ? get_class($photo) : 'N/A']);
+
                 if ($currentCount + $index >= 6) break;
 
                 $uploaded = $cloudinary->uploadGallery($photo, $user->id, (string)($currentCount + $index));
 
-                $user->photos()->create([
+                Log::debug('📸 Cloudinary response', ['url' => $uploaded['url'], 'public_id' => $uploaded['public_id']]);
+
+                $record = $user->photos()->create([
                     'path'       => $uploaded['url'],
                     'public_id'  => $uploaded['public_id'],
                     'sort_order' => $currentCount + $index,
                 ]);
+
+                Log::debug('📸 Registro creado', ['id' => $record->id, 'sort_order' => $record->sort_order]);
             }
         }
 
