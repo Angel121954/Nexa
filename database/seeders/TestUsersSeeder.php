@@ -11,6 +11,18 @@ class TestUsersSeeder extends Seeder
 {
     public function run(): void
     {
+        $cityToDept = [
+            'Bogotá'      => 'Cundinamarca',
+            'Medellín'    => 'Antioquia',
+            'Cali'        => 'Valle del Cauca',
+            'Barranquilla'=> 'Atlántico',
+            'Cartagena'   => 'Bolívar',
+            'Cúcuta'      => 'Norte de Santander',
+            'Manizales'   => 'Caldas',
+            'Pereira'     => 'Risaralda',
+            'Armenia'     => 'Quindío',
+        ];
+
         $people = [
             // name, email, gender, birth_date, city, bio, interests (nombres)
             ['Valentina Torres',  'valen@demo.com',    'female',     '1999-03-14', 'Bogotá',     'Amante del café, los libros y los atardeceres. Busco conversaciones que inspiren.',         ['Café','Lectura','Fotografía','Arte','Viajes']],
@@ -62,10 +74,13 @@ class TestUsersSeeder extends Seeder
             ]);
 
             // Crear perfil completo
+            $department = $cityToDept[$city] ?? 'Cundinamarca';
             DB::table('profiles')->insert([
                 'user_id'           => $userId,
                 'bio'               => $bio,
                 'city'              => $city,
+                'country'           => 'colombia',
+                'department'        => $department,
                 'birth_date'        => $birth,
                 'gender'            => $gender,
                 'profile_completed' => true,

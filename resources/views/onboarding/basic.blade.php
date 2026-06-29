@@ -50,18 +50,36 @@
                 @error('bio')<span class="field-error">{{ $message }}</span>@enderror
             </div>
 
-            {{-- Departamento --}}
+            {{-- País --}}
             <div class="field">
-                <label for="department" class="field-label">Departamento</label>
+                <label for="country" class="field-label">País</label>
+                <div class="field-input-wrap">
+                    <svg class="field-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M2 4h12M2 8h12M2 12h12" stroke-linecap="round" />
+                    </svg>
+                    <select id="country" name="country"
+                        class="field-select @error('country') is-invalid @enderror" required>
+                        <option value="" disabled {{ old('country', $selectedCountry ?? '') ? '' : 'selected' }}>Selecciona tu país</option>
+                        @foreach($countries as $code => $name)
+                        <option value="{{ $code }}" {{ old('country', $selectedCountry ?? 'colombia') === $code ? 'selected' : '' }}>{{ $name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                @error('country')<span class="field-error">{{ $message }}</span>@enderror
+            </div>
+
+            {{-- Departamento / Provincia --}}
+            <div class="field">
+                <label for="department" class="field-label">{{ $regionLabel }}</label>
                 <div class="field-input-wrap">
                     <svg class="field-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
                         <path d="M2 4h12M2 8h12M2 12h12" stroke-linecap="round" />
                     </svg>
                     <select id="department" name="department"
                         class="field-select @error('department') is-invalid @enderror" required>
-                        <option value="" disabled {{ old('department', $selectedDepartment ?? '') ? '' : 'selected' }}>Selecciona tu departamento</option>
+                        <option value="" disabled {{ old('department', $selectedDepartment ?? '') ? '' : 'selected' }}>Selecciona tu {{ lcfirst($regionLabel) }}</option>
                         @foreach($departments as $dept => $cities)
-                        <option value="{{ $dept }}" {{ old('department', $selectedDepartment ?? '') === $dept ? 'selected' : '' }}>{{ $dept }}</option>
+                        <option value="{{ $dept }}" data-country="{{ $selectedCountry }}" {{ old('department', $selectedDepartment ?? '') === $dept ? 'selected' : '' }}>{{ $dept }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -82,7 +100,7 @@
                         <option value="" disabled {{ old('city', $profile->city ?? '') ? '' : 'selected' }}>Selecciona tu ciudad</option>
                         @foreach($departments as $dept => $cities)
                             @foreach($cities as $cityOption)
-                            <option value="{{ $cityOption }}" data-department="{{ $dept }}"
+                            <option value="{{ $cityOption }}" data-country="{{ $selectedCountry }}" data-department="{{ $dept }}"
                                 {{ old('city', $profile->city ?? '') === $cityOption ? 'selected' : '' }}>
                                 {{ $cityOption }}
                             </option>
@@ -150,5 +168,8 @@
 @endsection
 
 @push('scripts')
+<script>
+    window.countriesData = @json($allRegions);
+</script>
 <script src="{{ asset('js/onboarding/onboarding.js') }}"></script>
 @endpush

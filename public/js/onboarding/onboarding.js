@@ -212,21 +212,73 @@ function autoCheckGenderPref(value) {
 }
 
 /**
- * Cascading city/department selects (basic.blade.php)
+ * Cascading country/department/city selects (basic.blade.php)
  */
 function initCitySelects() {
+    const countrySelect = document.getElementById('country');
     const deptSelect = document.getElementById('department');
     const citySelect = document.getElementById('city');
-    if (!deptSelect || !citySelect) return;
+    if (!countrySelect || !deptSelect || !citySelect) return;
 
-    const allOptions = Array.from(citySelect.options);
+    const regionLabels = { colombia: 'Departamento', ecuador: 'Provincia' };
 
-    function filterCities() {
+    function getCountryName(code) {
+        return regionLabels[code] || 'Departamento';
+    }
+
+    function rebuildOptions() {
+        const selectedCountry = countrySelect.value;
+        if (!selectedCountry || !window.countriesData?.[selectedCountry]) return;
+
+        const regions = window.countriesData[selectedCountry];
+
+        // Update department label
+        const deptLabel = document.querySelector('label[for="department"]');
+        if (deptLabel) deptLabel.textContent = getCountryName(selectedCountry);
+
+        // Rebuild department select
+        const currentDept = deptSelect.value;
+        deptSelect.innerHTML = '<option value="" disabled selected>Selecciona tu ' + getCountryName(selectedCountry).toLowerCase() + '</option>';
+        Object.keys(regions).forEach(dept => {
+            const opt = document.createElement('option');
+            opt.value = dept;
+            opt.textContent = dept;
+            opt.dataset.country = selectedCountry;
+            if (dept === currentDept) opt.selected = true;
+            deptSelect.appendChild(opt);
+        });
+
+        // Rebuild city select with all cities from this country
+        const currentCity = citySelect.value;
+        citySelect.innerHTML = '<option value="" disabled selected>Selecciona tu ciudad</option>';
+        Object.entries(regions).forEach(([dept, cities]) => {
+            cities.forEach(city => {
+                const opt = document.createElement('option');
+                opt.value = city;
+                opt.textContent = city;
+                opt.dataset.country = selectedCountry;
+                opt.dataset.department = dept;
+                if (city === currentCity) opt.selected = true;
+                citySelect.appendChild(opt);
+            });
+        });
+
+        // Reset city if current selection is invalid
+        const selectedCityOpt = citySelect.options[citySelect.selectedIndex];
+        if (selectedCityOpt && selectedCityOpt.dataset.country !== selectedCountry) {
+            citySelect.value = '';
+        }
+
+        applyFilter();
+    }
+
+    function applyFilter() {
+        const selectedCountry = countrySelect.value;
         const selectedDept = deptSelect.value;
 
-        allOptions.forEach(opt => {
+        Array.from(citySelect.options).forEach(opt => {
             if (!opt.value) return;
-            opt.hidden = opt.dataset.department !== selectedDept;
+            opt.hidden = opt.dataset.country !== selectedCountry || opt.dataset.department !== selectedDept;
         });
 
         if (citySelect.value) {
@@ -237,9 +289,13 @@ function initCitySelects() {
         }
     }
 
-    deptSelect.addEventListener('change', filterCities);
+    countrySelect.addEventListener('change', rebuildOptions);
+    deptSelect.addEventListener('change', applyFilter);
 
-    if (deptSelect.value) {
-        filterCities();
+    // Initialize on load
+    if (countrySelect.value) {
+        rebuildOptions();
+    } else {
+        applyFilter();
     }
 }

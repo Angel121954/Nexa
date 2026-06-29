@@ -28,6 +28,7 @@ class ProfileUpdateRequest extends FormRequest
             ],
             'bio' => ['nullable', 'string', 'max:700'],
             'city' => ['nullable', 'string', 'max:100'],
+            'country' => ['nullable', 'string', 'in:colombia,ecuador'],
             'birth_date' => ['nullable', 'date', 'before:-15 years'],
             'gender' => ['nullable', 'in:male,female,non_binary,other'],
             'pronouns' => ['nullable', 'string', 'max:50'],

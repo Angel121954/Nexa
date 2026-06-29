@@ -63,8 +63,15 @@
                 </button>
             </div>
 
+            <select name="country" class="filter-select" id="filter-country">
+                <option value="">País</option>
+                @foreach($countries as $code => $name)
+                <option value="{{ $code }}" {{ $selectedCountry == $code ? 'selected' : '' }}>{{ $name }}</option>
+                @endforeach
+            </select>
+
             <select name="department" class="filter-select" id="filter-department">
-                <option value="">Departamento</option>
+                <option value="">{{ $regionLabel }}</option>
                 @foreach($departments as $dept => $cities)
                 <option value="{{ $dept }}" {{ request('department') == $dept ? 'selected' : '' }}>{{ $dept }}</option>
                 @endforeach
@@ -74,7 +81,7 @@
                 <option value="">Ciudad</option>
                 @foreach($departments as $dept => $cities)
                     @foreach($cities as $cityOption)
-                    <option value="{{ $cityOption }}" data-department="{{ $dept }}"
+                    <option value="{{ $cityOption }}" data-country="{{ $selectedCountry }}" data-department="{{ $dept }}"
                         {{ request('city') == $cityOption ? 'selected' : '' }}>
                         {{ $cityOption }}
                     </option>
@@ -408,6 +415,11 @@
 @endpush
 
 @push('scripts')
+<script>
+    window.exploreCountriesData = @json($allRegions);
+    window.exploreRegionLabels = { colombia: 'Departamento', ecuador: 'Provincia' };
+    window.exploreSelectedCountry = '{{ $selectedCountry }}';
+</script>
 <script src="{{ asset('js/explore/app.js') }}" type="module"></script>
 <script src="{{ asset('js/stories/stories.js') }}" defer></script>
 @endpush

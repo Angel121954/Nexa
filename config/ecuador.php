@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'Azuay' => ['Cuenca', 'Gualaceo', 'Paute', 'Girón', 'Santa Isabel', 'Sigsig', 'Chordeleg', 'Nabón', 'Pucará', 'San Fernando'],
+    'Bolívar' => ['Guaranda', 'San Miguel', 'Caluma', 'Chillanes', 'Chimbo', 'Echeandía', 'Las Naves'],
+    'Cañar' => ['Azogues', 'La Troncal', 'Biblián', 'Cañar', 'Déleg', 'Suscal'],
+    'Carchi' => ['Tulcán', 'San Gabriel', 'El Ángel', 'Bolívar', 'Mira', 'Huaca'],
+    'Chimborazo' => ['Riobamba', 'Alausí', 'Guano', 'Chambo', 'Colta', 'Cumandá', 'Pallatanga', 'Penipe'],
+    'Cotopaxi' => ['Latacunga', 'La Maná', 'Pujilí', 'Salcedo', 'Saquisilí', 'Sigchos'],
+    'El Oro' => ['Machala', 'Pasaje', 'Santa Rosa', 'Huaquillas', 'Zaruma', 'Piñas', 'Portovelo', 'Arenillas', 'Balsas', 'Chilla'],
+    'Esmeraldas' => ['Esmeraldas', 'Atacames', 'Quinindé', 'San Lorenzo', 'Muisne', 'Eloy Alfaro', 'Rioverde'],
+    'Galápagos' => ['Puerto Baquerizo Moreno', 'Puerto Ayora', 'Puerto Villamil'],
+    'Guayas' => ['Guayaquil', 'Durán', 'Milagro', 'Daule', 'Samborondón', 'Playas', 'Salitre', 'Naranjal', 'El Triunfo', 'Balzar', 'Naranjito', 'Yaguachi', 'Babahoyo', 'Pedro Carbo', 'Lomas de Sargentillo'],
+    'Imbabura' => ['Ibarra', 'Otavalo', 'Cotacachi', 'Atuntaqui', 'Pimampiro', 'Urcuquí'],
+    'Loja' => ['Loja', 'Catamayo', 'Macará', 'Zamora', 'Cariamanga', 'Alamor', 'Gonzanamá', 'Saraguro', 'Calvas', 'Celica'],
+    'Los Ríos' => ['Babahoyo', 'Quevedo', 'Ventanas', 'Vinces', 'Baba', 'Montalvo', 'Puebloviejo', 'Urdaneta', 'Valencia', 'Mocache'],
+    'Manabí' => ['Portoviejo', 'Manta', 'Chone', 'Jipijapa', 'Montecristi', 'El Carmen', 'Sucre', 'Tosagua', 'Rocafuerte', 'Paján', 'Flavio Alfaro', 'Junín', 'Jaramijó', 'San Vicente'],
+    'Morona Santiago' => ['Macas', 'Gualaquiza', 'Sucúa', 'Palora', 'San Juan Bosco', 'Santiago de Méndez'],
+    'Napo' => ['Tena', 'Archidona', 'El Chaco', 'Quijos', 'Carlos Julio Arosemena Tola'],
+    'Orellana' => ['Coca', 'Aguarico', 'La Joya de los Sachas', 'Loreto'],
+    'Pastaza' => ['Puyo', 'Mera', 'Santa Clara', 'Arajuno'],
+    'Pichincha' => ['Quito', 'Cayambe', 'Machachi', 'Sangolquí', 'Rumiñahui', 'Pedro Moncayo', 'Puerto Quito', 'San Miguel de Los Bancos', 'Pedro Vicente Maldonado'],
+    'Santa Elena' => ['Santa Elena', 'Salinas', 'La Libertad'],
+    'Santo Domingo de los Tsáchilas' => ['Santo Domingo', 'La Concordia', 'El Carmen'],
+    'Sucumbíos' => ['Nueva Loja', 'Lago Agrio', 'Shushufindi', 'Cascales', 'Cuyabeno', 'Gonzalo Pizarro', 'Putumayo', 'Sucumbíos'],
+    'Tungurahua' => ['Ambato', 'Baños de Agua Santa', 'Pelileo', 'Píllaro', 'Cevallos', 'Mocha', 'Patate', 'Quero', 'Tisaleo'],
+    'Zamora Chinchipe' => ['Zamora', 'Yantzaza', 'El Pangui', 'Zumbi', 'Centinela del Cóndor', 'Palanda', 'Chinchipe'],
+];

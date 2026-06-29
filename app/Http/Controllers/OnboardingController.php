@@ -17,37 +17,70 @@ use Illuminate\View\View;
 
 class OnboardingController extends Controller
 {
+    private function getCountries(): array
+    {
+        return [
+            'colombia' => 'Colombia',
+            'ecuador'  => 'Ecuador',
+        ];
+    }
+
+    private function getRegionLabel(string $countryCode): string
+    {
+        return $countryCode === 'ecuador' ? 'Provincia' : 'Departamento';
+    }
+
     // ── Paso 2: Perfil básico ──────────────────
     public function basic(): View
     {
         $user = auth()->user();
         $profile = $user->profile ?? new Profile(['user_id' => $user->id]);
-        $departments = collect(config('colombia'));
+        $countries = $this->getCountries();
+
+        $selectedCountry = $profile->country ?? 'colombia';
+        $regions = collect(config($selectedCountry));
 
         $selectedDepartment = null;
         if ($profile->city) {
-            $selectedDepartment = $departments->search(fn ($cities) => in_array($profile->city, $cities));
+            $selectedDepartment = $regions->search(fn ($cities) => in_array($profile->city, $cities));
+        }
+
+        $allRegions = [];
+        foreach ($countries as $code => $name) {
+            $allRegions[$code] = config($code);
         }
 
         return view('onboarding.basic', [
             'user'               => $user,
             'profile'            => $profile,
-            'departments'        => $departments,
+            'countries'          => $countries,
+            'selectedCountry'    => $selectedCountry,
+            'departments'        => $regions,
             'selectedDepartment' => $selectedDepartment,
+            'regionLabel'        => $this->getRegionLabel($selectedCountry),
+            'allRegions'         => $allRegions,
         ]);
     }
 
     public function storeBasic(Request $request): RedirectResponse
     {
-        $departments = config('colombia');
+        $countries = $this->getCountries();
+        $countryCode = $request->get('country', 'colombia');
+
+        if (!isset($countries[$countryCode])) {
+            return back()->withErrors(['country' => 'País no válido.'])->withInput();
+        }
+
+        $regions = config($countryCode);
 
         $request->validate([
             'bio'        => ['nullable', 'string', 'max:700'],
-            'department' => ['required', 'string', 'in:' . implode(',', array_keys($departments))],
-            'city'       => ['required', 'string', function ($attr, $value, $fail) use ($request, $departments) {
-                $cities = $departments[$request->department] ?? [];
+            'country'    => ['required', 'string', 'in:' . implode(',', array_keys($countries))],
+            'department' => ['required', 'string', 'in:' . implode(',', array_keys($regions))],
+            'city'       => ['required', 'string', function ($attr, $value, $fail) use ($request, $regions) {
+                $cities = $regions[$request->department] ?? [];
                 if (!in_array($value, $cities)) {
-                    $fail('La ciudad seleccionada no es válida para el departamento escogido.');
+                    $fail('La ciudad seleccionada no es válida para la región escogida.');
                 }
             }],
             'birth_date' => ['required', 'date', 'before:-15 years'],
@@ -55,14 +88,19 @@ class OnboardingController extends Controller
             'pronouns'   => ['nullable', 'string', 'max:50'],
         ], [
             'birth_date.before' => 'Debes tener al menos 15 años.',
-            'department.in'     => 'El departamento seleccionado no es válido.',
+            'country.in'        => 'El país seleccionado no es válido.',
+            'department.in'     => 'La región seleccionada no es válida.',
         ]);
+
+        $countryName = $countries[$countryCode];
+        $regionLabel = $this->getRegionLabel($countryCode);
 
         $user = auth()->user();
         $profile = $user->profile ?? new Profile(['user_id' => $user->id]);
         $profile->fill([
             'bio'             => $request->bio,
             'city'            => $request->city,
+            'country'         => $countryCode,
             'department'      => $request->department,
             'birth_date'      => $request->birth_date,
             'gender'          => $request->gender,
@@ -79,7 +117,7 @@ class OnboardingController extends Controller
         // Geocodificar la ciudad seleccionada para establecer home_latitude/home_longitude
         $httpClient = new Client();
         $provider = Nominatim::withOpenStreetMapServer($httpClient, 'Nexa App');
-        $query = GeocodeQuery::create($request->city . ', ' . $request->department . ', Colombia');
+        $query = GeocodeQuery::create($request->city . ', ' . $request->department . ', ' . $countryName);
 
         try {
             $result = $provider->geocodeQuery($query);
@@ -93,7 +131,7 @@ class OnboardingController extends Controller
                     'home_latitude'  => $coords->getLatitude(),
                     'home_longitude' => $coords->getLongitude(),
                     'home_city'      => $homeCity,
-                    'home_country'   => 'Colombia',
+                    'home_country'   => $countryName,
                 ])->save();
             }
         } catch (\Exception $e) {

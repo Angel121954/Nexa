@@ -16,10 +16,24 @@ use Illuminate\View\View;
 
 class ExploreController extends Controller
 {
+    private function getCountries(): array
+    {
+        return [
+            'colombia' => 'Colombia',
+            'ecuador'  => 'Ecuador',
+        ];
+    }
+
+    private function getRegionLabel(string $countryCode): string
+    {
+        return $countryCode === 'ecuador' ? 'Provincia' : 'Departamento';
+    }
+
     // ── Feed principal ─────────────────────────
     public function index(Request $request): View|JsonResponse
     {
         $me = auth()->user();
+        $countries = $this->getCountries();
 
         $query = User::with(['profile', 'interests', 'photos'])
             ->whereHas('profile', fn($q) => $q->where('profile_completed', true))
@@ -28,7 +42,13 @@ class ExploreController extends Controller
             ->whereDoesntHave('blocksSent', fn($q) => $q->where('blocked_id', $me->id))
             ->whereDoesntHave('likesReceived', fn($q) => $q->where('sender_id', $me->id));
 
-        // Filtro: departamento
+        // Filtro: país
+        $selectedCountry = $request->get('country', 'colombia');
+        if ($selectedCountry && isset($countries[$selectedCountry])) {
+            $query->whereHas('profile', fn($q) => $q->where('country', $selectedCountry));
+        }
+
+        // Filtro: departamento / provincia
         if ($dept = $request->get('department')) {
             $query->whereHas('profile', fn($q) => $q->where('department', $dept));
         }
@@ -129,7 +149,18 @@ class ExploreController extends Controller
             ->toArray();
 
         $interests = Interest::orderBy('name')->get();
-        $departments = config('colombia');
+
+        $selectedCountry = $request->get('country', 'colombia');
+        if (!isset($countries[$selectedCountry])) {
+            $selectedCountry = 'colombia';
+        }
+        $departments = collect(config($selectedCountry));
+
+        $allRegions = [];
+        foreach ($countries as $code => $name) {
+            $allRegions[$code] = config($code);
+        }
+        $regionLabel = $this->getRegionLabel($selectedCountry);
 
         if ($request->wantsJson()) {
             $html = view('explore._cards', compact('users', 'likedIds', 'matchIds'))->render();
@@ -140,7 +171,10 @@ class ExploreController extends Controller
             ]);
         }
 
-        return view('explore.index', compact('users', 'likedIds', 'matchIds', 'interests', 'tab', 'departments'));
+        return view('explore.index', compact(
+            'users', 'likedIds', 'matchIds', 'interests', 'tab',
+            'departments', 'countries', 'selectedCountry', 'allRegions', 'regionLabel'
+        ));
     }
 
     // ── Toggle Like (AJAX) ──────────────────────

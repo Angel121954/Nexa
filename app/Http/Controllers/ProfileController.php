@@ -82,6 +82,8 @@ class ProfileController extends Controller
         $profile->fill($request->only([
             'bio',
             'city',
+            'country',
+            'department',
             'birth_date',
             'gender',
             'pronouns',
