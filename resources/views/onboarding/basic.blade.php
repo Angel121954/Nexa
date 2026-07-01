@@ -152,10 +152,10 @@
                 </label>
                 <select id="pronouns" name="pronouns" class="field-select">
                     <option value="">Selecciona tus pronombres</option>
-                    <option value="he/him" {{ old('pronouns', $profile->pronouns ?? '') === 'he/him'   ? 'selected' : '' }}>Él / Him</option>
-                    <option value="she/her" {{ old('pronouns', $profile->pronouns ?? '') === 'she/her'  ? 'selected' : '' }}>Ella / Her</option>
-                    <option value="they/them" {{ old('pronouns', $profile->pronouns ?? '') === 'they/them'? 'selected' : '' }}>Elle / They</option>
-                    <option value="any" {{ old('pronouns', $profile->pronouns ?? '') === 'any'      ? 'selected' : '' }}>Cualquiera</option>
+                    <option value="él" {{ old('pronouns', $profile->pronouns ?? '') === 'él'   ? 'selected' : '' }}>Él</option>
+                    <option value="ella" {{ old('pronouns', $profile->pronouns ?? '') === 'ella'  ? 'selected' : '' }}>Ella</option>
+                    <option value="elle" {{ old('pronouns', $profile->pronouns ?? '') === 'elle'? 'selected' : '' }}>Elle</option>
+                    <option value="cualquiera" {{ old('pronouns', $profile->pronouns ?? '') === 'cualquiera'      ? 'selected' : '' }}>Cualquiera</option>
                 </select>
             </div>
 
