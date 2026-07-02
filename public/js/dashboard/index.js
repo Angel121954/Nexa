@@ -1,7 +1,26 @@
 document.addEventListener('DOMContentLoaded', () => {
+    initSidebarToggle();
     initBarChart();
     initDonutChart();
 });
+
+function initSidebarToggle() {
+    const toggle = document.getElementById('dash-mobile-toggle');
+    const sidebar = document.getElementById('dash-sidebar');
+    if (!toggle || !sidebar) return;
+
+    toggle.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+    });
+
+    document.addEventListener('click', (e) => {
+        if (sidebar.classList.contains('open') &&
+            !sidebar.contains(e.target) &&
+            !toggle.contains(e.target)) {
+            sidebar.classList.remove('open');
+        }
+    });
+}
 
 function initBarChart() {
     const container = document.getElementById('dash-bar-chart');

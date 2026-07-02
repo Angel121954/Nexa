@@ -2,18 +2,22 @@
     'use strict';
 
     const badge = document.getElementById('nav-notif-badge');
-    if (!badge) return;
+    const bottomBadge = document.getElementById('bottom-nav-notif-badge');
 
     const userIdMeta = document.querySelector('meta[name="user-id"]');
     if (!userIdMeta) return;
     const currentUserId = userIdMeta.content;
 
     function updateBadge(count) {
-        if (count > 0) {
-            badge.textContent = count > 99 ? '99+' : count;
-            badge.style.display = '';
-        } else {
-            badge.style.display = 'none';
+        const text = count > 99 ? '99+' : count;
+        const show = count > 0;
+        if (badge) {
+            badge.style.display = show ? '' : 'none';
+            badge.textContent = text;
+        }
+        if (bottomBadge) {
+            bottomBadge.style.display = show ? '' : 'none';
+            bottomBadge.textContent = text;
         }
     }
 

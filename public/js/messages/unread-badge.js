@@ -3,19 +3,23 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     const badge = document.getElementById('nav-unread-badge');
-    if (!badge) return;
+    const bottomBadge = document.getElementById('bottom-nav-unread-badge');
 
     const userIdMeta = document.querySelector('meta[name="user-id"]');
     if (!userIdMeta) return;
     const currentUserId = userIdMeta.content;
 
     function renderBadge(count) {
-        if (count > 0) {
-            badge.style.display = '';
-            badge.textContent = count > 9 ? '9+' : count;
-            badge.title = `${count} mensaje${count !== 1 ? 's' : ''} no leído${count !== 1 ? 's' : ''}`;
-        } else {
-            badge.style.display = 'none';
+        const text = count > 9 ? '9+' : count;
+        const show = count > 0;
+        if (badge) {
+            badge.style.display = show ? '' : 'none';
+            badge.textContent = text;
+            badge.title = show ? `${count} mensaje${count !== 1 ? 's' : ''} no leído${count !== 1 ? 's' : ''}` : '';
+        }
+        if (bottomBadge) {
+            bottomBadge.style.display = show ? '' : 'none';
+            bottomBadge.textContent = text;
         }
     }
 

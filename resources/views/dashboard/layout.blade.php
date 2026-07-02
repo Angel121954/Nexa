@@ -68,6 +68,14 @@
 
     <main class="dash-main" id="dash-main">
 
+        <button class="dash-mobile-toggle" id="dash-mobile-toggle" aria-label="Abrir menú">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <line x1="3" y1="12" x2="21" y2="12"/>
+                <line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+        </button>
+
         <x-toast />
         @if(session('success'))
         <script>document.addEventListener('DOMContentLoaded', () => showToast(@json(session('success')), 'success'));</script>
